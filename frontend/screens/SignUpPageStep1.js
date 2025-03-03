@@ -76,7 +76,8 @@ const SignUpPageStep1 = () => {
         <TextInput
           style={styles.input}
           placeholder="+123 567 89000"
-          keyboardType="phone-pad"
+          keyboardType="numeric"
+          returnKeyType="done"
           placeholderTextColor="#999"
           value={contact}
           onChangeText={setContact}

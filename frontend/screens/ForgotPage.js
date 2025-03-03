@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import API_BASE_URL from "../env";
 
 const ForgotPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ const ForgotPage = ({ navigation }) => {
   
     setIsLoading(true);
     try {
-      const response = await fetch("http://192.168.100.19:3000/api/forgot-password", {
+      const response = await fetch(`${API_BASE_URL}/api/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
