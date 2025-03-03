@@ -22,16 +22,14 @@ const LoginScreen = ({ navigation }) => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://192.168.100.19:3000/login", {  
+      const response = await fetch("http://192.168.100.19:3000/api/login", {  
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ username, password }),
-      });
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+    
 
-      // 处理非JSON响应
+
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
@@ -105,7 +103,7 @@ const LoginScreen = ({ navigation }) => {
 
         <View style={styles.signupRow}>
           <Text style={styles.signupText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUpPage')}>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUpPageStep1')}>
           <Text style={styles.signupLink}>Sign Up</Text>
           </TouchableOpacity>
         </View>

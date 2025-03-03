@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.66, // Shadow visibility
     shadowRadius: 5, // How blurry the shadow is
     elevation: 5, // Shadow for Android
-    width:'60%',
+    width:'70%',
   },
   buttonText: {
     color: 'white',
