@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
+import API_BASE_URL from "../../env";
 
 const ResetPasswordPage = ({ route, navigation }) => {
   const { email, token } = route.params;
@@ -15,7 +16,7 @@ const ResetPasswordPage = ({ route, navigation }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://192.168.100.19:3000/api/reset-password', {
+      const response = await fetch(`${API_BASE_URL}/api/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

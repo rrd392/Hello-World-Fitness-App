@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import API_BASE_URL from "../env";
+import API_BASE_URL from "../../env";
 
 const ForgotPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
