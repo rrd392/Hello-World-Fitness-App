@@ -1,7 +1,7 @@
 ﻿# FitnessApp-expo frontend
-cd FitnessApp
+cd FitnessApp/frontend
 npx expo start
 
 # FitnessApp-expo backend
-cd backend
+cd FitnessApp/backend
 node server.js
