@@ -41,7 +41,7 @@ const LoginScreen = ({ navigation }) => {
       if (data.success) {
         navigation.navigate(data.role === "admin" ? "AdminPage" : "OnBoardingPage");
       } else {
-        Alert.alert("Login Failed", data.message || "Invalid credentials");
+        Alert.alert("Login Failed");
       }
     } catch (error) {
       console.error("Login error:", error);  

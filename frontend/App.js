@@ -5,15 +5,16 @@ import { NavigationContainer } from "@react-navigation/native";
 // Import screens from the screens folder
 import LoginScreen from "./screens/LoginScreen";
 import AdminPage from "./screens/AdminPage";
-import UserDashboard from "./screens/UserDashboard";
+import MemberDashboard from "./screens/Dashboard/MemberDashboard";
 import OnBoardingPage from "./screens/OnBoardingPage"; 
-import ForgotPage from "./screens/ForgotPage";
-import ResetPasswordPage from "./screens/ResetPasswordPage";
-import SignUpPageStep1 from "./screens/SignUpPageStep1";  // User details
-import SignUpPageStep2 from "./screens/SignUpPageStep2";  // Additional info
-import SignUpPageStep3 from "./screens/SignUpPageStep3";  // Goal selection
-import SignUpPageStep4 from "./screens/SignUpPageStep4";  // Membership selection
-import CreatedPage from "./screens/CreatedPage";
+import ForgotPage from "./screens/Forgot Password/ForgotPage";
+import ResetPasswordPage from "./screens/Forgot Password/ResetPasswordPage";
+import SignUpPageStep1 from "./screens/Sign up/SignUpPageStep1";  // User details
+import SignUpPageStep2 from "./screens/Sign up/SignUpPageStep2";  // Additional info
+import SignUpPageStep3 from "./screens/Sign up/SignUpPageStep3";  // Goal selection
+import SignUpPageStep4 from "./screens/Sign up/SignUpPageStep4";  // Membership selection
+import CreatedPage from "./screens/Sign up/CreatedPage";
+import BottomTabNavigator from './screens/BottomTabNavigator';
 
 const Stack = createStackNavigator();
 
@@ -32,8 +33,8 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen 
-          name="UserDashboard" 
-          component={UserDashboard} 
+          name="MemberDashboard" 
+          component={MemberDashboard} 
           options={{ headerShown: false }}
         />
         <Stack.Screen 
@@ -71,9 +72,14 @@ export default function App() {
           component={SignUpPageStep4}
           options={{ headerShown: false }}
         />
-          <Stack.Screen 
+        <Stack.Screen 
           name="CreatedPage" 
           component={CreatedPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="BottomTabNavigator" 
+          component={BottomTabNavigator} 
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

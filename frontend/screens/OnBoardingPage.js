@@ -69,7 +69,7 @@ const OnboardingScreen = () => {
           {item.showButton && (
         <TouchableOpacity 
           style={styles.getStartedButton}
-          onPress={() => navigation.navigate('UserDashboard')}
+          onPress={() => navigation.navigate('BottomTabNavigator')}
         >
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
