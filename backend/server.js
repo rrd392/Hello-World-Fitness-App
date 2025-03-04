@@ -14,6 +14,9 @@ app.use(express.json());
 app.use('/api', loginRoute);
 app.use('/api',forgotPasswordRoute);
 
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/api/dashboard', dashboardRoutes);
+
 // Start the server
 const PORT = 3000;
 app.listen(PORT, () => {

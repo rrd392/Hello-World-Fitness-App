@@ -1,16 +1,75 @@
-import React from 'react';
-import { View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { ScrollView, View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
+import API_BASE_URL from "../../env";
+import * as SecureStore from 'expo-secure-store';
+import { getUserId } from '../getUserId';
 
 const MemberDashboard = () => {
   const navigation = useNavigation();
 
-  const handleLogout = () => {
-    
-    navigation.navigate('Login'); 
-  };
+  async function logout() {
+    await SecureStore.deleteItemAsync("userToken");
+    navigation.navigate("Login")
+    console.log("Logged out, token removed.");
+  }
+
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
+  const [upcomingClassData, setUpcomingClassData] = useState([]);
+  const [classData, setClassData] = useState([]);
+  const [workoutPlans, setWorkoutPlans] = useState([]);
+  const [dietPlans, setDietPlans] = useState([]);
+
+  useEffect(() => {
+    async function fetchUserId() {
+        const token = await getUserId();
+        setUserId(token.id);
+    }
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;  // Ensure userId exists
+  
+    const fetchUserData = async () => {
+  
+      try {  
+        const response = await fetch(`${API_BASE_URL}/api/dashboard/display/${userId}`, {    
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+  
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+        }
+  
+        const data = await response.json();
+  
+        if (data.success) {
+          setUserName(data.userName);
+          setUpcomingClassData(data.classes);
+          setClassData(data.disClass);
+          setWorkoutPlans(data.workoutPlans);
+          setDietPlans(data.diet);
+        } 
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+      } finally {
+      }
+    };
+  
+    fetchUserData();  
+  }, [userId]);
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', { timeZone: 'Asia/Kuala_Lumpur' }); 
+  }
 
   const announcements = [
     { id: '1', text: 'More Nutritious Meal Are Added Into...' },
@@ -18,16 +77,30 @@ const MemberDashboard = () => {
     { id: '3', text: 'New Yoga Classes Available Every Weekend!' }
   ];
 
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
+  const profile = () => console.log("Profile clicked");
+
 return (
-  <View style={styles.container}>
+  <ScrollView style={styles.container}>
     {/* Header Section */}
     <SafeAreaView style={styles.header}>
       <View style={styles.headerRow}>
-        <Text style={styles.greeting}>Hi, Madison</Text>
+        <Text style={styles.greeting}>Hi, {userName}</Text>
         <View style={styles.iconRow}>
-          <TouchableOpacity><Ionicons name="search" size={24} color="#896CFE" /></TouchableOpacity>
           <TouchableOpacity><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
-          <TouchableOpacity><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
+          <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
+          {dropdownVisible && (
+            <View style={styles.dropdown}>
+              <TouchableOpacity onPress={profile} style={styles.menuItem}>
+                <Text>Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={logout} style={styles.menuItem}>
+                <Text>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
       <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
@@ -55,10 +128,11 @@ return (
       <Text style={styles.sectionTitle}>Your Upcoming Event</Text>
       <View style={styles.classCard}>
         <View>
-          <Text style={styles.classTitle}>Yoga Flow</Text>
-          <Text style={styles.classDetails}><Ionicons name="time-outline" size={15} color="white" /> 8:00 - 9:00</Text>
-          <Text style={styles.classDetails}><Ionicons name="person-outline" size={15} color="white" /> Coach Aaron</Text>
-          <Text style={styles.classDetails} marginBottom='30'><Ionicons name="calendar-outline" size={15} color="white" /> 2025-01-02</Text>
+        {/* .slice(0, 5) */}
+          <Text style={styles.classTitle}>{upcomingClassData.class_name}</Text>
+          <Text style={styles.classDetails}><Ionicons name="time-outline" size={15} color="white" /> {upcomingClassData.start_time} - {upcomingClassData.end_time}</Text>
+          <Text style={styles.classDetails}><Ionicons name="person-outline" size={15} color="white" /> {upcomingClassData.trainerName}</Text>
+          <Text style={styles.lastClassDetails} marginBottom='30'><Ionicons name="calendar-outline" size={15} color="white" /> {formatDate(upcomingClassData.schedule_date)}</Text>
         </View>
           <Image source={require('../../assets/bck1.png')} style={styles.classImage} />
         </View>
@@ -67,28 +141,90 @@ return (
       </TouchableOpacity>
     </View>
 
-    {/* Announcements */}
+    {/* Classes */}
     <View style={styles.announcementSection}>
       <Text style={styles.announcementTitle}>Explore Classes</Text>
       <FlatList
-        data={announcements}
-        horizontal={true} // Enables horizontal scrolling
-        showsHorizontalScrollIndicator={false} // Hides scrollbar
-        keyExtractor={(item) => item.id}
+        data={[...(Array.isArray(classData) ? classData : []), { isMoreCard: true }]} // Add a special item at the end
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item, index) => item.class_id?.toString() || `more-${index}`}
         contentContainerStyle={styles.listContainer}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card}>
-            {/* Background Image */}
-            <Image source={require('../../assets/bck1.png')} style={styles.announcementImage} />
-            {/* Text Overlay */}
-            <View style={styles.textOverlay}>
-              <Text style={styles.announcementText}>{item.text}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => 
+          item.isMoreCard ? (
+            // "More >" Card
+            <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more classes")}>
+              <Text style={styles.moreText}>More &gt;</Text>
+            </TouchableOpacity>
+          ) : (
+            // Regular Class Card
+            <TouchableOpacity style={styles.card}>
+              <Image source={require('../../assets/bck2.png')} style={styles.announcementImage} />
+              <View style={styles.textOverlay}>
+                <Text style={styles.announcementText}>{item.class_name}</Text>
+              </View>
+            </TouchableOpacity>
+          )
+        }
       />
     </View>
-  </View>
+
+    {/* Workout Plans */}
+    <View style={styles.announcementSection}>
+      <Text style={styles.announcementTitle}>Explore Workout Plans</Text>
+      <FlatList
+        data={[...(Array.isArray(workoutPlans) ? workoutPlans : []), { isMoreCard: true }]} // Add a special item at the end
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item, index) => item.workout_plan_id?.toString() || `more-${index}`}
+        contentContainerStyle={styles.listContainer}
+        renderItem={({ item }) => 
+          item.isMoreCard ? (
+            // "More >" Card
+            <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more workout plans")}>
+              <Text style={styles.moreText}>More &gt;</Text>
+            </TouchableOpacity>
+          ) : (
+            // Regular Class Card
+            <TouchableOpacity style={styles.card}>
+              <Image source={require('../../assets/bck2.png')} style={styles.announcementImage} />
+              <View style={styles.textOverlay}>
+                <Text style={styles.announcementText}>{item.plan_name}</Text>
+              </View>
+            </TouchableOpacity>
+          )
+        }
+      />
+    </View>
+
+    {/* Diet Plans */}
+    <View style={styles.announcementSection}>
+      <Text style={styles.announcementTitle}>Explore Diet Plans</Text>
+      <FlatList
+        data={[...(Array.isArray(dietPlans) ? dietPlans : []), { isMoreCard: true }]} // Add a special item at the end
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item, index) => item.meal_id?.toString() || `more-${index}`}
+        contentContainerStyle={styles.listContainer}
+        renderItem={({ item }) => 
+          item.isMoreCard ? (
+            // "More >" Card
+            <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more workout plans")}>
+              <Text style={styles.moreText}>More &gt;</Text>
+            </TouchableOpacity>
+          ) : (
+            // Regular Class Card
+            <TouchableOpacity style={styles.card}>
+              <Image source={require('../../assets/bck2.png')} style={styles.announcementImage} />
+              <View style={styles.textOverlay}>
+                <Text style={styles.announcementText}>{item.name}</Text>
+              </View>
+            </TouchableOpacity>
+          )
+        }
+      />
+    </View>
+  </ScrollView>
 );
 };
 
@@ -99,17 +235,18 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10},
   membership: { backgroundColor: '#fff', paddingVertical: 5, paddingHorizontal:20, borderRadius: 20, alignSelf: 'flex-start', fontWeight:'bold', color:'#896CFE', marginBottom:20 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap:10},
+  iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap:20},
   navButtons: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 },
   navItem: { alignItems: 'center' },
   navText: { color: 'white', marginTop: 5 },
 
-  upcomingClass: {backgroundColor:'#896CFE', padding: 15},
-  sectionTitle: { fontSize: 24, color: 'white', marginBottom: 10, textAlign:'center' },
+  upcomingClass: {backgroundColor:'#B3A0FF', padding: 15},
+  sectionTitle: { fontSize: 24, color: 'black', marginBottom: 10, textAlign:'center' },
   classCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#000', borderRadius: 10 },
-  classTitle: { fontSize: 24, color: 'yellow', marginTop:30, marginLeft:40 },
-  classDetails: { color: '#fff', marginLeft:40 },
-  classImage: { width: 150, height: '100%', borderRadius: 10 },
+  classTitle: { fontSize: 24, color: 'yellow', marginTop:30, marginLeft:40, marginBottom:10 },
+  classDetails: { color: '#fff', marginLeft:40, marginBottom:5 },
+  lastClassDetails:{ color: '#fff', marginLeft:40, marginBottom:30 },
+  classImage: { width: 200, height: '100%', borderRadius: 10 },
   moreButton: { marginTop: 10, alignSelf: 'center', backgroundColor: '#000', paddingHorizontal: 30, paddingVertical:8, borderRadius: 20 },
   moreButtonText: { color: 'white' },
 
@@ -136,6 +273,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)', 
     borderRadius: 10,
+  },
+  dropdown: {
+    position: "absolute",
+    top: 30,
+    right: 0,
+    backgroundColor: "white",
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    padding: 10,
+    width: 100,
+  },
+  menuItem: {
+    padding: 10,
+  },
+  moreCard: {
+    width: 80,
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // backgroundColor: 'rgba(255, 255, 255, 0.2)', // Light grey background
+    borderRadius: 10,
+    marginHorizontal: 5,
+  },
+  moreText: {
+    fontSize: 16,
+    // fontWeight: 'bold',
+    color: '#fff',
+    fontStyle:'italic'
   },
 });
 

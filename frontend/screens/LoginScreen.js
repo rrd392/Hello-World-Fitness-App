@@ -9,6 +9,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import API_BASE_URL from "../env";
+import * as SecureStore from 'expo-secure-store';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -39,6 +40,7 @@ const LoginScreen = ({ navigation }) => {
       const data = await response.json();
 
       if (data.success) {
+        await SecureStore.setItemAsync("userToken", data.token);
         navigation.navigate(data.role === "admin" ? "AdminPage" : "OnBoardingPage");
       } else {
         Alert.alert("Login Failed");
