@@ -71,12 +71,6 @@ const MemberDashboard = () => {
     return date.toLocaleDateString('en-GB', { timeZone: 'Asia/Kuala_Lumpur' }); 
   }
 
-  const announcements = [
-    { id: '1', text: 'More Nutritious Meal Are Added Into...' },
-    { id: '2', text: 'Level Up Your Cardio With Our Cardio Blast...' },
-    { id: '3', text: 'New Yoga Classes Available Every Weekend!' }
-  ];
-
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
@@ -108,15 +102,15 @@ return (
       {/* Navigation Icons */}
       <View style={styles.navButtons}>
         <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="checkbox-outline" size={30} color="white" />
+          <Ionicons name="checkbox" size={30} color="#B3A0FF" />
           <Text style={styles.navText}>Check In</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="barbell-outline" size={30} color="white" />
+          <Ionicons name="barbell" size={30} color="#B3A0FF" />
           <Text style={styles.navText}>Classes</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="nutrition-outline" size={30} color="white" />
+          <Ionicons name="nutrition" size={30} color="#B3A0FF" />
           <Text style={styles.navText}>Nutrition</Text>
         </TouchableOpacity>
       </View>
@@ -126,16 +120,16 @@ return (
     {/* Upcoming Class Section */}
     <View style={styles.upcomingClass}>
       <Text style={styles.sectionTitle}>Your Upcoming Event</Text>
-      <View style={styles.classCard}>
+      <TouchableOpacity style={styles.classCard}>
         <View>
         {/* .slice(0, 5) */}
           <Text style={styles.classTitle}>{upcomingClassData.class_name}</Text>
           <Text style={styles.classDetails}><Ionicons name="time-outline" size={15} color="white" /> {upcomingClassData.start_time} - {upcomingClassData.end_time}</Text>
           <Text style={styles.classDetails}><Ionicons name="person-outline" size={15} color="white" /> {upcomingClassData.trainerName}</Text>
-          <Text style={styles.lastClassDetails} marginBottom='30'><Ionicons name="calendar-outline" size={15} color="white" /> {formatDate(upcomingClassData.schedule_date)}</Text>
+          <Text style={styles.lastClassDetails} marginBottom='40'><Ionicons name="calendar-outline" size={15} color="white" /> {formatDate(upcomingClassData.schedule_date)}</Text>
         </View>
-          <Image source={require('../../assets/bck1.png')} style={styles.classImage} />
-        </View>
+        <Image source={{ uri: `${API_BASE_URL}/uploads/${upcomingClassData.class_image}` }} style={styles.classImage} />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.moreButton}>
         <Text style={styles.moreButtonText}>More</Text>
       </TouchableOpacity>
@@ -159,7 +153,7 @@ return (
           ) : (
             // Regular Class Card
             <TouchableOpacity style={styles.card}>
-              <Image source={require('../../assets/bck2.png')} style={styles.announcementImage} />
+              <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}` }} style={styles.announcementImage} />
               <View style={styles.textOverlay}>
                 <Text style={styles.announcementText}>{item.class_name}</Text>
               </View>
@@ -187,7 +181,7 @@ return (
           ) : (
             // Regular Class Card
             <TouchableOpacity style={styles.card}>
-              <Image source={require('../../assets/bck2.png')} style={styles.announcementImage} />
+              <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.announcementImage} />
               <View style={styles.textOverlay}>
                 <Text style={styles.announcementText}>{item.plan_name}</Text>
               </View>
@@ -198,7 +192,7 @@ return (
     </View>
 
     {/* Diet Plans */}
-    <View style={styles.announcementSection}>
+    <View style={styles.announcementSection} marginBottom='40'>
       <Text style={styles.announcementTitle}>Explore Diet Plans</Text>
       <FlatList
         data={[...(Array.isArray(dietPlans) ? dietPlans : []), { isMoreCard: true }]} // Add a special item at the end
@@ -215,7 +209,7 @@ return (
           ) : (
             // Regular Class Card
             <TouchableOpacity style={styles.card}>
-              <Image source={require('../../assets/bck2.png')} style={styles.announcementImage} />
+              <Image source={{ uri: `${API_BASE_URL}/uploads/${item.meal_pictures}` }} style={styles.announcementImage} />
               <View style={styles.textOverlay}>
                 <Text style={styles.announcementText}>{item.name}</Text>
               </View>
@@ -238,7 +232,7 @@ const styles = StyleSheet.create({
   iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap:20},
   navButtons: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 },
   navItem: { alignItems: 'center' },
-  navText: { color: 'white', marginTop: 5 },
+  navText: { color: '#B3A0FF', marginTop: 5 },
 
   upcomingClass: {backgroundColor:'#B3A0FF', padding: 15},
   sectionTitle: { fontSize: 24, color: 'black', marginBottom: 10, textAlign:'center' },
@@ -246,11 +240,11 @@ const styles = StyleSheet.create({
   classTitle: { fontSize: 24, color: 'yellow', marginTop:30, marginLeft:40, marginBottom:10 },
   classDetails: { color: '#fff', marginLeft:40, marginBottom:5 },
   lastClassDetails:{ color: '#fff', marginLeft:40, marginBottom:30 },
-  classImage: { width: 200, height: '100%', borderRadius: 10 },
+  classImage: { width: 150, height: '100%', borderRadius: 10 },
   moreButton: { marginTop: 10, alignSelf: 'center', backgroundColor: '#000', paddingHorizontal: 30, paddingVertical:8, borderRadius: 20 },
   moreButtonText: { color: 'white' },
 
-  announcementTitle: { fontSize: 18, color: 'white', marginBottom: 10, fontWeight:'bold' },
+  announcementTitle: { fontSize: 18, color: 'white', marginBottom: 20, fontWeight:'bold' },
   announcementSection: { backgroundColor: '#111', padding: 15, marginTop: 20 },
   announcementImage: { width: '100%', height: '100%', borderRadius: 10, marginRight: 10, position: 'absolute' },
   announcementText: { color: 'white', fontSize: 14, textAlign: 'center' },
@@ -271,7 +265,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', 
     borderRadius: 10,
   },
   dropdown: {
@@ -296,7 +290,7 @@ const styles = StyleSheet.create({
     height: 120,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: 'rgba(255, 255, 255, 0.2)', // Light grey background
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Light grey background
     borderRadius: 10,
     marginHorizontal: 5,
   },

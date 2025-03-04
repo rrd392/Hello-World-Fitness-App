@@ -51,15 +51,15 @@ const BottomTabNavigator = () => {
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === "Home") iconName = "home-outline";
-          else if (route.name === "Classes") iconName = "calendar-outline";
-          else if (route.name === "WorkoutPlan" || route.name === "Schedule") iconName = "barbell-outline";
-          else if (route.name === "Profile") iconName = "person-outline";
+          if (route.name === "Home") iconName = "home";
+          else if (route.name === "Classes") iconName = "calendar";
+          else if (route.name === "WorkoutPlan" || route.name === "Schedule") iconName = "barbell";
+          else if (route.name === "Profile") iconName = "person";
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarStyle: { backgroundColor: "#5C3CAF" },
-        tabBarActiveTintColor: "#fff",
-        tabBarInactiveTintColor: "#D1B6FF",
+        tabBarStyle: { backgroundColor: "#B3A0FF" },
+        tabBarActiveTintColor: "#E2F163",
+        tabBarInactiveTintColor: "#fff",
       })}
     >
       {userRole === "member" ? (
