@@ -15,6 +15,7 @@ import SignUpPageStep3 from "./screens/Sign up/SignUpPageStep3";  // Goal select
 import SignUpPageStep4 from "./screens/Sign up/SignUpPageStep4";  // Membership selection
 import CreatedPage from "./screens/Sign up/CreatedPage";
 import BottomTabNavigator from './screens/BottomTabNavigator';
+import CheckIn from './screens/CheckIn';
 
 const Stack = createStackNavigator();
 
@@ -80,6 +81,11 @@ export default function App() {
         <Stack.Screen 
           name="BottomTabNavigator" 
           component={BottomTabNavigator} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="CheckIn" 
+          component={CheckIn} 
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
