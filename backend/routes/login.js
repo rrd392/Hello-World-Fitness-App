@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const db = require('../db'); 
 const router = express.Router();
 
-
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -30,16 +29,15 @@ router.post('/login', (req, res) => {
             return res.status(401).json({ success: false, message: "456Invalid username or password" });
         }
 
-
         const SECRET_KEY = "your_secret_key";  // Replace with a secure key or use .env
-        const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: "1h" });
+        const token = jwt.sign({ id: user.user_id, role: user.role }, SECRET_KEY, { expiresIn: "1h" });
 
         res.json({
             success: true,
             role: user.role,
             token,
             user: {
-                id: user.id,
+                id: user.user_id,
                 username: user.username
             }
         });
