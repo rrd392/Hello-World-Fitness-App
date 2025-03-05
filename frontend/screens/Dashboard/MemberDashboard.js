@@ -34,7 +34,7 @@ return (
       <Text style={styles.membership}>Standard Monthly</Text>
       {/* Navigation Icons */}
       <View style={styles.navButtons}>
-        <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('CheckIn')}>
+        <TouchableOpacity style={styles.navItem} >
           <Ionicons name="checkbox-outline" size={30} color="white" />
           <Text style={styles.navText}>Check In</Text>
         </TouchableOpacity>
