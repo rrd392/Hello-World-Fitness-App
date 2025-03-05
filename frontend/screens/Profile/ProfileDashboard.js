@@ -13,7 +13,7 @@ const ProfileDashboard = () => {
                 <Text style={styles.userEmail}>madison@example.com</Text>
                 <Text style={styles.userBirthday}>Birthday: April 1st</Text>
                 <Text style={styles.membershipBadge}>Standard Monthly</Text>
-                
+
                 <View style={styles.statsContainer}>
                     <View style={styles.statBox}><Text style={styles.statNumber}>75 Kg</Text><Text style={styles.statLabel}>Weight</Text></View>
                     <View style={styles.statBox}><Text style={styles.statNumber}>28</Text><Text style={styles.statLabel}>Years Old</Text></View>
@@ -32,8 +32,8 @@ const ProfileDashboard = () => {
                 ))}
             </View>
 
-            
         </ScrollView>
+
     );
 };
 

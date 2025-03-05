@@ -75,9 +75,8 @@ const MemberDashboard = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
-  
-  const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
 
+  const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
 
   //Notification icon pop up page
   const toggleNotification = () => navigation.navigate('Notification');
