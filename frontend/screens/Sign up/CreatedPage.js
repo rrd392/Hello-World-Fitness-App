@@ -32,7 +32,7 @@ const CreatedPage = () => {
         {/* Continue Button */}
         <TouchableOpacity 
           style={styles.continueButton} 
-          onPress={() => navigation.navigate("Login")}
+          onPress={() => navigation.navigate("OnBoardingPage")}
         >
           <Text style={styles.continueButtonText}>Go to Dashboard</Text>
         </TouchableOpacity>

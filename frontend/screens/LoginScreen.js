@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  Alert, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
   StyleSheet,
   SafeAreaView,
 } from "react-native";
 import API_BASE_URL from "../env";
 import * as SecureStore from 'expo-secure-store';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ navigation, onLoginSuccess }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,12 +24,12 @@ const LoginScreen = ({ navigation }) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/login`, {    
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
-    });
-    
+      });
+
 
 
       if (!response.ok) {
@@ -41,12 +41,13 @@ const LoginScreen = ({ navigation }) => {
 
       if (data.success) {
         await SecureStore.setItemAsync("userToken", data.token);
-        navigation.navigate(data.role === "admin" ? "AdminPage" : "OnBoardingPage");
+        // navigation.navigate(data.role === "admin" ? "AdminPage" : "Home", { screen: "MemberDashboard" });
+        onLoginSuccess();
       } else {
         Alert.alert("Login Failed");
       }
     } catch (error) {
-      console.error("Login error:", error);  
+      console.error("Login error:", error);
       Alert.alert("Error", error.message || "Network request failed");
     } finally {
       setLoading(false);
@@ -87,17 +88,17 @@ const LoginScreen = ({ navigation }) => {
             />
           </View>
 
-          <TouchableOpacity 
-              style={styles.forgotPasswordButton}
-              onPress={() => navigation.navigate('ForgotPage')}
-            >
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          <TouchableOpacity
+            style={styles.forgotPasswordButton}
+            onPress={() => navigation.navigate('ForgotPage')}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.bottomActionContainer}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.loginButton}
           onPress={handleLogin}
         >
@@ -107,7 +108,7 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.signupRow}>
           <Text style={styles.signupText}>Don't have an account? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('SignUpPageStep1')}>
-          <Text style={styles.signupLink}>Sign Up</Text>
+            <Text style={styles.signupLink}>Sign Up</Text>
           </TouchableOpacity>
         </View>
 
@@ -120,7 +121,7 @@ const LoginScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: "#fff",
     paddingHorizontal: 32,
   },
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: "#007AFF",
     height: 48,
-    width:250,
+    width: 250,
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
   signupRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop:150,
+    marginTop: 150,
   },
   signupText: {
     color: "#232323",
@@ -203,9 +204,9 @@ const styles = StyleSheet.create({
     color: "#1a1a1a",
     marginBottom: 12,
   },
-  hearder1:{
-    fontSize:18,
-    fontWeight:"bold",
+  hearder1: {
+    fontSize: 18,
+    fontWeight: "bold",
     marginHorizontal: 10,
   },
   subtitle: {
