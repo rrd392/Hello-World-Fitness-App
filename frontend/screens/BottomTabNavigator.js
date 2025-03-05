@@ -6,7 +6,7 @@ import { getUserId } from "./getUserId";
 
 // Member Screens
 import MemberHomeScreen from "./Dashboard/MemberDashboard";
-import MemberProfileScreen from "./OnBoardingPage";
+import MemberProfileScreen from "./Profile/ProfileDashboard";
 import MemberWorkoutScreen from "./LoginScreen";
 import MemberClassesScreen from "./AdminPage";
 

@@ -32,14 +32,7 @@ const ProfileDashboard = () => {
                 ))}
             </View>
 
-            {/* Bottom Navigation */}
-            <View style={styles.bottomNavigation}>
-                {bottomNavItems.map((item, index) => (
-                    <TouchableOpacity key={index} style={styles.navItem} onPress={item.onPress}>
-                        <Ionicons name={item.icon} size={28} color='#fff' />
-                    </TouchableOpacity>
-                ))}
-            </View>
+            
         </ScrollView>
     );
 };
@@ -52,11 +45,7 @@ const menuItems = [
     { title: 'Logout', icon: 'exit', onPress: () => console.log('Logout') },
 ];
 
-const bottomNavItems = [
-    { icon: 'home', onPress: () => console.log('Home') },
-    { icon: 'barbell', onPress: () => console.log('Classes') },
-    { icon: 'fitness', onPress: () => console.log('Fitness') },
-];
+
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#8E77FF' },
