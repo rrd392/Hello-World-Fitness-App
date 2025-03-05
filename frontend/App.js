@@ -15,6 +15,7 @@ import SignUpPageStep3 from "./screens/Sign up/SignUpPageStep3";  // Goal select
 import SignUpPageStep4 from "./screens/Sign up/SignUpPageStep4";  // Membership selection
 import CreatedPage from "./screens/Sign up/CreatedPage";
 import BottomTabNavigator from './screens/BottomTabNavigator';
+import Notification from "./screens/Notification";
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,11 @@ export default function App() {
         <Stack.Screen 
           name="MemberDashboard" 
           component={MemberDashboard} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Notification" 
+          component={Notification} 
           options={{ headerShown: false }}
         />
         <Stack.Screen 

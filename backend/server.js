@@ -18,6 +18,9 @@ app.use('/api',forgotPasswordRoute);
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
 
+const notificationRoutes = require('./routes/notification');
+app.use('/api/notification', notificationRoutes);
+
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads')));
 
 // Start the server

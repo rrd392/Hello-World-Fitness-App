@@ -71,10 +71,15 @@ const MemberDashboard = () => {
     return date.toLocaleDateString('en-GB', { timeZone: 'Asia/Kuala_Lumpur' }); 
   }
 
+  //Profile icon dropdown button
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
   const profile = () => console.log("Profile clicked");
+
+  //Notification icon pop up page
+  const toggleNotification = () => navigation.navigate('Notification');
+
 
 return (
   <ScrollView style={styles.container}>
@@ -83,7 +88,7 @@ return (
       <View style={styles.headerRow}>
         <Text style={styles.greeting}>Hi, {userName}</Text>
         <View style={styles.iconRow}>
-          <TouchableOpacity><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
+          <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
           <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
           {dropdownVisible && (
             <View style={styles.dropdown}>
