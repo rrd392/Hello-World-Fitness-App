@@ -22,6 +22,12 @@ router.get('/display/:user_id', (req, res) => {
 
     const dietQuery = 'SELECT * FROM meal LIMIT 5';
 
+    const notificationQuery = `SELECT * FROM notifications n
+                            INNER JOIN user u ON n.user_id = u.user_id
+                            INNER JOIN class_participants cp ON n.class_id = cp.class_id
+                            INNER JOIN user s ON cp.user_id = s.user_id
+                            WHERE u.user_id = ?`;
+
     db.query(userQuery, [user_id], (error, userResult) => {
         if (error) {
             console.error("Database error:", error);
