@@ -74,6 +74,8 @@ const MemberDashboard = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
+  const handleGoToProfile=() =>navigation.navigate('ProfileDashboard');
+  
   const profile = () => console.log("Profile clicked");
 
 return (
@@ -87,7 +89,7 @@ return (
           <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
           {dropdownVisible && (
             <View style={styles.dropdown}>
-              <TouchableOpacity onPress={profile} style={styles.menuItem}>
+              <TouchableOpacity onPress={handleGoToProfile} style={styles.menuItem}>
                 <Text>Profile</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={logout} style={styles.menuItem}>
