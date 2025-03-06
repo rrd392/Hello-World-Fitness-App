@@ -345,26 +345,17 @@ const MemberWorkoutPlan = () => {
         ):(
           <View>
             <ModalDropdown
-              options={[
-                { key: "all", label: "All" },
-                { key: "monday", label: "Monday" },
-                { key: "tuesday", label: "Tuesday" },
-                { key: "wednesday", label: "Wednesday" },
-                { key: "thursday", label: "Thursday" },
-                { key: "friday", label: "Friday" },
-                { key: "saturday", label: "Saturday" },
-                { key: "sunday", label: "Sunday" },
-              ]}
+              options={["All", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
               defaultValue="Filter day"
+              renderRow={(option, index) => (
+                <TouchableOpacity key={index}>
+                  <Text>{option}</Text>
+                </TouchableOpacity>
+              )}
+              onSelect={(index, value) => setSelectedDay(value)}
               textStyle={{fontSize: 16,color: "#000",backgroundColor: "#E2F163",paddingVertical: 5,borderRadius: 10, marginLeft: "auto", fontWeight: "400",width: "100%",textAlign: "center",marginTop: -10,marginBottom: 30,}}
               dropdownStyle={{width: "90%",height: 180,right: 0,marginTop: -20,borderRadius: 10,}}
               dropdownTextStyle={{fontSize: 16,color: "#000",textAlign: "center",paddingVertical: 10,borderRadius: 10,}}
-              renderRow={(option, index, isSelected) => (
-                <TouchableOpacity key={option.key}>
-                  <Text>{option.label}</Text>
-                </TouchableOpacity>
-              )}
-              onSelect={(index, value) => setSelectedDay(value.label)}
             />
             <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
           </View>
