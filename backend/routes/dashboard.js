@@ -12,7 +12,7 @@ router.get('/display/:user_id', (req, res) => {
         FROM class_participants cp 
         INNER JOIN classes c ON cp.class_id = c.class_id
         INNER JOIN user f ON c.trainer_id = f.user_id
-        WHERE cp.user_id = ? AND c.schedule_date > '2025-01-01' ORDER BY c.schedule_date LIMIT 1
+        WHERE cp.user_id = ? AND c.schedule_date > NOW() ORDER BY c.schedule_date LIMIT 1
     `;
 
     const classQuery = 'SELECT * FROM classes LIMIT 5';

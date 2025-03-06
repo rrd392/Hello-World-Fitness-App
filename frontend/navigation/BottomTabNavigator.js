@@ -4,15 +4,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { getUserId } from "../screens/getUserId";
 import HomeStack from "./HomeStack";
+import TrainerHomeStack from "./TrainerHomeStack";
+import WorkoutPlanStack from "./WorkoutPlanStack";
 
 // Member Screens
 import MemberProfileScreen from "../screens/Profile/ProfileDashboard";
-import MemberWorkoutScreen from "../screens/LoginScreen";
 import MemberClassesScreen from "../screens/AdminPage";
 
 
 // Dummy Trainer Screens
-const TrainerHomeScreen = () => <View><Text>Trainer Home</Text></View>;
 const TrainerClassesScreen = () => <View><Text>Trainer Classes</Text></View>;
 const TrainerScheduleScreen = () => <View><Text>Trainer Schedule</Text></View>;
 const TrainerProfileScreen = () => <View><Text>Trainer Profile</Text></View>;
@@ -55,7 +55,7 @@ const BottomTabNavigator = () => {
           if (route.name === "Home") iconName = "home";
           else if (route.name === "Classes") iconName = "calendar";
           else if (route.name === "WorkoutPlan" || route.name === "Schedule") iconName = "barbell";
-          else if (route.name === "Profile") iconName = "person";
+          else if (route.name === "More") iconName = "ellipsis-vertical-outline";
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarStyle: { backgroundColor: "#B3A0FF" },
@@ -67,15 +67,15 @@ const BottomTabNavigator = () => {
         <>
           <Tab.Screen name="Home" component={HomeStack} />
           <Tab.Screen name="Classes" component={MemberClassesScreen} />
-          <Tab.Screen name="WorkoutPlan" component={MemberWorkoutScreen} />
-          <Tab.Screen name="Profile" component={MemberProfileScreen} />
+          <Tab.Screen name="WorkoutPlan" component={WorkoutPlanStack} />
+          <Tab.Screen name="More" component={MemberProfileScreen} />
         </>
       ) : userRole === "trainer" ? (
         <>
-          <Tab.Screen name="Home" component={TrainerHomeScreen} />
+          <Tab.Screen name="Home" component={TrainerHomeStack} />
           <Tab.Screen name="Classes" component={TrainerClassesScreen} />
           <Tab.Screen name="Schedule" component={TrainerScheduleScreen} />
-          <Tab.Screen name="Profile" component={TrainerProfileScreen} />
+          <Tab.Screen name="More" component={TrainerProfileScreen} />
         </>
       ) : (
         <Tab.Screen name="Error" component={() => <Text>Invalid Role</Text>} />

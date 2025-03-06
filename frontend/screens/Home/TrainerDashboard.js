@@ -7,7 +7,7 @@ import API_BASE_URL from "../../env";
 import * as SecureStore from 'expo-secure-store';
 import { getUserId } from '../getUserId';
 
-const MemberDashboard = () => {
+const TrainerDashboard = () => {
   const navigation = useNavigation();
 
   async function logout() {
@@ -327,4 +327,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MemberDashboard;
+export default TrainerDashboard;
