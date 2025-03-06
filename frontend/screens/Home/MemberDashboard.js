@@ -99,17 +99,7 @@ return (
         <Text style={styles.greeting}>Hi, {userName}</Text>
         <View style={styles.iconRow}>
           <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
-          <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <TouchableOpacity onPress={handleGoToProfile} style={styles.menuItem}>
-                <Text>Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={logout} style={styles.menuItem}>
-                <Text>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          <TouchableOpacity onPress={handleGoToProfile}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
         </View>
       </View>
       <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
