@@ -108,7 +108,7 @@ return (
       {/* Navigation Icons */}
       <View style={styles.navButtons}>
         <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="checkbox" size={30} color="#B3A0FF" />
+          <Ionicons name="checkbox" size={30} color="#B3A0FF" onPress={() => navigation.navigate('CheckIn')}/>
           <Text style={styles.navText}>Check In</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
