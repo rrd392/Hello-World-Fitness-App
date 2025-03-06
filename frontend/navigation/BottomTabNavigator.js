@@ -8,7 +8,6 @@ import TrainerHomeStack from "./TrainerHomeStack";
 import WorkoutPlanStack from "./WorkoutPlanStack";
 
 // Member Screens
-import MemberProfileScreen from "../screens/Profile/ProfileDashboard";
 import MemberClassesScreen from "../screens/AdminPage";
 
 
@@ -68,7 +67,7 @@ const BottomTabNavigator = () => {
           <Tab.Screen name="Home" component={HomeStack} />
           <Tab.Screen name="Classes" component={MemberClassesScreen} />
           <Tab.Screen name="WorkoutPlan" component={WorkoutPlanStack} />
-          <Tab.Screen name="More" component={MemberProfileScreen} />
+          <Tab.Screen name="More" component={MemberClassesScreen} />
         </>
       ) : userRole === "trainer" ? (
         <>
