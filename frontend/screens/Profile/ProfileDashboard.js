@@ -36,7 +36,7 @@ const ProfileDashboard = () => {
         {
             title: "Membership",
             icon: "star",
-            onPress: () => console.log("Membership"),
+            onPress: () => navigation.navigate("MembershipStep1"),
         },
         {
             title: "Transaction History",
