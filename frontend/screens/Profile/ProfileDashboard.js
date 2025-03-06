@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 import { AuthContext } from "../../context/AuthContext";
 import LogoutModal from './LogoutModal';
+import ProfileStack from '../../navigation/ProfileStack';
 
 
 
@@ -31,7 +32,7 @@ const ProfileDashboard = () => {
 
 
     const menuItems = [
-        { title: "Profile", icon: "person", onPress: () => console.log("Profile") },
+        { title: "Profile", icon: "person", onPress: () => navigation.navigate("UpdateProfile") },
         {
             title: "Membership",
             icon: "star",

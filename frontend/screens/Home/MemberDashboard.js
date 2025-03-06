@@ -1,23 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from "../../context/AuthContext";
 import { ScrollView, View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
-import * as SecureStore from 'expo-secure-store';
 import { getUserId } from '../getUserId';
 
 
 const MemberDashboard = () => {
   const navigation = useNavigation();
-  const { logoutContext } = useContext(AuthContext);
-
-  async function logout() {
-    await SecureStore.deleteItemAsync("userToken");
-    logoutContext();
-    console.log("Logged out, token removed.");
-  }
 
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
@@ -86,7 +77,7 @@ const MemberDashboard = () => {
 
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
-  const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
+  const handleGoToProfile = () =>navigation.navigate('ProfileStack');
 
   //Notification icon pop up page
   const toggleNotification = () => navigation.navigate('Notification');
