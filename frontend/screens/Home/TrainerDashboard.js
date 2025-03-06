@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from "../../context/AuthContext";
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,14 +7,12 @@ import API_BASE_URL from "../../env";
 import * as SecureStore from 'expo-secure-store';
 import { getUserId } from '../getUserId';
 
-
-const MemberDashboard = () => {
+const TrainerDashboard = () => {
   const navigation = useNavigation();
-  const { logoutContext } = useContext(AuthContext);
 
   async function logout() {
     await SecureStore.deleteItemAsync("userToken");
-    logoutContext();
+    navigation.navigate("Login")
     console.log("Logged out, token removed.");
   }
 
@@ -330,4 +327,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MemberDashboard;
+export default TrainerDashboard;
