@@ -1,71 +1,239 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect, useContext } from 'react';
+import {
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    TouchableOpacity,
+    Dimensions,
+    ScrollView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
+import { AuthContext } from "../../context/AuthContext";
+import LogoutModal from './LogoutModal';
+import ProfileStack from '../../navigation/ProfileStack';
+
+
 
 const ProfileDashboard = () => {
+    const navigation = useNavigation();
+    const { logoutContext } = useContext(AuthContext);
+    const [showLogoutModel,setShowLogoutModal]=useState(false);
+
+
+    async function logout() {
+        await SecureStore.deleteItemAsync("userToken");
+        logoutContext();
+        console.log("Logged out, token removed.");
+    }
+
+
+    const menuItems = [
+        { title: "Profile", icon: "person", onPress: () => navigation.navigate("UpdateProfile") },
+        {
+            title: "Membership",
+            icon: "star",
+            onPress: () => navigation.navigate("MembershipStep1"),
+        },
+        {
+            title: "Transaction History",
+            icon: "receipt",
+            onPress: () => console.log("Transaction History"),
+        },
+        {
+            title: "Achievement",
+            icon: "trophy",
+            onPress: () => console.log("Achievement"),
+        },
+        { title: "Logout", icon: "exit", onPress:()=> setShowLogoutModal(true) },
+    ];
+
+    
+
     return (
         <ScrollView style={styles.container}>
-            {/* Header Section */}
-            <View style={styles.headerSection}>
-                <Text style={styles.uidText}>UID:001</Text>
-                <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.profileImage} />
-                <Text style={styles.userName}>Madison Smith</Text>
-                <Text style={styles.userEmail}>madison@example.com</Text>
-                <Text style={styles.userBirthday}>Birthday: April 1st</Text>
-                <Text style={styles.membershipBadge}>Standard Monthly</Text>
+            <SafeAreaView>
+                <TouchableOpacity style={styles.headerRow} onPress={() => navigation.goBack()}>
+                    <Ionicons name="chevron-back-outline" size={24} color="#E2F163" style={styles.backIcon} />
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.title}>Home</Text>
+                    </View>
+                </TouchableOpacity>
 
-                <View style={styles.statsContainer}>
-                    <View style={styles.statBox}><Text style={styles.statNumber}>75 Kg</Text><Text style={styles.statLabel}>Weight</Text></View>
-                    <View style={styles.statBox}><Text style={styles.statNumber}>28</Text><Text style={styles.statLabel}>Years Old</Text></View>
-                    <View style={styles.statBox}><Text style={styles.statNumber}>1.65 CM</Text><Text style={styles.statLabel}>Height</Text></View>
+                {/* Header Section */}
+                <View style={styles.headerSection}>
+                    <Text style={styles.uidText}>ID: 1</Text>
+                    <Image
+                        source={require("../../assets/icon.png")} //put profile image here
+                        style={styles.profileImage}
+                    />
+                    <Text style={styles.userName}>Madison Smith</Text>
+                    <Text style={styles.userEmail}>madison@example.com</Text>
+                    <Text style={styles.userBirthday}>Birthday: April 1st</Text>
+                    <Text style={styles.membershipBadge}>Standard Monthly</Text>
+
+                    <View style={styles.statsContainer}>
+                        <View style={styles.statBox}>
+                            <Text style={styles.statNumber}>75 Kg</Text>
+                            <Text style={styles.statLabel}>Weight</Text>
+                        </View>
+                        <View style={styles.divider} />
+                        <View style={styles.statBox}>
+                            <Text style={styles.statNumber}>28</Text>
+                            <Text style={styles.statLabel}>Years Old</Text>
+                        </View>
+                        <View style={styles.divider} />
+                        <View style={styles.statBox}>
+                            <Text style={styles.statNumber}>1.65 CM</Text>
+                            <Text style={styles.statLabel}>Height</Text>
+                        </View>
+                    </View>
                 </View>
-            </View>
 
-            {/* Menu Section */}
-            <View style={styles.menuSection}>
-                {menuItems.map((item, index) => (
-                    <TouchableOpacity key={index} style={styles.menuItem} onPress={item.onPress}>
-                        <View style={styles.menuIconContainer}><Ionicons name={item.icon} size={24} color='#fff' /></View>
-                        <Text style={styles.menuText}>{item.title}</Text>
-                        <Ionicons name='chevron-forward' size={20} color='#fff' />
-                    </TouchableOpacity>
-                ))}
-            </View>
+                {/* Menu Section */}
+                <View style={styles.menuSection}>
+                    {menuItems.map((item, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.menuItem}
+                            onPress={item.onPress}
+                        >
+                            <View style={styles.menuIconContainer}>
+                                <Ionicons name={item.icon} size={24} color="#fff" />
+                            </View>
+                            <Text style={styles.menuText}>{item.title}</Text>
+                            <Ionicons name="chevron-forward" size={20} color="#E2F163" />
+                        </TouchableOpacity>
+                    ))}
+                </View>
 
+                <LogoutModal
+                visible={showLogoutModel}
+                onCancel={()=>setShowLogoutModal(false)}
+                onConfirm={()=>{
+                    setShowLogoutModal(false);
+                    logout();
+                }}
+                
+                ></LogoutModal>
+            </SafeAreaView>
         </ScrollView>
 
     );
 };
 
-const menuItems = [
-    { title: 'Profile', icon: 'person', onPress: () => console.log('Profile') },
-    { title: 'Membership', icon: 'star', onPress: () => console.log('Membership') },
-    { title: 'Transaction History', icon: 'receipt', onPress: () => console.log('Transaction History') },
-    { title: 'Achievement', icon: 'trophy', onPress: () => console.log('Achievement') },
-    { title: 'Logout', icon: 'exit', onPress: () => console.log('Logout') },
-];
-
-
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#8E77FF' },
-    headerSection: { alignItems: 'center', padding: 20 },
-    uidText: { color: '#fff', marginBottom: 10, fontWeight: 'bold' },
+    container: {
+        flex: 1,
+        backgroundColor: "#212020",
+        position: "relative",
+
+    },
+
+    headerRow: {
+        flexDirection: 'row',
+        padding: 10,
+
+    },
+    backIcon: {
+        marginTop: 4,
+
+    },
+    title: {
+        color: "#896CFE",
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginLeft: 10,
+    },
+
+    headerSection: {
+        alignItems: "center",
+        backgroundColor: "#B3A0FF",
+        paddingTop:15,
+        paddingBottom: 50,
+    },
+
+    uidText: { color: "#fff", marginBottom: 10, fontWeight: "bold", fontSize: 18 },
+
     profileImage: { width: 100, height: 100, borderRadius: 50, marginBottom: 10 },
-    userName: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
-    userEmail: { color: '#fff', marginBottom: 5 },
-    userBirthday: { color: '#fff', marginBottom: 10 },
-    membershipBadge: { backgroundColor: '#FFF', color: '#8E77FF', paddingVertical: 5, paddingHorizontal: 15, borderRadius: 20, fontWeight: 'bold', marginVertical: 10 },
-    statsContainer: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginTop: 20 },
-    statBox: { alignItems: 'center', padding: 10 },
-    statNumber: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-    statLabel: { color: '#fff', fontSize: 14 },
-    menuSection: { backgroundColor: '#000', paddingVertical: 20 },
-    menuItem: { flexDirection: 'row', alignItems: 'center', padding: 15, borderBottomColor: '#333', borderBottomWidth: 1 },
-    menuIconContainer: { width: 40, alignItems: 'center' },
-    menuText: { flex: 1, color: '#fff', fontSize: 16 },
-    bottomNavigation: { flexDirection: 'row', justifyContent: 'space-around', padding: 10, backgroundColor: '#8E77FF' },
-    navItem: { padding: 10 }
+    userName: { fontSize: 24, fontWeight: "bold", color: "#fff" },
+    userEmail: { color: "#fff", marginBottom: 5 },
+    userBirthday: { color: "#fff", marginBottom: 10 },
+    membershipBadge: {
+        backgroundColor: "#FFF",
+        color: "#896CFE",
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 20,
+        fontWeight: "bold",
+    },
+
+    statsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        width: "90%",
+        backgroundColor: "#896CFE",
+        borderRadius: 10,
+        position: 'absolute',
+        top: 285,  // Adjust this value to overlap as desired
+        alignSelf: "center",
+        zIndex: 10,
+        elevation: 5,
+        paddingHorizontal: 10,
+    },
+    statBox: {
+        alignItems: "center",
+        padding: 15,
+        borderColor: "white",
+
+    },
+    divider: {
+        width: 1,
+        backgroundColor: "#ccc",
+        height: "80%",
+        marginVertical: "auto",
+    },
+    statNumber: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "bold"
+    },
+    statLabel: {
+        color: "#fff",
+        fontSize: 14
+    },
+    menuSection: {
+        paddingTop: 40,
+        flex: 1,
+    },
+    menuItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 15,
+        borderBottomColor: "#333",
+        borderBottomWidth: 1,
+        width:"90%",
+        alignSelf:"center"
+    },
+    menuIconContainer: {
+        width: 40,
+        height: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#896CFE",
+        borderRadius: 50,
+    },
+
+    menuText: {
+        flex: 1,
+        color: "#fff",
+        fontSize: 20,
+        marginLeft: 15,
+    },
 });
 
 export default ProfileDashboard;
