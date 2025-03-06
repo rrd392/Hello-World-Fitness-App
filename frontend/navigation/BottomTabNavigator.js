@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { getUserId } from "./getUserId";
+import { getUserId } from "../screens/getUserId";
+import HomeStack from "./HomeStack";
 
 // Member Screens
-import MemberHomeScreen from "./Dashboard/MemberDashboard";
-import MemberProfileScreen from "./OnBoardingPage";
-import MemberWorkoutScreen from "./LoginScreen";
-import MemberClassesScreen from "./AdminPage";
+import MemberProfileScreen from "../screens/Profile/ProfileDashboard";
+import MemberWorkoutScreen from "../screens/LoginScreen";
+import MemberClassesScreen from "../screens/AdminPage";
+
 
 // Dummy Trainer Screens
 const TrainerHomeScreen = () => <View><Text>Trainer Home</Text></View>;
@@ -64,7 +65,7 @@ const BottomTabNavigator = () => {
     >
       {userRole === "member" ? (
         <>
-          <Tab.Screen name="Home" component={MemberHomeScreen} />
+          <Tab.Screen name="Home" component={HomeStack} />
           <Tab.Screen name="Classes" component={MemberClassesScreen} />
           <Tab.Screen name="WorkoutPlan" component={MemberWorkoutScreen} />
           <Tab.Screen name="Profile" component={MemberProfileScreen} />

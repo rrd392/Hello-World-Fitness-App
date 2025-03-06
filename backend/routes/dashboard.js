@@ -4,7 +4,6 @@ const router = express.Router();
 
 router.get('/display/:user_id', (req, res) => {
     const { user_id } = req.params; 
-    const currentDate = new Date();  // Get current date-time
 
     const userQuery = `SELECT name FROM user WHERE user_id = ?`;
 
@@ -21,12 +20,6 @@ router.get('/display/:user_id', (req, res) => {
     const workoutPlansQuery = 'SELECT * FROM workout_plans LIMIT 5';
 
     const dietQuery = 'SELECT * FROM meal LIMIT 5';
-
-    const notificationQuery = `SELECT * FROM notifications n
-                            INNER JOIN user u ON n.user_id = u.user_id
-                            INNER JOIN class_participants cp ON n.class_id = cp.class_id
-                            INNER JOIN user s ON cp.user_id = s.user_id
-                            WHERE u.user_id = ?`;
 
     db.query(userQuery, [user_id], (error, userResult) => {
         if (error) {
