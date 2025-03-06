@@ -30,7 +30,7 @@ router.post('/login', (req, res) => {
         }
 
         const SECRET_KEY = "your_secret_key";  // Replace with a secure key or use .env
-        const token = jwt.sign({ id: user.user_id, role: user.role }, SECRET_KEY, { expiresIn: "1h" });
+        const token = jwt.sign({ id: user.user_id, role: user.role, name: user.name }, SECRET_KEY, { expiresIn: "1h" });
 
         res.json({
             success: true,

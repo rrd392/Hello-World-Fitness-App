@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
+import { AuthContext } from "../../context/AuthContext";
 import { ScrollView, View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,11 +11,13 @@ import { getUserId } from '../getUserId';
 const TrainerDashboard = () => {
   const navigation = useNavigation();
 
-  async function logout() {
-    await SecureStore.deleteItemAsync("userToken");
-    navigation.navigate("Login")
-    console.log("Logged out, token removed.");
-  }
+  const { logoutContext } = useContext(AuthContext);
+  
+    async function logout() {
+        await SecureStore.deleteItemAsync("userToken");
+        logoutContext();
+        console.log("Logged out, token removed.");
+    }
 
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
