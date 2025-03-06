@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext} from "react";
 import {
   View,
   Text,
@@ -10,8 +10,10 @@ import {
 } from "react-native";
 import API_BASE_URL from "../env";
 import * as SecureStore from 'expo-secure-store';
+import { AuthContext } from "../context/AuthContext"; 
 
-const LoginScreen = ({ navigation, onLoginSuccess }) => {
+const LoginScreen = ({ navigation}) => {
+  const { loginContext } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,7 @@ const LoginScreen = ({ navigation, onLoginSuccess }) => {
       if (data.success) {
         await SecureStore.setItemAsync("userToken", data.token);
         // navigation.navigate(data.role === "admin" ? "AdminPage" : "Home", { screen: "MemberDashboard" });
-        onLoginSuccess();
+        loginContext();
       } else {
         Alert.alert("Login Failed");
       }

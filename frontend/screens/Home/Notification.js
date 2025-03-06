@@ -74,18 +74,30 @@ const Notification = () => {
                     <View style={{ width: 24 }} />
                 </View>
 
-                {/* List of Notifications */}
-                <FlatList
-                    data={notifications}
-                    keyExtractor={(item) => item.notification_id}
-                    renderItem={({ item }) => (
-                        <View style={styles.notificationItem}>
-                            <Text style={styles.notificationTitle}>{item.title}</Text>
-                            <Text style={styles.notificationText}>{item.message}</Text>
-                        </View>
-                    )}
-                    contentContainerStyle={styles.listSection}
-                />
+                {Array.isArray(notifications) && notifications.length > 0 ? (
+                    <FlatList
+                        data={notifications}  // Ensure notifications is an array
+                        keyExtractor={(item) => item.notification_id.toString()} // Ensure it's a string
+                        renderItem={({ item }) => (
+                            <View style={styles.notificationItem}>
+                                <Text style={styles.notificationTitle}>{item.title}</Text>
+                                <Text style={styles.notificationText}>{item.message}</Text>
+                            </View>
+                        )}
+                        contentContainerStyle={styles.listSection}
+                    />
+                ) : (
+                    <FlatList
+                        data={[]} // Required for FlatList to prevent errors
+                        contentContainerStyle={styles.listSection}
+                        ListEmptyComponent={
+                            <View style={styles.notificationItem}>
+                                <Text style={styles.notificationTitle}>No notifications</Text>
+                            </View>
+                        }
+                    />
+                )}
+            
             </SafeAreaView>
         </View>
     )

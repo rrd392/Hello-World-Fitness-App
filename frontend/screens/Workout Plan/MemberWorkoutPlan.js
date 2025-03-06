@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from "../../context/AuthContext";
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,14 +7,14 @@ import API_BASE_URL from "../../env";
 import * as SecureStore from 'expo-secure-store';
 import { getUserId } from '../getUserId';
 
-
-const MemberDashboard = () => {
+const MemberWorkoutPlan = () => {
   const navigation = useNavigation();
-  const { logoutContext } = useContext(AuthContext);
+  const [selected, setSelected] = useState("General");
+  const [selectedLevel, setSelectedLevel] = useState("");
 
   async function logout() {
     await SecureStore.deleteItemAsync("userToken");
-    logoutContext();
+    navigation.navigate("Login")
     console.log("Logged out, token removed.");
   }
 
@@ -113,21 +112,28 @@ return (
         </View>
       </View>
       <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
-      <Text style={styles.membership}>Standard Monthly</Text>
       {/* Navigation Icons */}
       <View style={styles.navButtons}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="checkbox" size={30} color="#B3A0FF" onPress={() => navigation.navigate('CheckIn')}/>
-          <Text style={styles.navText}>Check In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="barbell" size={30} color="#B3A0FF" />
-          <Text style={styles.navText}>Classes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="nutrition" size={30} color="#B3A0FF" />
-          <Text style={styles.navText}>Nutrition</Text>
-        </TouchableOpacity>
+        {["General", "Custom", "Coach"].map((item) => (
+          <TouchableOpacity
+            key={item}
+            style={[styles.navItem, selected === item && styles.selectedNavItem]} 
+            onPress={() => setSelected(item)}
+          >
+            <Text style={styles.navText}>{item}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={styles.levelButtons}>
+        {["Beginner", "Intermediate", "Advanced"].map((item) => (
+          <TouchableOpacity
+            key={item}
+            style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
+            onPress={() => setSelectedLevel(item)}
+          >
+            <Text style={styles.levelText}>{item}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
     </SafeAreaView>
 
@@ -254,12 +260,16 @@ const styles = StyleSheet.create({
   header: { padding: 20, marginBottom: -30 },
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
-  membership: { backgroundColor: '#fff', paddingVertical: 5, paddingHorizontal: 20, borderRadius: 20, alignSelf: 'flex-start', fontWeight: 'bold', color: '#896CFE', marginBottom: 20 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
   iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
-  navButtons: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 },
-  navItem: { alignItems: 'center' },
-  navText: { color: '#B3A0FF', marginTop: 5 },
+  navButtons:{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20},
+  navItem:{alignItems: 'center', paddingVertical:10, width:'33%'},
+  navText:{color:'white', fontSize:16, fontWeight:'bold'},
+  selectedNavItem: {backgroundColor: "rgba(255, 255, 255, 0.5)", paddingVertical:10, width:'33%'},
+  levelButtons: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20},
+  levelItem: { alignItems: 'center', backgroundColor:'rgba(226, 241, 99, 0.5)', borderRadius:15, padding:8, width:'30%'},
+  levelText: { color: '#000', fontSize:14 },
+  selectedLevelItem:{backgroundColor: "rgba(226, 241, 99, 1)", width:'30%'},
 
   upcomingClass: { backgroundColor: '#B3A0FF', padding: 15 },
   sectionTitle: { fontSize: 24, color: 'black', marginBottom: 10, textAlign: 'center' },
@@ -330,4 +340,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MemberDashboard;
+export default MemberWorkoutPlan;
