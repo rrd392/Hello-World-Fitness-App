@@ -72,10 +72,9 @@ const MemberDashboard = () => {
   }
 
 
-  const handleGoToProfile = () =>navigation.navigate('ProfileStack');
-
   //Notification icon pop up page
   const toggleNotification = () => navigation.navigate('Notification');
+  const handleGoToProfile = () => navigation.navigate('ProfileStack');
   
   return (
     <View style={styles.container}>
