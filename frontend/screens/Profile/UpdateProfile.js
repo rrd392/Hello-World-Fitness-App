@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import HeaderVer1 from "../HeaderVer1";
 
 const UpdateProfile = () => {
 
@@ -21,7 +22,6 @@ const UpdateProfile = () => {
     const [fullName, setFullName] = useState('Madison Smith');
     const [email, setEmail] = useState('madisons@example.com');
     const [contactNumber, setContactNumber] = useState('123 567 8900');
-    // const [dateOfBirth, setDateOfBirth] = useState('01 / 04 / 199X');
     const [weight, setWeight] = useState('75');
     const [height, setHeight] = useState('165');
 
@@ -71,16 +71,13 @@ const UpdateProfile = () => {
     };
 
 
-
     return (
         <ScrollView style={styles.container} nestedScrollEnabled={true}>
             <SafeAreaView>
-                <TouchableOpacity style={styles.headerRow} onPress={() => navigation.goBack()}>
-                    <Ionicons name="chevron-back-outline" size={24} color="#E2F163" style={styles.backIcon} />
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.title}>Profile</Text>
-                    </View>
-                </TouchableOpacity>
+                <HeaderVer1
+                    title="Profile"
+                    onPress={() => navigation.goBack()}
+                />
 
                 {/* Header Section */}
                 <View style={styles.headerSection}>
@@ -231,22 +228,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#212020",
 
-    },
-
-    headerRow: {
-        flexDirection: 'row',
-        padding: 10,
-
-    },
-    backIcon: {
-        marginTop: 4,
-
-    },
-    title: {
-        color: "#896CFE",
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginLeft: 10,
     },
 
     headerSection: {

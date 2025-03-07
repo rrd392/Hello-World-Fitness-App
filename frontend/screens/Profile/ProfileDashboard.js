@@ -17,7 +17,6 @@ import LogoutModal from './LogoutModal';
 import HeaderVer1 from '../HeaderVer1';
 
 
-
 const ProfileDashboard = () => {
     const navigation = useNavigation();
     const { logoutContext } = useContext(AuthContext);
@@ -61,7 +60,7 @@ const ProfileDashboard = () => {
                     title="Home"
                     onPress={() => navigation.navigate("MemberDashboard")}
                 />
-                
+
                 {/* Header Section */}
                 <View style={styles.headerSection}>
                     <Text style={styles.uidText}>ID: 1</Text>
