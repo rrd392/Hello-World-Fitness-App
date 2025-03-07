@@ -15,14 +15,6 @@ const MemberWorkoutPlan = () => {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [selectedDay, setSelectedDay] = useState("All");
 
-  const { logoutContext } = useContext(AuthContext);
-  
-  async function logout() {
-    await SecureStore.deleteItemAsync("userToken");
-    logoutContext();
-    console.log("Logged out, token removed.");
-  }
-
   //Profile icon dropdown button
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
@@ -164,17 +156,7 @@ const MemberWorkoutPlan = () => {
           <Text style={styles.greeting}>Hi, {userName}</Text>
           <View style={styles.iconRow}>
             <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
-            <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
-            {dropdownVisible && (
-              <View style={styles.dropdown}>
-                <TouchableOpacity onPress={handleGoToProfile} style={styles.menuItem}>
-                  <Text>Profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={logout} style={styles.menuItem}>
-                  <Text>Logout</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            <TouchableOpacity onPress={handleGoToProfile}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
           </View>
         </View>
         <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
@@ -306,7 +288,7 @@ const MemberWorkoutPlan = () => {
           <View>
             <ModalDropdown
               options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
-              defaultValue="Filter day "
+              defaultValue="All"
               textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
               dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
               dropdownTextStyle={{
@@ -345,17 +327,18 @@ const MemberWorkoutPlan = () => {
         ):(
           <View>
             <ModalDropdown
-              options={["All", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
-              defaultValue="Filter day"
-              renderRow={(option, index) => (
-                <TouchableOpacity key={index}>
-                  <Text>{option}</Text>
-                </TouchableOpacity>
-              )}
+              options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
+              defaultValue="All"
+              textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
+              dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
+              dropdownTextStyle={{
+                fontSize: 16, 
+                color: "#000", 
+                textAlign: "center", 
+                paddingVertical: 10, 
+                borderRadius:10
+              }}
               onSelect={(index, value) => setSelectedDay(value)}
-              textStyle={{fontSize: 16,color: "#000",backgroundColor: "#E2F163",paddingVertical: 5,borderRadius: 10, marginLeft: "auto", fontWeight: "400",width: "100%",textAlign: "center",marginTop: -10,marginBottom: 30,}}
-              dropdownStyle={{width: "90%",height: 180,right: 0,marginTop: -20,borderRadius: 10,}}
-              dropdownTextStyle={{fontSize: 16,color: "#000",textAlign: "center",paddingVertical: 10,borderRadius: 10,}}
             />
             <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
           </View>

@@ -12,13 +12,6 @@ import { AuthContext } from "../../context/AuthContext";
 const DetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
     const { workout_plan } = route.params;
-    const { logoutContext } = useContext(AuthContext);
-    
-    async function logout() {
-    await SecureStore.deleteItemAsync("userToken");
-    logoutContext();
-    console.log("Logged out, token removed.");
-    }
 
     //Profile icon dropdown button
     const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -114,17 +107,7 @@ const DetailWorkoutPlan = ({ route }) => {
                     <Text style={styles.greeting}>Hi, {userName}</Text>
                     <View style={styles.iconRow}>
                         <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
-                        <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
-                        {dropdownVisible && (
-                        <View style={styles.dropdown}>
-                            <TouchableOpacity onPress={handleGoToProfile} style={styles.menuItem}>
-                            <Text>Profile</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={logout} style={styles.menuItem}>
-                            <Text>Logout</Text>
-                            </TouchableOpacity>
-                        </View>
-                        )}
+                        <TouchableOpacity onPress={handleGoToProfile}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
                     </View>
                 </View>
                 <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
