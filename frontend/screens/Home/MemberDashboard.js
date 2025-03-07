@@ -90,9 +90,6 @@ const MemberDashboard = () => {
         </View>
         <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
         <Text style={styles.membership}>Standard Monthly</Text>
-      </SafeAreaView>      
-
-      <ScrollView>
         {/* Navigation Icons */}
         <View style={styles.navButtons}>
           <TouchableOpacity style={styles.navItem}>
@@ -108,7 +105,9 @@ const MemberDashboard = () => {
             <Text style={styles.navText}>Nutrition</Text>
           </TouchableOpacity>
         </View>
+      </SafeAreaView>      
 
+      <ScrollView>
         {/* Upcoming Class Section */}
         <View style={styles.upcomingClass}>
           <Text style={styles.sectionTitle}>Your Upcoming Event</Text>
@@ -235,10 +234,10 @@ const styles = StyleSheet.create({
   membership: { backgroundColor: '#fff', paddingVertical: 5, paddingHorizontal: 20, borderRadius: 20, alignSelf: 'flex-start', fontWeight: 'bold', color: '#896CFE', marginBottom: 20 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
   iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
-  
   navButtons: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 30 },
   navItem: { alignItems: 'center' },
   navText: { color: '#B3A0FF', marginTop: 5 },
+
   upcomingClass: { backgroundColor: '#B3A0FF', padding: 15 },
   sectionTitle: { fontSize: 24, color: 'black', marginBottom: 10, textAlign: 'center' },
   classCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#000', borderRadius: 10 },
