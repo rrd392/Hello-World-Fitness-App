@@ -3,7 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import MemberDashboard from "../screens/Home/MemberDashboard";
 import ProfileStack from "./ProfileStack";
-import ProfileDashboard from "../screens/Profile/ProfileDashboard";
 import Notification from "../screens/Home/Notification";
 import CheckIn from "../screens/Home/CheckIn";
 
