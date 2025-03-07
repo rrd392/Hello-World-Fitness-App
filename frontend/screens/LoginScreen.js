@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext} from "react";
 import {
   View,
   Text,
@@ -7,13 +7,12 @@ import {
   Alert,
   StyleSheet,
   SafeAreaView,
-  KeyboardAvoidingView,
 } from "react-native";
 import API_BASE_URL from "../env";
 import * as SecureStore from 'expo-secure-store';
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext"; 
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ navigation}) => {
   const { loginContext } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -58,52 +57,48 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.welcomeTitle}>Welcome</Text>
+        <Text style={styles.subtitle}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+        </Text>
+      </View>
 
-        <View style={styles.header}>
-          <Text style={styles.welcomeTitle}>Welcome</Text>
-          <Text style={styles.subtitle}>
-            Your fitness journey starts here! Log in to book classes, track your progress, and stay motivated.
-          </Text>
-        </View>
-
-        <View style={styles.centerFormContainer}>
-          <View style={styles.formBox}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.hearder1}>Username</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Username"
-                placeholderTextColor="#999"
-                onChangeText={setUsername}
-                value={username}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.hearder1}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="*************"
-                placeholderTextColor="#999"
-                secureTextEntry
-                onChangeText={setPassword}
-                value={password}
-              />
-            </View>
-
-            <TouchableOpacity
-              style={styles.forgotPasswordButton}
-              onPress={() => navigation.navigate('ForgotPage')}
-            >
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
+      <View style={styles.centerFormContainer}>
+        <View style={styles.formBox}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.hearder1}>Username</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              placeholderTextColor="#999"
+              onChangeText={setUsername}
+              value={username}
+            />
           </View>
-        </View>
 
-        
-      </KeyboardAvoidingView>
+          <View style={styles.inputGroup}>
+            <Text style={styles.hearder1}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="*************"
+              placeholderTextColor="#999"
+              secureTextEntry
+              onChangeText={setPassword}
+              value={password}
+            />
+          </View>
+
+          <TouchableOpacity
+            style={styles.forgotPasswordButton}
+            onPress={() => navigation.navigate('ForgotPage')}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       <View style={styles.bottomActionContainer}>
         <TouchableOpacity
           style={styles.loginButton}
@@ -119,20 +114,18 @@ const LoginScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+
+
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea:{
-    flex:1,
-    backgroundColor: "#232323",
-  },
   container: {
     flex: 1,
-    justifyContent:"center",
-    // paddingHorizontal: 32,
+    backgroundColor: "#fff",
+    paddingHorizontal: 32,
   },
   header: {
     marginTop: 40,
@@ -172,20 +165,17 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: "#232323",
     fontSize: 14,
-    fontWeight: "bold",
   },
   bottomActionContainer: {
-    // marginBottom: 10,
-    // justifyContent: "center",
+    marginBottom: 10,
+    justifyContent: "center",
     alignItems: "center",
   },
   loginButton: {
-    backgroundColor: "gray",
+    backgroundColor: "#007AFF",
     height: 48,
     width: 250,
     borderRadius: 30,
-    borderWidth: 2,
-    borderColor: "#FFF",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
@@ -201,11 +191,11 @@ const styles = StyleSheet.create({
     marginTop: 150,
   },
   signupText: {
-    color: "white",
+    color: "#232323",
     fontSize: 14,
   },
   signupLink: {
-    color: "#E2F163",
+    color: "#007AFF",
     fontSize: 14,
     fontWeight: "500",
   },
@@ -213,7 +203,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
-    color: "white",
+    color: "#1a1a1a",
     marginBottom: 12,
   },
   hearder1: {
@@ -223,7 +213,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: "white",
+    color: "#666",
     textAlign: "center",
     lineHeight: 20,
     paddingHorizontal: 24,
