@@ -228,7 +228,7 @@ const MemberDashboard = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
-  header: { padding: 20, marginBottom: -50 },
+  header: { padding: 20, marginBottom: -30 },
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
   membership: { backgroundColor: '#fff', paddingVertical: 5, paddingHorizontal: 20, borderRadius: 20, alignSelf: 'flex-start', fontWeight: 'bold', color: '#896CFE', marginBottom: 20 },

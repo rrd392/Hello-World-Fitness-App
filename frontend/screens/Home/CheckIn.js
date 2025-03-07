@@ -55,7 +55,7 @@ const CheckIn = () => {
                 <View style={styles.headerRow}>
                     {/* Back Button */}
                     <TouchableOpacity style={styles.homeButton} onPress={() => navigation.navigate('MemberDashboard')}>
-                        <Ionicons name="chevron-back-outline" size={20} color="#E2F163"/>
+                        <Ionicons name="caret-back" size={20} color="#E2F163"/>
                         <Text style={styles.homeText}>Home</Text>
                     </TouchableOpacity>                    
                     <View style={styles.iconRow}>

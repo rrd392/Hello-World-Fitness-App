@@ -40,7 +40,7 @@ const ProfileDashboard = () => {
         {
             title: "Transaction History",
             icon: "receipt",
-            onPress: () => console.log("Transaction History"),
+            onPress: () => navigation.navigate("TransactionHistory"),
         },
         {
             title: "Achievement",
@@ -55,7 +55,7 @@ const ProfileDashboard = () => {
     return (
         <ScrollView style={styles.container}>
             <SafeAreaView>
-                <TouchableOpacity style={styles.headerRow} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.headerRow} onPress={() => navigation.navigate("MemberDashboard")}>
                     <Ionicons name="chevron-back-outline" size={24} color="#E2F163" style={styles.backIcon} />
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>Home</Text>
