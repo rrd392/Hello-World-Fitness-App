@@ -23,26 +23,24 @@ const UpdateProfile = () => {
                 <TouchableOpacity style={styles.headerRow} onPress={() => navigation.goBack()}>
                     <Ionicons name="chevron-back-outline" size={24} color="#E2F163" style={styles.backIcon} />
                     <View style={styles.titleContainer}>
-                        <Text style={styles.title}>Home</Text>
+                        <Text style={styles.title}>Profile</Text>
                     </View>
                 </TouchableOpacity>
 
                 {/* Header Section */}
                 <View style={styles.headerSection}>
-                    <Text style={styles.uidText}>ID: 1</Text>
                     <Image
                         source={require("../../assets/icon.png")} //put profile image here
                         style={styles.profileImage}
                     />
-                    <Text style={styles.userName}>Madison Smith</Text>
-                    <Text style={styles.userEmail}>madison@example.com</Text>
-                    <Text style={styles.userBirthday}>Birthday: April 1st</Text>
-                    <Text style={styles.membershipBadge}>Standard Monthly</Text>
+                    <View style={styles.profileInfo}>
+                        <Text style={styles.userName}>Madison Smith</Text>
+                        <Text style={styles.userSubtitle}>Hello World Fitness</Text>
+                        <Text style={styles.userSubtitle}>Member Since Jan 2025</Text>
+                        <Text style={styles.membershipBadge}>Standard Monthly</Text>
+                    </View>
 
                 </View>
-
-
-
             </SafeAreaView>
         </ScrollView>
 
@@ -53,7 +51,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#212020",
-        position: "relative",
 
     },
 
@@ -74,18 +71,23 @@ const styles = StyleSheet.create({
     },
 
     headerSection: {
+        flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#B3A0FF",
-        paddingTop: 15,
-        paddingBottom: 50,
+        justifyContent: "space-around",
     },
 
-    uidText: { color: "#fff", marginBottom: 10, fontWeight: "bold", fontSize: 18 },
+    profileInfo: {
+        marginLeft: 20,
+    },
 
-    profileImage: { width: 100, height: 100, borderRadius: 50, marginBottom: 10 },
+    profileImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+    },
+
     userName: { fontSize: 24, fontWeight: "bold", color: "#fff" },
-    userEmail: { color: "#fff", marginBottom: 5 },
-    userBirthday: { color: "#fff", marginBottom: 10 },
+    userSubtitle: { color: "#fff", marginBottom: 5 },
     membershipBadge: {
         backgroundColor: "#FFF",
         color: "#896CFE",
@@ -93,6 +95,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         borderRadius: 20,
         fontWeight: "bold",
+        textAlign: "center",
     },
 
 
