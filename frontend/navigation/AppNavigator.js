@@ -16,6 +16,7 @@ import SignUpPageStep2 from "../screens/Sign up/SignUpPageStep2";
 import SignUpPageStep3 from "../screens/Sign up/SignUpPageStep3";
 import SignUpPageStep4 from "../screens/Sign up/SignUpPageStep4";
 import CreatedPage from "../screens/Sign up/CreatedPage";
+import MembershipStep1 from "../screens/Profile/MembershipStep1";
 
 // App Screens
 import BottomTabNavigator from "./BottomTabNavigator";
@@ -33,6 +34,7 @@ const AuthStackNavigator = () => (
         <AuthStack.Screen name="SignUpPageStep3" component={SignUpPageStep3} />
         <AuthStack.Screen name="SignUpPageStep4" component={SignUpPageStep4} />
         <AuthStack.Screen name="CreatedPage" component={CreatedPage} />
+        <AuthStack.Screen name="MembershipStep1" component={MembershipStep1} />
     </AuthStack.Navigator>
 );
 

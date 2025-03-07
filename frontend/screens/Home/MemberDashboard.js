@@ -1,23 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from "../../context/AuthContext";
 import { ScrollView, View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
-import * as SecureStore from 'expo-secure-store';
 import { getUserId } from '../getUserId';
 
 
 const MemberDashboard = () => {
   const navigation = useNavigation();
-  const { logoutContext } = useContext(AuthContext);
-
-  async function logout() {
-    await SecureStore.deleteItemAsync("userToken");
-    logoutContext();
-    console.log("Logged out, token removed.");
-  }
 
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
@@ -30,6 +21,7 @@ const MemberDashboard = () => {
     async function fetchUserId() {
       const token = await getUserId();
       setUserId(token.id);
+      setUserName(token.name);
     }
     fetchUserId();
   }, []);
@@ -53,7 +45,6 @@ const MemberDashboard = () => {
         const data = await response.json();
 
         if (data.success) {
-          setUserName(data.userName);
           if (Array.isArray(data.classes)) {
             setUpcomingClassData(data.classes);
           } else if (data.classes) {
@@ -61,7 +52,6 @@ const MemberDashboard = () => {
           } else {
             setUpcomingClassData([]); // Fallback to empty array
           }
-          // setUpcomingClassData(data.classes);
           setClassData(data.disClass);
           setWorkoutPlans(data.workoutPlans);
           setDietPlans(data.diet);
@@ -81,186 +71,174 @@ const MemberDashboard = () => {
     return date.toLocaleDateString('en-GB', { timeZone: 'Asia/Kuala_Lumpur' });
   }
 
-  //Profile icon dropdown button
-  const [dropdownVisible, setDropdownVisible] = useState(false);
 
-  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
-
-  const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
+  const handleGoToProfile = () =>navigation.navigate('ProfileStack');
 
   //Notification icon pop up page
   const toggleNotification = () => navigation.navigate('Notification');
   
-return (
-  <ScrollView style={styles.container}>
-    {/* Header Section */}
-    <SafeAreaView style={styles.header}>
-      <View style={styles.headerRow}>
-        <Text style={styles.greeting}>Hi, {userName}</Text>
-        <View style={styles.iconRow}>
-          <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
-          <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <TouchableOpacity onPress={handleGoToProfile} style={styles.menuItem}>
-                <Text>Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={logout} style={styles.menuItem}>
-                <Text>Logout</Text>
-              </TouchableOpacity>
+  return (
+    <View style={styles.container}>
+      {/* Header Section */}
+      <SafeAreaView style={styles.header}>
+        <View style={styles.headerRow}>
+          <Text style={styles.greeting}>Hi, {userName}</Text>
+          <View style={styles.iconRow}>
+            <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
+            <TouchableOpacity onPress={handleGoToProfile}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
+          </View>
+        </View>
+        <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
+        <Text style={styles.membership}>Standard Monthly</Text>
+      </SafeAreaView>      
+
+      <ScrollView>
+        {/* Navigation Icons */}
+        <View style={styles.navButtons}>
+          <TouchableOpacity style={styles.navItem}>
+            <Ionicons name="checkbox" size={30} color="#B3A0FF" />
+            <Text style={styles.navText}>Check In</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <Ionicons name="barbell" size={30} color="#B3A0FF" />
+            <Text style={styles.navText}>Classes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <Ionicons name="nutrition" size={30} color="#B3A0FF" />
+            <Text style={styles.navText}>Nutrition</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Upcoming Class Section */}
+        <View style={styles.upcomingClass}>
+          <Text style={styles.sectionTitle}>Your Upcoming Event</Text>
+          {Array.isArray(upcomingClassData) && upcomingClassData.length > 0 ? (
+            <TouchableOpacity style={styles.classCard}>
+              <View>
+                <Text style={styles.classTitle}>{upcomingClassData[0].class_name}</Text>
+                <Text style={styles.classDetails}>
+                  <Ionicons name="time-outline" size={15} color="white" /> {upcomingClassData[0].start_time} - {upcomingClassData[0].end_time}
+                </Text>
+                <Text style={styles.classDetails}>
+                  <Ionicons name="person-outline" size={15} color="white" /> {upcomingClassData[0].trainerName}
+                </Text>
+                <Text style={styles.lastClassDetails} marginBottom="40">
+                  <Ionicons name="calendar-outline" size={15} color="white" /> {formatDate(upcomingClassData[0].schedule_date)}
+                </Text>
+              </View>
+              <Image source={{ uri: `${API_BASE_URL}/uploads/${upcomingClassData[0].class_image}` }} style={styles.classImage} />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.classCard}>
+              <Text style={styles.noClassTitle}>No upcoming classes</Text>
             </View>
           )}
-        </View>
-      </View>
-      <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
-      <Text style={styles.membership}>Standard Monthly</Text>
-      {/* Navigation Icons */}
-      <View style={styles.navButtons}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="checkbox" size={30} color="#B3A0FF" onPress={() => navigation.navigate('CheckIn')}/>
-          <Text style={styles.navText}>Check In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="barbell" size={30} color="#B3A0FF" />
-          <Text style={styles.navText}>Classes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="nutrition" size={30} color="#B3A0FF" />
-          <Text style={styles.navText}>Nutrition</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
 
-
-      {/* Upcoming Class Section */}
-      <View style={styles.upcomingClass}>
-        <Text style={styles.sectionTitle}>Your Upcoming Event</Text>
-        {Array.isArray(upcomingClassData) && upcomingClassData.length > 0 ? (
-          <TouchableOpacity style={styles.classCard}>
-            <View>
-              <Text style={styles.classTitle}>{upcomingClassData[0].class_name}</Text>
-              <Text style={styles.classDetails}>
-                <Ionicons name="time-outline" size={15} color="white" /> {upcomingClassData[0].start_time} - {upcomingClassData[0].end_time}
-              </Text>
-              <Text style={styles.classDetails}>
-                <Ionicons name="person-outline" size={15} color="white" /> {upcomingClassData[0].trainerName}
-              </Text>
-              <Text style={styles.lastClassDetails} marginBottom="40">
-                <Ionicons name="calendar-outline" size={15} color="white" /> {formatDate(upcomingClassData[0].schedule_date)}
-              </Text>
-            </View>
-            <Image source={{ uri: `${API_BASE_URL}/uploads/${upcomingClassData[0].class_image}` }} style={styles.classImage} />
+          <TouchableOpacity style={styles.moreButton}>
+            <Text style={styles.moreButtonText}>More</Text>
           </TouchableOpacity>
-        ) : (
-          <View style={styles.classCard}>
-            <Text style={styles.noClassTitle}>No upcoming classes</Text>
-          </View>
-        )}
+        </View>
 
-        <TouchableOpacity style={styles.moreButton}>
-          <Text style={styles.moreButtonText}>More</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Classes */}
+        <View style={styles.announcementSection}>
+          <Text style={styles.announcementTitle}>Explore Classes</Text>
+          <FlatList
+            data={[...(Array.isArray(classData) ? classData : []), { isMoreCard: true }]} // Add a special item at the end
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => item.class_id?.toString() || `more-${index}`}
+            contentContainerStyle={styles.listContainer}
+            renderItem={({ item }) =>
+              item.isMoreCard ? (
+                // "More >" Card
+                <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more classes")}>
+                  <Text style={styles.moreText}>More &gt;</Text>
+                </TouchableOpacity>
+              ) : (
+                // Regular Class Card
+                <TouchableOpacity style={styles.card}>
+                  <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}` }} style={styles.announcementImage} />
+                  <View style={styles.textOverlay}>
+                    <Text style={styles.announcementText}>{item.class_name}</Text>
+                  </View>
+                </TouchableOpacity>
+              )
+            }
+          />
+        </View>
 
-      {/* Classes */}
-      <View style={styles.announcementSection}>
-        <Text style={styles.announcementTitle}>Explore Classes</Text>
-        <FlatList
-          data={[...(Array.isArray(classData) ? classData : []), { isMoreCard: true }]} // Add a special item at the end
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => item.class_id?.toString() || `more-${index}`}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) =>
-            item.isMoreCard ? (
-              // "More >" Card
-              <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more classes")}>
-                <Text style={styles.moreText}>More &gt;</Text>
-              </TouchableOpacity>
-            ) : (
-              // Regular Class Card
-              <TouchableOpacity style={styles.card}>
-                <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}` }} style={styles.announcementImage} />
-                <View style={styles.textOverlay}>
-                  <Text style={styles.announcementText}>{item.class_name}</Text>
-                </View>
-              </TouchableOpacity>
-            )
-          }
-        />
-      </View>
+        {/* Workout Plans */}
+        <View style={styles.announcementSection}>
+          <Text style={styles.announcementTitle}>Explore Workout Plans</Text>
+          <FlatList
+            data={[...(Array.isArray(workoutPlans) ? workoutPlans : []), { isMoreCard: true }]} // Add a special item at the end
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => item.workout_plan_id?.toString() || `more-${index}`}
+            contentContainerStyle={styles.listContainer}
+            renderItem={({ item }) =>
+              item.isMoreCard ? (
+                // "More >" Card
+                <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more workout plans")}>
+                  <Text style={styles.moreText}>More &gt;</Text>
+                </TouchableOpacity>
+              ) : (
+                // Regular Class Card
+                <TouchableOpacity style={styles.card}>
+                  <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.announcementImage} />
+                  <View style={styles.textOverlay}>
+                    <Text style={styles.announcementText}>{item.plan_name}</Text>
+                  </View>
+                </TouchableOpacity>
+              )
+            }
+          />
+        </View>
 
-      {/* Workout Plans */}
-      <View style={styles.announcementSection}>
-        <Text style={styles.announcementTitle}>Explore Workout Plans</Text>
-        <FlatList
-          data={[...(Array.isArray(workoutPlans) ? workoutPlans : []), { isMoreCard: true }]} // Add a special item at the end
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => item.workout_plan_id?.toString() || `more-${index}`}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) =>
-            item.isMoreCard ? (
-              // "More >" Card
-              <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more workout plans")}>
-                <Text style={styles.moreText}>More &gt;</Text>
-              </TouchableOpacity>
-            ) : (
-              // Regular Class Card
-              <TouchableOpacity style={styles.card}>
-                <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.announcementImage} />
-                <View style={styles.textOverlay}>
-                  <Text style={styles.announcementText}>{item.plan_name}</Text>
-                </View>
-              </TouchableOpacity>
-            )
-          }
-        />
-      </View>
-
-      {/* Diet Plans */}
-      <View style={styles.announcementSection} marginBottom='40'>
-        <Text style={styles.announcementTitle}>Explore Diet Plans</Text>
-        <FlatList
-          data={[...(Array.isArray(dietPlans) ? dietPlans : []), { isMoreCard: true }]} // Add a special item at the end
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => item.meal_id?.toString() || `more-${index}`}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) =>
-            item.isMoreCard ? (
-              // "More >" Card
-              <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more workout plans")}>
-                <Text style={styles.moreText}>More &gt;</Text>
-              </TouchableOpacity>
-            ) : (
-              // Regular Class Card
-              <TouchableOpacity style={styles.card}>
-                <Image source={{ uri: `${API_BASE_URL}/uploads/${item.meal_pictures}` }} style={styles.announcementImage} />
-                <View style={styles.textOverlay}>
-                  <Text style={styles.announcementText}>{item.name}</Text>
-                </View>
-              </TouchableOpacity>
-            )
-          }
-        />
-      </View>
-    </ScrollView>
+        {/* Diet Plans */}
+        <View style={styles.announcementSection} marginBottom='40'>
+          <Text style={styles.announcementTitle}>Explore Diet Plans</Text>
+          <FlatList
+            data={[...(Array.isArray(dietPlans) ? dietPlans : []), { isMoreCard: true }]} // Add a special item at the end
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => item.meal_id?.toString() || `more-${index}`}
+            contentContainerStyle={styles.listContainer}
+            renderItem={({ item }) =>
+              item.isMoreCard ? (
+                // "More >" Card
+                <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more workout plans")}>
+                  <Text style={styles.moreText}>More &gt;</Text>
+                </TouchableOpacity>
+              ) : (
+                // Regular Class Card
+                <TouchableOpacity style={styles.card}>
+                  <Image source={{ uri: `${API_BASE_URL}/uploads/${item.meal_pictures}` }} style={styles.announcementImage} />
+                  <View style={styles.textOverlay}>
+                    <Text style={styles.announcementText}>{item.name}</Text>
+                  </View>
+                </TouchableOpacity>
+              )
+            }
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
-  header: { padding: 20, marginBottom: -30 },
+  header: { padding: 20, marginBottom: -50 },
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
   membership: { backgroundColor: '#fff', paddingVertical: 5, paddingHorizontal: 20, borderRadius: 20, alignSelf: 'flex-start', fontWeight: 'bold', color: '#896CFE', marginBottom: 20 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
   iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
-  navButtons: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 },
+  
+  navButtons: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 30 },
   navItem: { alignItems: 'center' },
   navText: { color: '#B3A0FF', marginTop: 5 },
-
   upcomingClass: { backgroundColor: '#B3A0FF', padding: 15 },
   sectionTitle: { fontSize: 24, color: 'black', marginBottom: 10, textAlign: 'center' },
   classCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#000', borderRadius: 10 },

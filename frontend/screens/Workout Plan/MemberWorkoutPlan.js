@@ -1,83 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState, useEffect,useContext } from 'react';
+import { View, Image, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import * as SecureStore from 'expo-secure-store';
 import { getUserId } from '../getUserId';
+import { AuthContext } from "../../context/AuthContext";
+import ModalDropdown from "react-native-modal-dropdown";
 
 const MemberWorkoutPlan = () => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState("General");
   const [selectedLevel, setSelectedLevel] = useState("");
+  const [selectedDay, setSelectedDay] = useState("All");
 
+  const { logoutContext } = useContext(AuthContext);
+  
   async function logout() {
     await SecureStore.deleteItemAsync("userToken");
-    navigation.navigate("Login")
+    logoutContext();
     console.log("Logged out, token removed.");
-  }
-
-  const [userId, setUserId] = useState("");
-  const [userName, setUserName] = useState("");
-  const [upcomingClassData, setUpcomingClassData] = useState([]);
-  const [classData, setClassData] = useState([]);
-  const [workoutPlans, setWorkoutPlans] = useState([]);
-  const [dietPlans, setDietPlans] = useState([]);
-
-  useEffect(() => {
-    async function fetchUserId() {
-      const token = await getUserId();
-      setUserId(token.id);
-    }
-    fetchUserId();
-  }, []);
-
-  useEffect(() => {
-    if (!userId) return;  // Ensure userId exists
-
-    const fetchUserData = async () => {
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/dashboard/display/${userId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!response.ok) {
-          const text = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-        }
-
-        const data = await response.json();
-
-        if (data.success) {
-          setUserName(data.userName);
-          if (Array.isArray(data.classes)) {
-            setUpcomingClassData(data.classes);
-          } else if (data.classes) {
-            setUpcomingClassData([data.classes]); // Convert single object to array
-          } else {
-            setUpcomingClassData([]); // Fallback to empty array
-          }
-          // setUpcomingClassData(data.classes);
-          setClassData(data.disClass);
-          setWorkoutPlans(data.workoutPlans);
-          setDietPlans(data.diet);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        Alert.alert("Error", error.message || "Network request failed");
-      } finally {
-      }
-    };
-
-    fetchUserData();
-  }, [userId]);
-
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', { timeZone: 'Asia/Kuala_Lumpur' });
   }
 
   //Profile icon dropdown button
@@ -89,223 +32,356 @@ const MemberWorkoutPlan = () => {
 
   //Notification icon pop up page
   const toggleNotification = () => navigation.navigate('Notification');
+
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
+  const [generalPlans, setGeneralPlans] = useState([]);
+  const [coachPlans, setCoachPlans] = useState([]);
+  const [customPlans, setCustomPlans] = useState([]);
+
+  useEffect(() => {
+    async function fetchUserId() {
+      const token = await getUserId();
+      setUserId(token.id);
+      setUserName(token.name);
+    }
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    fetchGeneralPlan();
+    if (userId) {  
+      fetchCoachPlan();
+      fetchCustomPlan();
+    }
+  }, [selectedLevel, userId, selectedDay]); 
+
+  const fetchGeneralPlan = async () => {
+    try {
+      const endpoint = selectedLevel
+        ? `${API_BASE_URL}/api/workout-plan/displayGeneral/${selectedLevel}`
+        : `${API_BASE_URL}/api/workout-plan/displayGeneral/all`;
+
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        if (Array.isArray(data.results)) {
+          setGeneralPlans(data.results);
+        } else if (data.results) {
+          setGeneralPlans([data.results]); 
+        } else {
+          setGeneralPlans([]); 
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching general workout plan data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    }
+  };
+
+  const fetchCoachPlan = async () => {
+    try {
+      const endpoint = selectedLevel
+        ? `${API_BASE_URL}/api/workout-plan/displayCoach/${userId}/${selectedLevel}`
+        : `${API_BASE_URL}/api/workout-plan/displayCoach/${userId}/all`;
+
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        if (Array.isArray(data.results)) {
+          setCoachPlans(data.results);
+        } else if (data.results) {
+          setCoachPlans([data.results]); 
+        } else {
+          setCoachPlans([]); 
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching coach workout plan data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    }
+  };
+
+  const fetchCustomPlan = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/workout-plan/displayCustom/${userId}/${selectedDay}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        if (Array.isArray(data.results)) {
+          setCustomPlans(data.results);
+        } else if (data.results) {
+          setCustomPlans([data.results]); 
+        } else {
+          setCustomPlans([]); 
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching custom workout plan data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    }
+  };
+
+  //Navigate to workout detail page
+  function toggleWorkOutDetails(workout_plan){
+    navigation.navigate('DetailWorkoutPlan', { workout_plan });
+  }
   
-return (
-  <ScrollView style={styles.container}>
-    {/* Header Section */}
-    <SafeAreaView style={styles.header}>
-      <View style={styles.headerRow}>
-        <Text style={styles.greeting}>Hi, {userName}</Text>
-        <View style={styles.iconRow}>
-          <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
-          <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <TouchableOpacity onPress={handleGoToProfile} style={styles.menuItem}>
-                <Text>Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={logout} style={styles.menuItem}>
-                <Text>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </View>
-      <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
-      {/* Navigation Icons */}
-      <View style={styles.navButtons}>
-        {["General", "Custom", "Coach"].map((item) => (
-          <TouchableOpacity
-            key={item}
-            style={[styles.navItem, selected === item && styles.selectedNavItem]} 
-            onPress={() => setSelected(item)}
-          >
-            <Text style={styles.navText}>{item}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <View style={styles.levelButtons}>
-        {["Beginner", "Intermediate", "Advanced"].map((item) => (
-          <TouchableOpacity
-            key={item}
-            style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
-            onPress={() => setSelectedLevel(item)}
-          >
-            <Text style={styles.levelText}>{item}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </SafeAreaView>
-
-
-      {/* Upcoming Class Section */}
-      <View style={styles.upcomingClass}>
-        <Text style={styles.sectionTitle}>Your Upcoming Event</Text>
-        {Array.isArray(upcomingClassData) && upcomingClassData.length > 0 ? (
-          <TouchableOpacity style={styles.classCard}>
-            <View>
-              <Text style={styles.classTitle}>{upcomingClassData[0].class_name}</Text>
-              <Text style={styles.classDetails}>
-                <Ionicons name="time-outline" size={15} color="white" /> {upcomingClassData[0].start_time} - {upcomingClassData[0].end_time}
-              </Text>
-              <Text style={styles.classDetails}>
-                <Ionicons name="person-outline" size={15} color="white" /> {upcomingClassData[0].trainerName}
-              </Text>
-              <Text style={styles.lastClassDetails} marginBottom="40">
-                <Ionicons name="calendar-outline" size={15} color="white" /> {formatDate(upcomingClassData[0].schedule_date)}
-              </Text>
-            </View>
-            <Image source={{ uri: `${API_BASE_URL}/uploads/${upcomingClassData[0].class_image}` }} style={styles.classImage} />
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.classCard}>
-            <Text style={styles.noClassTitle}>No upcoming classes</Text>
+  return (
+    <View style={styles.container}>
+      {/* Header Section */}
+      <SafeAreaView style={styles.header}>
+        <View style={styles.headerRow}>
+          <Text style={styles.greeting}>Hi, {userName}</Text>
+          <View style={styles.iconRow}>
+            <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
+            <TouchableOpacity onPress={toggleDropdown}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
+            {dropdownVisible && (
+              <View style={styles.dropdown}>
+                <TouchableOpacity onPress={handleGoToProfile} style={styles.menuItem}>
+                  <Text>Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={logout} style={styles.menuItem}>
+                  <Text>Logout</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
-        )}
+        </View>
+        <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
+        {/* Navigation Icons */}
+        <View style={styles.navButtons}>
+          {["General", "Coach", "Custom"].map((item) => (
+            <TouchableOpacity
+              key={item}
+              style={[styles.navItem, selected === item && styles.selectedNavItem]} 
+              onPress={() => setSelected(item)}
+            >
+              <Text style={styles.navText}>{item}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </SafeAreaView>
+        
+      {selected === "General" && (
+        generalPlans.length > 0 ? (
+          <View>
+            <View style={styles.levelButtons}>
+              {["Beginner", "Intermediate", "Advanced"].map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
+                  onPress={() => setSelectedLevel(item)}
+                >
+                  <Text style={styles.levelText}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Text style={styles.contentTitle}>Let's Go {userName}</Text>
+            <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
+            <FlatList
+              data={generalPlans}  
+              keyExtractor={(item) => item.workout_plan_id.toString()} 
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
+                  <View style={styles.generalItem}>
+                      <Text style={styles.generalTitle}>{item.plan_name}</Text>
+                      <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
+                      <Text><Ionicons name="accessibility" size={13}></Ionicons>  {item.count} Exercises</Text>
+                  </View>
+                  <View style={styles.imageContainer}>
+                    <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.workoutImage} />
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{item.difficulty}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
+              contentContainerStyle={styles.listSection}
+            />
+          </View>
+        ):(
+          <View>
+            <View style={styles.levelButtons}>
+              {["Beginner", "Intermediate", "Advanced"].map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
+                  onPress={() => setSelectedLevel(item)}
+                >
+                  <Text style={styles.levelText}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
+          </View>
+        )
+        )
+      }
+      {selected === "Coach" && (
+          coachPlans.length > 0 ? (
+            <View>
+              <View style={styles.levelButtons}>
+                {["Beginner", "Intermediate", "Advanced"].map((item) => (
+                  <TouchableOpacity
+                    key={item}
+                    style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
+                    onPress={() => setSelectedLevel(item)}
+                  >
+                    <Text style={styles.levelText}>{item}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text style={styles.contentTitle}>Let's Go {userName}</Text>
+              <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
+              <FlatList
+              data={coachPlans}  
+              keyExtractor={(item) => item.workout_plan_id.toString()} 
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
+                  <View style={styles.generalItem}>
+                      <Text style={styles.generalTitle}>{item.plan_name}</Text>
+                      <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
+                      <Text><Ionicons name="accessibility" size={13}></Ionicons>  {item.count} Exercises</Text>
+                  </View>
+                  <View style={styles.imageContainer}>
+                    <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.workoutImage} />
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{item.difficulty}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
+              contentContainerStyle={styles.listSection}
+              />
+            </View>
+          ):(
+            <View>
+              <View style={styles.levelButtons}>
+                {["Beginner", "Intermediate", "Advanced"].map((item) => (
+                  <TouchableOpacity
+                    key={item}
+                    style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
+                    onPress={() => setSelectedLevel(item)}
+                  >
+                    <Text style={styles.levelText}>{item}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
+            </View>
+          )
+      )}
+      {selected === "Custom" && (
+        customPlans.length > 0 ? (
+          <View>
+            <ModalDropdown
+              options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
+              defaultValue="Filter day "
+              textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
+              dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
+              dropdownTextStyle={{
+                fontSize: 16, 
+                color: "#000", 
+                textAlign: "center", 
+                paddingVertical: 10, 
+                borderRadius:10
+              }}
+              onSelect={(index, value) => setSelectedDay(value)}
+            />
 
-        <TouchableOpacity style={styles.moreButton}>
-          <Text style={styles.moreButtonText}>More</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Classes */}
-      <View style={styles.announcementSection}>
-        <Text style={styles.announcementTitle}>Explore Classes</Text>
-        <FlatList
-          data={[...(Array.isArray(classData) ? classData : []), { isMoreCard: true }]} // Add a special item at the end
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => item.class_id?.toString() || `more-${index}`}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) =>
-            item.isMoreCard ? (
-              // "More >" Card
-              <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more classes")}>
-                <Text style={styles.moreText}>More &gt;</Text>
-              </TouchableOpacity>
-            ) : (
-              // Regular Class Card
-              <TouchableOpacity style={styles.card}>
-                <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}` }} style={styles.announcementImage} />
-                <View style={styles.textOverlay}>
-                  <Text style={styles.announcementText}>{item.class_name}</Text>
+            <Text style={styles.contentTitle}>Let's Go {userName}</Text>
+            <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
+            <FlatList
+            data={customPlans}  
+            keyExtractor={(item) => item.workout_plan_id.toString()} 
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
+                <View style={styles.generalItem}>
+                    <Text style={styles.generalTitle}>{item.plan_name}</Text>
+                    <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
+                    <Text><Ionicons name="accessibility" size={13}></Ionicons>  {item.count} Exercises</Text>
+                </View>
+                <View style={styles.imageContainer}>
+                  <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.workoutImage} />
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{item.difficulty}</Text>
+                  </View>
                 </View>
               </TouchableOpacity>
-            )
-          }
-        />
-      </View>
+            )}
+            contentContainerStyle={styles.listSection}
+            />
+          </View>
+        ):(
+          <View>
+            <ModalDropdown
+              options={["All", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
+              defaultValue="Filter day"
+              renderRow={(option, index) => (
+                <TouchableOpacity key={index}>
+                  <Text>{option}</Text>
+                </TouchableOpacity>
+              )}
+              onSelect={(index, value) => setSelectedDay(value)}
+              textStyle={{fontSize: 16,color: "#000",backgroundColor: "#E2F163",paddingVertical: 5,borderRadius: 10, marginLeft: "auto", fontWeight: "400",width: "100%",textAlign: "center",marginTop: -10,marginBottom: 30,}}
+              dropdownStyle={{width: "90%",height: 180,right: 0,marginTop: -20,borderRadius: 10,}}
+              dropdownTextStyle={{fontSize: 16,color: "#000",textAlign: "center",paddingVertical: 10,borderRadius: 10,}}
+            />
+            <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
+          </View>
+        )
+      )}
 
-      {/* Workout Plans */}
-      <View style={styles.announcementSection}>
-        <Text style={styles.announcementTitle}>Explore Workout Plans</Text>
-        <FlatList
-          data={[...(Array.isArray(workoutPlans) ? workoutPlans : []), { isMoreCard: true }]} // Add a special item at the end
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => item.workout_plan_id?.toString() || `more-${index}`}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) =>
-            item.isMoreCard ? (
-              // "More >" Card
-              <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more workout plans")}>
-                <Text style={styles.moreText}>More &gt;</Text>
-              </TouchableOpacity>
-            ) : (
-              // Regular Class Card
-              <TouchableOpacity style={styles.card}>
-                <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.announcementImage} />
-                <View style={styles.textOverlay}>
-                  <Text style={styles.announcementText}>{item.plan_name}</Text>
-                </View>
-              </TouchableOpacity>
-            )
-          }
-        />
-      </View>
-
-      {/* Diet Plans */}
-      <View style={styles.announcementSection} marginBottom='40'>
-        <Text style={styles.announcementTitle}>Explore Diet Plans</Text>
-        <FlatList
-          data={[...(Array.isArray(dietPlans) ? dietPlans : []), { isMoreCard: true }]} // Add a special item at the end
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => item.meal_id?.toString() || `more-${index}`}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) =>
-            item.isMoreCard ? (
-              // "More >" Card
-              <TouchableOpacity style={styles.moreCard} onPress={() => console.log("Navigate to more workout plans")}>
-                <Text style={styles.moreText}>More &gt;</Text>
-              </TouchableOpacity>
-            ) : (
-              // Regular Class Card
-              <TouchableOpacity style={styles.card}>
-                <Image source={{ uri: `${API_BASE_URL}/uploads/${item.meal_pictures}` }} style={styles.announcementImage} />
-                <View style={styles.textOverlay}>
-                  <Text style={styles.announcementText}>{item.name}</Text>
-                </View>
-              </TouchableOpacity>
-            )
-          }
-        />
-      </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  header: { padding: 20, marginBottom: -30 },
+  container: { flex: 1, backgroundColor: '#000', paddingBottom:270, padding: 20},
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
   iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
-  navButtons:{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20},
+  navButtons:{flexDirection: 'row', justifyContent: 'space-between', marginTop: 20},
   navItem:{alignItems: 'center', paddingVertical:10, width:'33%'},
   navText:{color:'white', fontSize:16, fontWeight:'bold'},
   selectedNavItem: {backgroundColor: "rgba(255, 255, 255, 0.5)", paddingVertical:10, width:'33%'},
-  levelButtons: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20},
+  
+  levelButtons: { flexDirection: 'row', justifyContent: 'space-between', marginBottom:30, marginTop:-15},
   levelItem: { alignItems: 'center', backgroundColor:'rgba(226, 241, 99, 0.5)', borderRadius:15, padding:8, width:'30%'},
   levelText: { color: '#000', fontSize:14 },
   selectedLevelItem:{backgroundColor: "rgba(226, 241, 99, 1)", width:'30%'},
 
-  upcomingClass: { backgroundColor: '#B3A0FF', padding: 15 },
-  sectionTitle: { fontSize: 24, color: 'black', marginBottom: 10, textAlign: 'center' },
-  classCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#000', borderRadius: 10 },
-  classTitle: { fontSize: 24, color: 'yellow', marginTop: 30, marginLeft: 40, marginBottom: 10 },
-  classDetails: { color: '#fff', marginLeft: 40, marginBottom: 5 },
-  lastClassDetails: { color: '#fff', marginLeft: 40, marginBottom: 30 },
-  classImage: { width: 150, height: '100%', borderRadius: 10 },
-  noClassTitle:{fontSize: 24, color: 'yellow', marginTop: 30, marginHorizontal:'auto', marginBottom: 30},
-  moreButton: { marginTop: 10, alignSelf: 'center', backgroundColor: '#000', paddingHorizontal: 30, paddingVertical: 8, borderRadius: 20 },
-  moreButtonText: { color: 'white' },
-
-  announcementTitle: { fontSize: 18, color: 'white', marginBottom: 20, fontWeight: 'bold' },
-  announcementSection: { backgroundColor: '#111', padding: 15, marginTop: 20 },
-  announcementImage: { width: '100%', height: '100%', borderRadius: 10, marginRight: 10, position: 'absolute' },
-  announcementText: { color: 'white', fontSize: 14, textAlign: 'center' },
-  listContainer: { paddingHorizontal: 10 },
-  card: {
-    width: Dimensions.get('window').width * 0.4,
-    height: 120,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 20,
-  },
-  textOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 10,
-  },
   dropdown: {
     position: "absolute",
     top: 30,
@@ -319,25 +395,35 @@ const styles = StyleSheet.create({
     elevation: 5,
     padding: 10,
     width: 100,
+    zIndex:99,
   },
-  menuItem: {
-    padding: 10,
-  },
-  moreCard: {
-    width: 80,
-    height: 120,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Light grey background
+  menuItem: {padding: 10,},
+
+  // content: { alignItems: "center",},
+  contentTitle:{color:'#E2F163', fontSize:20, textAlign:'left', marginBottom: 10, fontWeight:'bold'},
+  contentSubTitle:{fontSize: 14, color: '#fff', marginBottom: 30, textAlign:'left'},
+  contentText: {color: "white", fontSize: 16,},
+  generalCard:{flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', marginBottom: 30, alignItems:'center', borderRadius: 20, overflow: "hidden", height:150, gap:'5%'},
+  generalItem: { width:'50%', marginLeft:15 },
+  generalTitle: { fontWeight: 'bold', color: 'black', fontSize:18, marginBottom:10 },
+  generalText: { color: 'black', marginBottom:15 },
+  workoutImage:{ width:'100%', height: '100%', borderRadius: 10 },
+  imageContainer: { width: '45%', height:'100%'},
+  badge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: "#E2F163", 
+    paddingHorizontal: 20,
+    paddingRight:28,
+    paddingVertical: 4,
     borderRadius: 10,
-    marginHorizontal: 5,
   },
-  moreText: {
-    fontSize: 16,
-    // fontWeight: 'bold',
-    color: '#fff',
-    fontStyle: 'italic'
+  badgeText: {
+    color: "#000",
+    fontSize: 12,
   },
+  
 });
 
 export default MemberWorkoutPlan;
