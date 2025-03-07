@@ -1,4 +1,4 @@
-import React, { useState, useContext} from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,14 @@ import {
   Alert,
   StyleSheet,
   SafeAreaView,
+  KeyboardAvoidingView,
 } from "react-native";
 import API_BASE_URL from "../env";
 import * as SecureStore from 'expo-secure-store';
-import { AuthContext } from "../context/AuthContext"; 
+import { AuthContext } from "../context/AuthContext";
+import HeaderVer3 from "./HeaderVer3";
 
-const LoginScreen = ({ navigation}) => {
+const LoginScreen = ({ navigation }) => {
   const { loginContext } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -57,15 +59,17 @@ const LoginScreen = ({ navigation}) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.welcomeTitle}>Welcome</Text>
-        <Text style={styles.subtitle}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-        </Text>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.container}>
+        <Text style={styles.title}>Log In</Text>
 
-      <View style={styles.centerFormContainer}>
+        <View style={styles.header}>
+          <Text style={styles.welcomeTitle}>Welcome</Text>
+          <Text style={styles.subtitle}>
+            Your fitness journey starts here! Log in to book classes, track your progress, and stay motivated.
+          </Text>
+        </View>
+
         <View style={styles.formBox}>
           <View style={styles.inputGroup}>
             <Text style={styles.hearder1}>Username</Text>
@@ -97,8 +101,9 @@ const LoginScreen = ({ navigation}) => {
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
         </View>
-      </View>
 
+
+      </KeyboardAvoidingView>
       <View style={styles.bottomActionContainer}>
         <TouchableOpacity
           style={styles.loginButton}
@@ -113,30 +118,38 @@ const LoginScreen = ({ navigation}) => {
             <Text style={styles.signupLink}>Sign Up</Text>
           </TouchableOpacity>
         </View>
-
-
-
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 32,
+    backgroundColor: "#232323",
+  },
+  container: {
+    marginTop: 50,
+
   },
   header: {
-    marginTop: 40,
+    marginVertical: 50,
   },
-  // center container
-  centerFormContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginTop: 30,
-    marginBottom: 10
+  title: {
+    fontSize: 24,
+    color: "#E2F163",
+    textAlign: "center",
+    fontWeight: "bold",
   },
+
+  welcomeTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "white",
+    marginBottom: 12,
+  },
+
   formBox: {
     backgroundColor: '#B3A0FF',
     padding: 24,
@@ -145,6 +158,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
+    marginHorizontal: 32,
   },
   inputGroup: {
     marginBottom: 20,
@@ -165,17 +179,22 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: "#232323",
     fontSize: 14,
+    fontWeight: "bold",
   },
   bottomActionContainer: {
-    marginBottom: 10,
-    justifyContent: "center",
+    flex: 1,
+    justifyContent: "space-between",
+    flexDirection: "column",
+    marginTop: 50,
     alignItems: "center",
   },
   loginButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#363636",
     height: 48,
-    width: 250,
+    width: 200,
     borderRadius: 30,
+    borderWidth: 1,
+    borderColor: "#FFF",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
@@ -183,37 +202,32 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
   signupRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 150,
+    marginBottom: 30,
   },
   signupText: {
-    color: "#232323",
+    color: "white",
     fontSize: 14,
   },
   signupLink: {
-    color: "#007AFF",
+    color: "#E2F163",
     fontSize: 14,
     fontWeight: "500",
   },
-  welcomeTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#1a1a1a",
-    marginBottom: 12,
-  },
+
   hearder1: {
     fontSize: 18,
     fontWeight: "bold",
     marginHorizontal: 10,
+    marginBottom: 5,
   },
   subtitle: {
     fontSize: 14,
-    color: "#666",
+    color: "white",
     textAlign: "center",
     lineHeight: 20,
     paddingHorizontal: 24,

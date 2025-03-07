@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import API_BASE_URL from "../../env";
+import HeaderVer3 from "../HeaderVer3";
 
 const ForgotPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ const ForgotPage = ({ navigation }) => {
       Alert.alert("Error", "Please enter your email");
       return;
     }
-  
+
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/forgot-password`, {
@@ -20,14 +21,15 @@ const ForgotPage = ({ navigation }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-  
+
       const data = await response.json();
-  
+
       if (data.success) {
         navigation.navigate('ResetPasswordPage', { email });
       } else {
         Alert.alert("Error", data.error || "Email verification failed");
       }
+
     } catch (error) {
       console.error("Fetch error:", error);
       Alert.alert("Error", "Could not verify email");
@@ -37,84 +39,89 @@ const ForgotPage = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={26} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.Title}>Forgotten Password</Text>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.container}>
+        <HeaderVer3
+          title="Forgotten Password"
+          onPress={() => navigation.goBack()}
+        />
 
-      <Text style={styles.subtitle}>
-        Enter your registered email to reset your password
-      </Text>
+        <View style={styles.header}>
+          <Text style={styles.welcomeTitle}>Forgot Password?</Text>
+          <Text style={styles.subtitle}>
+            Enter your registered email to reset your password
+          </Text>
+        </View>
 
-      <View style={styles.centerFormContainer}>
-        <View style={styles.formBox}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.header1}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter registered email"
-              placeholderTextColor="#999"
-              onChangeText={setEmail}
-              value={email}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
+
+        <View style={styles.centerFormContainer}>
+          <View style={styles.formBox}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.header1}>Email address</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter registered email"
+                placeholderTextColor="#999"
+                onChangeText={setEmail}
+                value={email}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+          </View>
+
+          <View style={styles.bottomActionContainer}>
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() => {handleEmailVerification()}}
+              disabled={isLoading}
+            >
+              <Text style={styles.loginButtonText}>
+                {isLoading ? "Checking..." : "Verify Email"}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.bottomActionContainer}>
-          <TouchableOpacity 
-            style={styles.loginButton} 
-            onPress={handleEmailVerification}
-            disabled={isLoading}
-          >
-            <Text style={styles.loginButtonText}>
-              {isLoading ? "Checking..." : "Verify Email"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 32,
+    backgroundColor: "#232323",
   },
+  container: {
+    marginTop: 50,
+
+  },
+
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 40,
+    marginVertical: 50,
   },
-  backButton: {
-    marginRight: 10, // Adjust spacing between button and title
-  },
-  Title: {
-    fontSize: 28,
+
+
+  welcomeTitle: {
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#1a1a1a",
     textAlign: "center",
-    flex: 1, // Ensures centering within the header
+    color: "white",
+    marginBottom: 12,
   },
+
   subtitle: {
     fontSize: 14,
-    color: "#666",
+    color: "white",
     textAlign: "center",
     lineHeight: 20,
-    paddingHorizontal: 24,
-    marginTop: 10,
   },
+
   centerFormContainer: {
-    flex: 1,
     justifyContent: "center", // Center vertically
     alignItems: "center", // Center horizontally
     paddingBottom: 50, // Prevents button from sticking to the bottom
+    paddingHorizontal: 32,
   },
   formBox: {
     backgroundColor: "#B3A0FF",
@@ -126,6 +133,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     width: "100%", // Set a fixed width to keep form balanced
   },
+
   inputGroup: {
     marginBottom: 20,
   },
@@ -139,22 +147,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   bottomActionContainer: {
-    marginTop: 20, // Ensures button is separate from the form
+    marginTop: 50, // Ensures button is separate from the form
     justifyContent: "center",
     alignItems: "center",
   },
   loginButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#363636",
     height: 48,
-    width: 250,
+    width: 200,
     borderRadius: 30,
+    borderWidth: 1,
+    borderColor: "#FFF",
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 10,
   },
   loginButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
   header1: {
     fontSize: 18,
