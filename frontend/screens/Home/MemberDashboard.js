@@ -92,7 +92,7 @@ const MemberDashboard = () => {
         <Text style={styles.membership}>Standard Monthly</Text>
         {/* Navigation Icons */}
         <View style={styles.navButtons}>
-          <TouchableOpacity style={styles.navItem}>
+          <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('CheckIn')}>
             <Ionicons name="checkbox" size={30} color="#B3A0FF" />
             <Text style={styles.navText}>Check In</Text>
           </TouchableOpacity>
