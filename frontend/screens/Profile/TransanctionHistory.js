@@ -77,7 +77,7 @@ const TransactionHistory = () => {
 
                 <ScrollView style={{ maxHeight: 400 }}>
                     {transactionHistory.map((item) => (
-                        <View style={styles.transactionCard}>
+                        <View key={item.id} style={styles.transactionCard}>
                             <View style={[styles.membershipContainer, getMembershipContainerStyle(item.plan)]}>
                                 <Text style={styles.membershipBadge}>{item.plan}</Text>
                             </View>
