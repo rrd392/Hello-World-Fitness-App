@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 import { AuthContext } from "../../context/AuthContext";
 import LogoutModal from './LogoutModal';
-
+import HeaderVer1 from '../HeaderVer1';
 
 
 const ProfileDashboard = () => {
@@ -40,12 +40,12 @@ const ProfileDashboard = () => {
         {
             title: "Transaction History",
             icon: "receipt",
-            onPress: () => console.log("Transaction History"),
+            onPress: () => navigation.navigate("TransactionHistory"),
         },
         {
             title: "Achievement",
             icon: "trophy",
-            onPress: () => console.log("Achievement"),
+            onPress: () => navigation.navigate("Achievement"),
         },
         { title: "Logout", icon: "exit", onPress:()=> setShowLogoutModal(true) },
     ];
@@ -55,12 +55,11 @@ const ProfileDashboard = () => {
     return (
         <ScrollView style={styles.container}>
             <SafeAreaView>
-                <TouchableOpacity style={styles.headerRow} onPress={() => navigation.goBack()}>
-                    <Ionicons name="chevron-back-outline" size={24} color="#E2F163" style={styles.backIcon} />
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.title}>Home</Text>
-                    </View>
-                </TouchableOpacity>
+                
+                <HeaderVer1
+                    title="Home"
+                    onPress={() => navigation.navigate("MemberDashboard")}
+                />
 
                 {/* Header Section */}
                 <View style={styles.headerSection}>
@@ -104,7 +103,7 @@ const ProfileDashboard = () => {
                                 <Ionicons name={item.icon} size={24} color="#fff" />
                             </View>
                             <Text style={styles.menuText}>{item.title}</Text>
-                            <Ionicons name="chevron-forward" size={20} color="#E2F163" />
+                            <Ionicons name="caret-forward" size={16} color="#E2F163" />
                         </TouchableOpacity>
                     ))}
                 </View>
@@ -133,21 +132,6 @@ const styles = StyleSheet.create({
 
     },
 
-    headerRow: {
-        flexDirection: 'row',
-        padding: 10,
-
-    },
-    backIcon: {
-        marginTop: 4,
-
-    },
-    title: {
-        color: "#896CFE",
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginLeft: 10,
-    },
 
     headerSection: {
         alignItems: "center",

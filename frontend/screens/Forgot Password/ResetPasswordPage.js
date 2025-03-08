@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import API_BASE_URL from "../../env";
+import HeaderVer3 from "../HeaderVer3";
 
 const ResetPasswordPage = ({ route, navigation }) => {
   const { email, token } = route.params;
@@ -19,7 +20,7 @@ const ResetPasswordPage = ({ route, navigation }) => {
       const response = await fetch(`${API_BASE_URL}/api/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           token,
           newPassword
         }),
@@ -41,96 +42,102 @@ const ResetPasswordPage = ({ route, navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.Title}>Reset Password</Text>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.container}>
 
-      <View style={styles.centerFormContainer}>
-        <View style={styles.formBox}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.header1}>New Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter new password"
-              placeholderTextColor="#999"
-              onChangeText={setNewPassword}
-              value={newPassword}
-              secureTextEntry
-            />
+        <HeaderVer3
+          title="Reset Password"
+          onPress={() => navigation.goBack()}
+        />
+
+        <Text style={styles.subtitle}>
+          Set your new password below.
+          Make sure it's strong and easy to remember. Once updated, you can log in with your new password.
+        </Text>
+
+        <View style={styles.centerFormContainer}>
+          <View style={styles.formBox}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.header1}>New Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter new password"
+                placeholderTextColor="#999"
+                onChangeText={setNewPassword}
+                value={newPassword}
+                secureTextEntry
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.header1}>Confirm Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm new password"
+                placeholderTextColor="#999"
+                onChangeText={setConfirmPassword}
+                value={confirmPassword}
+                secureTextEntry
+              />
+            </View>
           </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.header1}>Confirm Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm new password"
-              placeholderTextColor="#999"
-              onChangeText={setConfirmPassword}
-              value={confirmPassword}
-              secureTextEntry
-            />
+
+          <View style={styles.bottomActionContainer}>
+            <TouchableOpacity
+              style={styles.resetButton}
+              onPress={handlePasswordReset}
+              disabled={isLoading}
+            >
+              <Text style={styles.resetButtonText}>
+                {isLoading ? "Resetting..." : "Reset Password"}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.bottomActionContainer}>
-          <TouchableOpacity 
-            style={styles.loginButton} 
-            onPress={handlePasswordReset}
-            disabled={isLoading}
-          >
-            <Text style={styles.loginButtonText}>
-              {isLoading ? "Resetting..." : "Reset Password"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: "#1a1a1a",
-    paddingHorizontal: 32,
+    backgroundColor: "#232323",
   },
-  backButton: {
-    marginTop: 20,
-    marginLeft: 10,
+  container: {
+    marginTop: 50,
   },
-  header: {
-    alignItems: "center",
-    marginTop: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "yellow",
-  },
+
   subtitle: {
+    marginTop:60,
+    marginBottom:30,
     fontSize: 14,
-    color: "#ccc",
+    color: "white",
     textAlign: "center",
-    paddingHorizontal: 24,
-    marginTop: 10,
     lineHeight: 20,
+    paddingHorizontal:24,
+
   },
   centerFormContainer: {
-    flex: 1,
     justifyContent: "center",
-    marginTop: 30,
-    marginBottom: 10,
+    paddingBottom: 50, // Prevents button from sticking to the bottom
+    paddingHorizontal: 32,
   },
   formBox: {
     backgroundColor: "#B3A0FF",
     padding: 24,
-    borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
+  },
+
+  header1: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginHorizontal: 10,
+    marginBottom: 5,
   },
   inputGroup: {
     marginBottom: 20,
@@ -148,13 +155,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontSize: 16,
   },
-  resetButton: {
-    backgroundColor: "#333",
-    height: 48,
-    borderRadius: 25,
+
+  bottomActionContainer: {
+    marginTop: 50, // Ensures button is separate from the form
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+  },
+
+  resetButton: {
+    backgroundColor: "#363636",
+    height: 48,
+    width: 200,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+
   },
   resetButtonText: {
     color: "#fff",
