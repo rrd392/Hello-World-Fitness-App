@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity, KeyboardAvoidingView } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import API_BASE_URL from "../../env";
 
 import HeaderVer3 from "../HeaderVer3";

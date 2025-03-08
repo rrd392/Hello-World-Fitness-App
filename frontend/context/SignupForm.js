@@ -14,8 +14,8 @@ export const SignupForm = ({ children }) => {
     contact: "",
     dob: new Date(),
     gender: "",
-    height:"",
-    weight:"",
+    height:null,
+    weight:null,
     goal:"",
     membershipPlan:null
   });
