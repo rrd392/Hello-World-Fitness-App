@@ -4,6 +4,8 @@ import UpdateProfile from "../screens/Profile/UpdateProfile";
 import ProfileDashboard from "../screens/Profile/ProfileDashboard";
 import MembershipStep1 from "../screens/Profile/MembershipStep1";
 import TransactionHistory from "../screens/Profile/TransanctionHistory";
+import Achievement from "../screens/Profile/Achievement";
+import Leaderboard from "../screens/Profile/Leaderboard";
 
 const ProfileStackNavigator = createStackNavigator();
 
@@ -17,6 +19,8 @@ const ProfileStack = () => {
             <ProfileStackNavigator.Screen name="UpdateProfile" component={UpdateProfile} />
             <ProfileStackNavigator.Screen name="MembershipStep1" component={MembershipStep1} />
             <ProfileStackNavigator.Screen name="TransactionHistory" component={TransactionHistory} />
+            <ProfileStackNavigator.Screen name="Achievement" component={Achievement} />
+            <ProfileStackNavigator.Screen name="Leaderboard" component={Leaderboard} />
 
         </ProfileStackNavigator.Navigator>
     );

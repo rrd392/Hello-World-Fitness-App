@@ -45,7 +45,7 @@ const ProfileDashboard = () => {
         {
             title: "Achievement",
             icon: "trophy",
-            onPress: () => console.log("Achievement"),
+            onPress: () => navigation.navigate("Achievement"),
         },
         { title: "Logout", icon: "exit", onPress:()=> setShowLogoutModal(true) },
     ];
