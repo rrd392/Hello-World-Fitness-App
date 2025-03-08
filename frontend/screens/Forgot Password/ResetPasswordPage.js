@@ -10,24 +10,29 @@ const ResetPasswordPage = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePasswordReset = async () => {
+    if (!newPassword.trim() || !confirmPassword.trim()) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+  
     if (newPassword !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
-
+  
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          token,
-          newPassword
+          email,  
+          newPassword: newPassword.trim(),
         }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         Alert.alert("Success", "Password updated successfully!");
         navigation.navigate('Login');
@@ -35,11 +40,13 @@ const ResetPasswordPage = ({ route, navigation }) => {
         Alert.alert("Error", data.error || "Password reset failed");
       }
     } catch (error) {
-      Alert.alert("Error", "Failed to update password");
+      console.error("Reset Password Error:", error);
+      Alert.alert("Error", "Failed to update password. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>

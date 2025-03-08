@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const db = require('./db'); 
 const loginRoute = require('./routes/login'); 
 const forgotPasswordRoute = require('./routes/forgot-password');
+const resetPasswordRoute = require('./routes/reset-password');
 const path = require('path');
 
 const app = express();
@@ -11,9 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 // Use Routes
-app.use('/api', loginRoute);
+app.use('/api',loginRoute);
 app.use('/api',forgotPasswordRoute);
+app.use('/api',resetPasswordRoute);
 
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
