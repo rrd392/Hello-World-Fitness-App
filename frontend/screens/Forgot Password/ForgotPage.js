@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity, KeyboardAvoidingView, } from "react-native";
+import { View, Text, TextInput, Alert, SafeAreaView, StyleSheet, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import API_BASE_URL from "../../env";
+
 import HeaderVer3 from "../HeaderVer3";
 
 const ForgotPage = ({ navigation }) => {
@@ -9,7 +10,7 @@ const ForgotPage = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleEmailVerification = async () => {
-    if (!email) {
+    if (!email.trim()) {
       Alert.alert("Error", "Please enter your email");
       return;
     }
@@ -17,19 +18,19 @@ const ForgotPage = ({ navigation }) => {
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/forgot-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
 
-      const data = await response.json();
+      const data = await response.json(); // <-- Fixed this line
 
       if (data.success) {
-        navigation.navigate('ResetPasswordPage', { email });
+        Alert.alert("Success", "Email verified! You can now reset your password.");
+        navigation.navigate("ResetPasswordPage", { email });
       } else {
         Alert.alert("Error", data.error || "Email verification failed");
       }
-
     } catch (error) {
       console.error("Fetch error:", error);
       Alert.alert("Error", "Could not verify email");
@@ -41,18 +42,12 @@ const ForgotPage = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView style={styles.container}>
-        <HeaderVer3
-          title="Forgotten Password"
-          onPress={() => navigation.goBack()}
-        />
+        <HeaderVer3 title="Forgotten Password" onPress={() => navigation.goBack()} />
 
         <View style={styles.header}>
           <Text style={styles.welcomeTitle}>Forgot Password?</Text>
-          <Text style={styles.subtitle}>
-            Enter your registered email to reset your password
-          </Text>
+          <Text style={styles.subtitle}>Enter your registered email to reset your password</Text>
         </View>
-
 
         <View style={styles.centerFormContainer}>
           <View style={styles.formBox}>
@@ -71,14 +66,8 @@ const ForgotPage = ({ navigation }) => {
           </View>
 
           <View style={styles.bottomActionContainer}>
-            <TouchableOpacity
-              style={styles.loginButton}
-              onPress={() => {handleEmailVerification()}}
-              disabled={isLoading}
-            >
-              <Text style={styles.loginButtonText}>
-                {isLoading ? "Checking..." : "Verify Email"}
-              </Text>
+            <TouchableOpacity style={styles.loginButton} onPress={handleEmailVerification} disabled={isLoading}>
+              <Text style={styles.loginButtonText}>{isLoading ? "Checking..." : "Verify Email"}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -94,14 +83,10 @@ const styles = StyleSheet.create({
   },
   container: {
     marginTop: 50,
-
   },
-
   header: {
     marginVertical: 50,
   },
-
-
   welcomeTitle: {
     fontSize: 24,
     fontWeight: "bold",
@@ -109,18 +94,16 @@ const styles = StyleSheet.create({
     color: "white",
     marginBottom: 12,
   },
-
   subtitle: {
     fontSize: 14,
     color: "white",
     textAlign: "center",
     lineHeight: 20,
   },
-
   centerFormContainer: {
-    justifyContent: "center", // Center vertically
-    alignItems: "center", // Center horizontally
-    paddingBottom: 50, // Prevents button from sticking to the bottom
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 50,
     paddingHorizontal: 32,
   },
   formBox: {
@@ -131,9 +114,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
-    width: "100%", // Set a fixed width to keep form balanced
+    width: "100%",
   },
-
   inputGroup: {
     marginBottom: 20,
   },
@@ -147,7 +129,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   bottomActionContainer: {
-    marginTop: 50, // Ensures button is separate from the form
+    marginTop: 50,
     justifyContent: "center",
     alignItems: "center",
   },
