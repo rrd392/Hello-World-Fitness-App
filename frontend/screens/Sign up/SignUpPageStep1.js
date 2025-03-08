@@ -8,16 +8,18 @@ import {
   SafeAreaView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; // Import icon library
+import { Ionicons } from "@expo/vector-icons"; 
+import { useSignup } from "../../context/SignupForm";
 
 const SignUpPageStep1 = () => {
   const navigation = useNavigation();
+  const { signupData, setSignupData } = useSignup();
 
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [username, setUsername] = useState("");
+  // const [password, setPassword] = useState("");
+  // const [name, setName] = useState("");
+  // const [contact, setContact] = useState("");
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,8 +42,9 @@ const SignUpPageStep1 = () => {
           style={styles.input}
           placeholder="example@example.com"
           placeholderTextColor="#999"
-          value={email}
-          onChangeText={setEmail}
+          value={signupData.email}
+          onChangeText={(text) => setSignupData({ ...signupData, email: text })}
+          
         />
 
         <Text style={styles.label}>Username</Text>
@@ -49,8 +52,8 @@ const SignUpPageStep1 = () => {
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#999"
-          value={username}
-          onChangeText={setUsername}
+          value={signupData.username}
+          onChangeText={(text) => setSignupData({ ...signupData, username: text })}
         />
 
         <Text style={styles.label}>Password</Text>
@@ -59,8 +62,8 @@ const SignUpPageStep1 = () => {
           placeholder="************"
           secureTextEntry
           placeholderTextColor="#999"
-          value={password}
-          onChangeText={setPassword}
+          value={signupData.password}
+          onChangeText={(text) => setSignupData({ ...signupData, password: text })}
         />
 
         <Text style={styles.label}>Name</Text>
@@ -68,8 +71,8 @@ const SignUpPageStep1 = () => {
           style={styles.input}
           placeholder="Your Name"
           placeholderTextColor="#999"
-          value={name}
-          onChangeText={setName}
+          value={signupData.name}
+        onChangeText={(text) => setSignupData({ ...signupData, name: text })}
         />
 
         <Text style={styles.label}>Contact No.</Text>
@@ -79,8 +82,8 @@ const SignUpPageStep1 = () => {
           keyboardType="numeric"
           returnKeyType="done"
           placeholderTextColor="#999"
-          value={contact}
-          onChangeText={setContact}
+          value={signupData.contact}
+          onChangeText={(text) => setSignupData({ ...signupData, contact: text })}
         />
       </View>
 
