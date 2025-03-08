@@ -4,9 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
-import * as SecureStore from 'expo-secure-store';
 import { getUserId } from '../getUserId';
-import { AuthContext } from "../../context/AuthContext";
 import ModalDropdown from "react-native-modal-dropdown";
 
 const MemberWorkoutPlan = () => {
@@ -15,11 +13,7 @@ const MemberWorkoutPlan = () => {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [selectedDay, setSelectedDay] = useState("All");
 
-  //Profile icon dropdown button
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
-
+  //Profile icon button
   const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
 
   //Notification icon pop up page

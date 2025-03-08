@@ -15,6 +15,9 @@ app.use(express.json());
 app.use('/api', loginRoute);
 app.use('/api',forgotPasswordRoute);
 
+const signupRoutes = require('./routes/signup');
+app.use('/api/signup', signupRoutes);
+
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
 

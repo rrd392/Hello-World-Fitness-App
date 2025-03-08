@@ -12,9 +12,12 @@ export const SignupForm = ({ children }) => {
     password: "",
     name: "",
     contact: "",
-    address: "", 
-    dob: "",
+    dob: new Date(),
     gender: "",
+    height:"",
+    weight:"",
+    goal:"",
+    membershipPlan:null
   });
 
   return (
