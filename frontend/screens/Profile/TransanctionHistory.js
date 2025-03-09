@@ -1,15 +1,56 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, TextInput, ScrollView} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
 
 const TransactionHistory = () => {
 
     const navigation = useNavigation();
+    const [userId, setUserId] = useState("");
+    const [userName, setUserName] = useState("");
+    const [transactions, setTransactions] = useState([]);
+    const [contact, setContact] = useState("");
+    
+    useEffect(() => {
+        async function fetchUserId() {
+            const token = await getUserId();
+            setUserId(token.id);
+            setUserName(token.name);
+        }
+        fetchUserId();
+    }, []);
+
+    useEffect(() => {
+        if(userId){
+            getTransactions();
+        }
+    }, [userId]);
+
+    const getTransactions = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/profile/displayTransactions/${userId}`, {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+            });
+      
+            const data = await response.json();
+      
+            if (data) {
+                setTransactions(data.transactions);
+                setContact(data.contact);
+            }
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+            Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
 
     const getMembershipContainerStyle = (plan) => {
-        switch (plan) {
+        const beforeDash = plan.split(" - ")[0];
+        switch (beforeDash) {
             case 'Standard Monthly':
                 return { backgroundColor: '#aaa', color: "#000" , borderRadius: 10};
             case 'Premium Monthly':
@@ -20,19 +61,6 @@ const TransactionHistory = () => {
                 return { backgroundColor: '#FFA500', color: "#000" , borderRadius: 10 };
         }
     };
-
-    const transactionHistory = [
-        { id: '1', plan: 'Standard Monthly', date: '2024-03-06', amount: '30.00' },
-        { id: '2', plan: 'Premium Monthly', date: '2024-03-06', amount: '50.00' },
-        { id: '3', plan: 'Standard Yearly', date: '2024-03-06', amount: '300.00' },
-        { id: '4', plan: 'Premium Yearly', date: '2024-03-06', amount: '500.00' },
-        { id: '5', plan: 'Standard Monthly', date: '2024-03-06', amount: '30.00' },
-        { id: '6', plan: 'Standard Yearly', date: '2024-03-06', amount: '50.00' },
-        { id: '7', plan: 'Premium Yearly', date: '2024-03-06', amount: '300.00' },
-        { id: '8', plan: 'Premium Monthly', date: '2024-03-06', amount: '50.00' },
-        { id: '9', plan: 'Standard Monthly', date: '2024-03-06', amount: '500.00' },
-        { id: '10', plan: 'Standard Monthly', date: '2024-03-06', amount: '30.00' },
-    ];
 
     return (
         <View style={styles.container}>
@@ -53,11 +81,11 @@ const TransactionHistory = () => {
                     <Text style={styles.sectionTitle}>Transaction Info</Text>
                     <View style={styles.infoName}>
                         <Ionicons name="person" size={20} color="black" />
-                        <Text style={styles.infoText}>Madison</Text>
+                        <Text style={styles.infoText}>{userName}</Text>
                     </View>
                     <View style={styles.infoPhone}>
                         <Ionicons name="call-outline" size={20} color="black"/>
-                        <Text style={styles.infoText}>+0123456789</Text>
+                        <Text style={styles.infoText}>+{contact}</Text>
                     </View>
                     <View style={styles.infoMethod}>
                         <Ionicons name="card-outline" size={20} color="black"/>
@@ -70,21 +98,30 @@ const TransactionHistory = () => {
             <View style={styles.transactionHSection}>
                 <Text style={styles.transactionHTitle}>Transaction History</Text>
                 <View style={styles.thead}>
-                    <Text style={styles.planHText}>Plan</Text>
+                    <Text style={styles.planHText}>Item</Text>
                     <Text style={styles.dateHText}>Date</Text>
                     <Text style={styles.amountHText}>Amount</Text>
                 </View>
 
                 <ScrollView style={{ maxHeight: 400 }}>
-                    {transactionHistory.map((item) => (
-                        <View key={item.id} style={styles.transactionCard}>
-                            <View style={[styles.membershipContainer, getMembershipContainerStyle(item.plan)]}>
-                                <Text style={styles.membershipBadge}>{item.plan}</Text>
+                    {transactions.length > 0? (
+                        transactions.map((item) => (
+                            <View key={item.transaction_id} style={styles.transactionCard}>
+                                <View style={[styles.membershipContainer, getMembershipContainerStyle(item.description)]}>
+                                    <Text style={styles.membershipBadge}>{item.description.split('-')[0]}</Text>
+                                </View>
+                                <Text style={styles.dateText}>{new Date(item.payment_date).toLocaleDateString('en-GB')}</Text>
+                                <Text style={styles.amountText}>{item.amount}</Text>
                             </View>
-                            <Text style={styles.dateText}>{item.date}</Text>
-                            <Text style={styles.amountText}>{item.amount}</Text>
+                        ))
+                    ):(
+                        <View style={styles.transactionCard}>
+                            <Text style={{color:'white', textAlign:'center', fontWeight:600, fontSize:16, marginVertical:10, width:"100%"}}>
+                                No transaction record available.
+                            </Text>
                         </View>
-                    ))}
+                    )}
+                    
                 </ScrollView>
                     
             </View>

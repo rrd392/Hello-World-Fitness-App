@@ -117,4 +117,26 @@ router.get('/displayUserMembership/:user_id', (req, res) => {
     });
 });
 
+router.get('/displayTransactions/:user_id', (req, res) => {
+    const { user_id } = req.params;
+
+    const displayQuery = `SELECT * FROM transactions WHERE user_id = ?`;
+    const contactQuery = `SELECT contact_number FROM user WHERE user_id = ?`;
+
+    db.query(displayQuery, [user_id], (error, transactions) => {
+        if (error) {
+            console.error("Database query error:", error);
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        db.query(contactQuery, [user_id], (error, contact) => {
+            if (error) {
+                console.error("Database query error:", error);
+                return res.status(500).json({ error: "Database query failed" });
+            }
+            res.json( {transactions, contact: contact[0].contact_number});
+        });
+    });
+});
+
+
 module.exports = router;

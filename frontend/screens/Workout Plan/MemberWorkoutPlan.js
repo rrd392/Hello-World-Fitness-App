@@ -1,6 +1,6 @@
-import React, { useState, useEffect,useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Image, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
@@ -34,13 +34,27 @@ const MemberWorkoutPlan = () => {
     fetchUserId();
   }, []);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   fetchGeneralPlan();
+  //   if (userId) {  
+  //     fetchCoachPlan();
+  //     fetchCustomPlan();
+  //   }
+  // }, [selectedLevel, userId, selectedDay]); 
+  const fetchData = async () => {
     fetchGeneralPlan();
-    if (userId) {  
+    if (userId) {
       fetchCoachPlan();
       fetchCustomPlan();
     }
-  }, [selectedLevel, userId, selectedDay]); 
+  };
+
+  // Reload data when the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [userId, selectedLevel, selectedDay])
+  );
 
   const fetchGeneralPlan = async () => {
     try {
@@ -141,6 +155,14 @@ const MemberWorkoutPlan = () => {
   function toggleWorkOutDetails(workout_plan){
     navigation.navigate('DetailWorkoutPlan', { workout_plan });
   }
+
+  function toggleCustomWorkOutDetails(workout_plan, selectedDay){
+    navigation.navigate('CustomDetailWorkoutPlan', { workout_plan, selectedDay });
+  }
+
+  function toggleAddWorkoutPlan(){
+    navigation.navigate('AddWorkoutPlan');
+  }
   
   return (
     <View style={styles.container}>
@@ -170,7 +192,7 @@ const MemberWorkoutPlan = () => {
         
       {selected === "General" && (
         generalPlans.length > 0 ? (
-          <View>
+          <View style={{ flex: 1 }}>
             <View style={styles.levelButtons}>
               {["Beginner", "Intermediate", "Advanced"].map((item) => (
                 <TouchableOpacity
@@ -206,7 +228,7 @@ const MemberWorkoutPlan = () => {
             />
           </View>
         ):(
-          <View>
+          <View style={{ flex: 1 }}>
             <View style={styles.levelButtons}>
               {["Beginner", "Intermediate", "Advanced"].map((item) => (
                 <TouchableOpacity
@@ -218,14 +240,14 @@ const MemberWorkoutPlan = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
+            <Text style={styles.contentText}>No Workout Plans Available.</Text>
           </View>
         )
         )
       }
       {selected === "Coach" && (
           coachPlans.length > 0 ? (
-            <View>
+            <View style={{ flex: 1 }}>
               <View style={styles.levelButtons}>
                 {["Beginner", "Intermediate", "Advanced"].map((item) => (
                   <TouchableOpacity
@@ -240,9 +262,9 @@ const MemberWorkoutPlan = () => {
               <Text style={styles.contentTitle}>Let's Go {userName}</Text>
               <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
               <FlatList
-              data={coachPlans}  
-              keyExtractor={(item) => item.workout_plan_id.toString()} 
-              renderItem={({ item }) => (
+                data={coachPlans}  
+                keyExtractor={(item) => item.workout_plan_id.toString()} 
+                renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
                   <View style={styles.generalItem}>
                       <Text style={styles.generalTitle}>{item.plan_name}</Text>
@@ -261,7 +283,7 @@ const MemberWorkoutPlan = () => {
               />
             </View>
           ):(
-            <View>
+            <View style={{ flex: 1 }}>
               <View style={styles.levelButtons}>
                 {["Beginner", "Intermediate", "Advanced"].map((item) => (
                   <TouchableOpacity
@@ -273,13 +295,13 @@ const MemberWorkoutPlan = () => {
                   </TouchableOpacity>
                 ))}
               </View>
-              <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
+              <Text style={styles.contentText}>No Workout Plans Available.</Text>
             </View>
           )
       )}
       {selected === "Custom" && (
         customPlans.length > 0 ? (
-          <View>
+          <View style={{ flex: 1 }}>
             <ModalDropdown
               options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
               defaultValue="All"
@@ -301,7 +323,7 @@ const MemberWorkoutPlan = () => {
             data={customPlans}  
             keyExtractor={(item) => item.workout_plan_id.toString()} 
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
+              <TouchableOpacity onPress={() => toggleCustomWorkOutDetails(item, selectedDay)} style={styles.generalCard}>
                 <View style={styles.generalItem}>
                     <Text style={styles.generalTitle}>{item.plan_name}</Text>
                     <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
@@ -317,9 +339,12 @@ const MemberWorkoutPlan = () => {
             )}
             contentContainerStyle={styles.listSection}
             />
+            <TouchableOpacity style={styles.addButton} onPress={() => toggleAddWorkoutPlan()}>
+              <Ionicons name="add" size={35} marginTop={7}></Ionicons>
+            </TouchableOpacity>
           </View>
         ):(
-          <View>
+          <View style={{ flex: 1 }}>
             <ModalDropdown
               options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
               defaultValue="All"
@@ -334,7 +359,10 @@ const MemberWorkoutPlan = () => {
               }}
               onSelect={(index, value) => setSelectedDay(value)}
             />
-            <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
+            <Text style={styles.contentText}>No Workout Plans Available.</Text>
+            <TouchableOpacity style={styles.addButton} onPress={() => toggleAddWorkoutPlan()}>
+              <Ionicons name="add" size={35} marginTop={7}></Ionicons>
+            </TouchableOpacity>
           </View>
         )
       )}
@@ -344,7 +372,7 @@ const MemberWorkoutPlan = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', paddingBottom:270, padding: 20},
+  container: { flex: 1, backgroundColor: '#000', padding: 20},
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
@@ -399,6 +427,16 @@ const styles = StyleSheet.create({
   badgeText: {
     color: "#000",
     fontSize: 12,
+  },
+  addButton:{
+    borderRadius:"50%",
+    backgroundColor:"#E2F163",
+    width:50,
+    height:50,
+    alignItems:"center",
+    position:'absolute',
+    bottom:0,
+    right:0
   },
   
 });

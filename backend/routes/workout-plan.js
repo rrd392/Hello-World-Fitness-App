@@ -1,6 +1,8 @@
 const express = require('express');
 const db = require('../db'); 
 const router = express.Router();
+const multer = require("multer");
+const path = require("path");
 
 router.get('/displayGeneral/:difficulty?', (req, res) => {
     const { difficulty } = req.params;
@@ -148,6 +150,70 @@ router.post('/addUserWorkoutPlan', (req, res) => {
             return res.status(500).json({ error: "Database query failed" });
         }
         res.json({success:true});
+    });
+});
+
+router.delete('/deleteUserWorkoutPlan', (req, res) =>{
+    const { user_id, workout_plan_id, selectedDay } = req.body;
+    let deleteUserWorkoutPlanQuery;
+    let parameters = [user_id, workout_plan_id];
+    
+    if(selectedDay == "All"){
+        deleteUserWorkoutPlanQuery = `DELETE FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ?`;
+    }else{
+        deleteUserWorkoutPlanQuery = `DELETE FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ? AND day_of_week = ?`;
+        parameters.push(selectedDay)
+    }
+    
+    db.query(deleteUserWorkoutPlanQuery, parameters, (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({success:true});
+    });
+});
+
+router.get('/displayWorkoutDetail', (req, res) => {
+
+    const detailPlanQuery = `SELECT * FROM workout_details`;
+    const detailTypeQuery = `SELECT exercise_type FROM workout_details GROUP BY exercise_type`;
+    
+    db.query(detailPlanQuery, (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        db.query(detailTypeQuery, (error, type)=>{
+            if (error) {
+                return res.status(500).json({ error: "Database query failed" });
+            }
+            res.json({results, type});
+        });
+    });
+});
+
+const storage = multer.diskStorage({
+    destination: path.resolve(__dirname, '../../../uploads/workout_image'), 
+    filename: (req, file, cb) => {
+        cb(null, file.originalname); 
+    },
+});
+
+const upload = multer({ storage });
+
+router.post('/createWorkoutPlan', upload.single("image"), (req, res) => {
+    const { name, description, difficulty, image } = req.body.addData;
+    const {workoutDetails} = req.body.workout_details;
+
+    const imageUrl = `workout_image/${req.file.filename}`;
+
+    const addNewPlanQuery = `INSERT INTO workout_plans (plan_name, description, difficulty, type, workout_image)
+                            VALUES (?, ?, ?, ?, ?)`;
+    
+    db.query(addNewPlanQuery, [name, description, difficulty, 'Member', imageUrl], (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({success:true, points});
     });
 });
 

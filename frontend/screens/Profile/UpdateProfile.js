@@ -92,11 +92,6 @@ const UpdateProfile = () => {
         }
     };
 
-    // Formatting date function
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-GB', { timeZone: 'Asia/Kuala_Lumpur' }); 
-    }
     //fitness goal dropdown
     const [showFitnessGoalDropdown, setShowFitnessGoalDropdown] = useState(false);
     const goalitems = [
