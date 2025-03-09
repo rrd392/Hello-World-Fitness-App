@@ -8,23 +8,37 @@ import {
   TouchableOpacity,
   Modal,
   SafeAreaView,
-  Keyboard
+  Keyboard,
+  ScrollView,
+  Alert
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useSignup } from "../../context/SignupForm";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-const SignUpPageStep2 = ({ navigation }) => {
-  const [gender, setGender] = useState("male");
-  const [dob, setDob] = useState("");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
+const SignUpPageStep2 = () => {
+  const navigation = useNavigation();
+  const { signupData, setSignupData } = useSignup();
+  
+  const validateAndProceed = () => {
+    if (
+      !signupData.gender.trim() ||
+      !signupData.dob ||
+      !signupData.height.trim() ||
+      !signupData.weight.trim() 
+      ) {
+      Alert.alert("Missing Information", "Please fill in all required fields.");
+      return; 
+    }
+
+    navigation.navigate("SignUpPageStep3"); 
+  };
+
   const [showGenderPicker, setShowGenderPicker] = useState(false);
   
   const heightInputRef = useRef();
   const weightInputRef = useRef();
-
-  const dismissKeyboard = () => {
-    Keyboard.dismiss();
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -38,86 +52,92 @@ const SignUpPageStep2 = ({ navigation }) => {
         <Text style={styles.title}>Create Account</Text>
       </View>
       
-      <Text style={styles.subtitle}>Let's Get To Know More About You!</Text>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.subtitle}>Let's Get To Know More About You!</Text>
 
-      {/* Form Container */}
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Gender</Text>
-        <TouchableOpacity 
-          style={styles.input} 
-          onPress={() => setShowGenderPicker(true)}
-        >
-          <Text style={styles.inputText}>{gender.charAt(0).toUpperCase() + gender.slice(1)}</Text>
-        </TouchableOpacity>
+        {/* Form Container */}
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Gender <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <TouchableOpacity 
+            style={styles.input} 
+            onPress={() => setShowGenderPicker(true)}
+          >
+            <Text style={styles.inputText}>{signupData.gender.charAt(0).toUpperCase() + signupData.gender.slice(1)}</Text>
+          </TouchableOpacity>
 
-        <Text style={styles.label}>Date of Birth</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="DD/MM/YYYY"
-          placeholderTextColor="#999"
-          value={dob} 
-          onChangeText={setDob}
-          onSubmitEditing={dismissKeyboard}
-        />
+          <Text style={styles.label}>Date of Birth <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <DateTimePicker
+            value={signupData.dob || new Date()}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              if (selectedDate) {
+                setSignupData({ ...signupData, dob: selectedDate });
+              }
+            }}
+            style={styles.dateInput}
+          />
 
-        <Text style={styles.label}>Height</Text>
-        <TextInput 
-          ref={heightInputRef}
-          style={styles.input} 
-          placeholder="cm"
-          placeholderTextColor="#999"
-          keyboardType="numeric"
-          returnKeyType="done"
-          value={height} 
-          onChangeText={setHeight}
-          onSubmitEditing={() => heightInputRef.current.blur()}
-        />
+          <Text style={styles.label}>Height <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <TextInput 
+            ref={heightInputRef}
+            style={styles.input} 
+            placeholder="cm"
+            placeholderTextColor="#999"
+            keyboardType="numeric"
+            returnKeyType="done"
+            value={signupData.height}
+            onChangeText={(text) => setSignupData({ ...signupData, height: text })}
+            onSubmitEditing={() => heightInputRef.current.blur()}
+          />
 
-        <Text style={styles.label}>Weight</Text>
-        <TextInput 
-          ref={weightInputRef}
-          style={styles.input} 
-          placeholder="kg"
-          placeholderTextColor="#999"
-          keyboardType="numeric"
-          returnKeyType="done"
-          value={weight} 
-          onChangeText={setWeight}
-          onSubmitEditing={() => weightInputRef.current.blur()}
-        />
-      </View>
-
-      {/* Gender Picker Modal */}
-      <Modal
-        visible={showGenderPicker}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={gender}
-              onValueChange={(value) => setGender(value)}
-            >
-              <Picker.Item label="Male" value="male" />
-              <Picker.Item label="Female" value="female" />
-            </Picker>
-            <TouchableOpacity
-              style={styles.doneButton}
-              onPress={() => setShowGenderPicker(false)}
-            >
-              <Text style={styles.doneButtonText}>Done</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.label}>Weight <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <TextInput 
+            ref={weightInputRef}
+            style={styles.input} 
+            placeholder="kg"
+            placeholderTextColor="#999"
+            keyboardType="numeric"
+            returnKeyType="done"
+            value={signupData.weight}
+            onChangeText={(text) => setSignupData({ ...signupData, weight: text })}
+            onSubmitEditing={() => weightInputRef.current.blur()}
+          />
         </View>
-      </Modal>
+      
+        {/* Gender Picker Modal */}
+        <Modal
+          visible={showGenderPicker}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={signupData.gender}
+                onValueChange={(value) => setSignupData({ ...signupData, gender: value })}
+                style={{color:'black'}}
+              >
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female"/>
+              </Picker>
+              <TouchableOpacity
+                style={styles.doneButton}
+                onPress={() => setShowGenderPicker(false)}
+              >
+                <Text style={styles.doneButtonText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate("SignUpPageStep3")}
-      >
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={validateAndProceed}
+        >
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -132,9 +152,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
-    backgroundColor: "#191919",
+    backgroundColor: "#000",
     paddingHorizontal: 15,
-    marginBottom: 20,
   },
   backButton: {
     padding: 8,
@@ -146,18 +165,25 @@ const styles = StyleSheet.create({
     textAlign: "center",
     flex: 1,
   },
+  scrollContainer: {
+    flexGrow: 1,                
+    justifyContent: "center",   
+    alignItems: "center",       
+    paddingVertical: 20,       
+  },
   subtitle: {
     fontSize: 18,
     color: "#FFF",
     textAlign: "center",
-    marginBottom: 50,
     fontWeight: "bold",
   },
   formContainer: {
     backgroundColor: "#B3A0FF",
+    padding: 30,
+    marginTop:30,
+    marginBottom: 30,
+    width:"100%",
     borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
   },
   label: {
     fontSize: 16,
@@ -173,6 +199,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 15,
     justifyContent: 'center',
+  },
+  dateInput:{
+    height: 45,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    marginBottom: 15,
+    fontSize: 16,
   },
   inputText: {
     color: '#000',
@@ -197,7 +230,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   pickerContainer: {
-    backgroundColor: 'white',
+    backgroundColor: '#B3A0FF',
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -206,15 +239,14 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 30,
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#FFF",
+    backgroundColor: "#FFF",
     width: "60%",
     alignSelf: "center",
-    marginTop: 15,
+    marginBottom: 15,
   },
   doneButtonText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: 500,
   },
 });
 

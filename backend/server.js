@@ -17,6 +17,9 @@ app.use('/api',loginRoute);
 app.use('/api',forgotPasswordRoute);
 app.use('/api',resetPasswordRoute);
 
+const signupRoutes = require('./routes/signup');
+app.use('/api/signup', signupRoutes);
+
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
 
@@ -25,6 +28,9 @@ app.use('/api/notification', notificationRoutes);
 
 const workoutPlanRoutes = require('./routes/workout-plan');
 app.use('/api/workout-plan', workoutPlanRoutes);
+
+const profileRoutes = require('./routes/profile');
+app.use('/api/profile', profileRoutes);
 
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads')));
 

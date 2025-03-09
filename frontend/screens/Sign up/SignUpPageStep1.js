@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -6,18 +6,31 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Alert,
+  ScrollView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; // Import icon library
+import { Ionicons } from "@expo/vector-icons"; 
+import { useSignup } from "../../context/SignupForm";
 
 const SignUpPageStep1 = () => {
   const navigation = useNavigation();
+  const { signupData, setSignupData } = useSignup();
 
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
+  const validateAndProceed = () => {
+    if (
+      !signupData.email.trim() ||
+      !signupData.username.trim() ||
+      !signupData.password.trim() ||
+      !signupData.name.trim() ||
+      !signupData.contact.trim()
+    ) {
+      Alert.alert("Missing Information", "Please fill in all required fields.");
+      return; 
+    }
+
+    navigation.navigate("SignUpPageStep2"); 
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -31,82 +44,83 @@ const SignUpPageStep1 = () => {
         <Text style={styles.title}>Create Account</Text>
       </View>
 
-      <Text style={styles.subtitle}>Let's Start!</Text>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.subtitle}>Let's Start!</Text>
 
-      {/* Form Container */}
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="example@example.com"
-          placeholderTextColor="#999"
-          value={email}
-          onChangeText={setEmail}
-        />
+        {/* Form Container */}
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Email <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <TextInput
+            style={styles.input}
+            placeholder="example@example.com"
+            placeholderTextColor="#999"
+            value={signupData.email}
+            onChangeText={(text) => setSignupData({ ...signupData, email: text.replace(/[^a-zA-Z0-9@._-]/g, '') })}
+          />
 
-        <Text style={styles.label}>Username</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          placeholderTextColor="#999"
-          value={username}
-          onChangeText={setUsername}
-        />
+          <Text style={styles.label}>Username <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            placeholderTextColor="#999"
+            value={signupData.username}
+            onChangeText={(text) => setSignupData({ ...signupData, username: text.replace(/[^a-zA-Z0-9_]/g, '') })}
+          />
 
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="************"
-          secureTextEntry
-          placeholderTextColor="#999"
-          value={password}
-          onChangeText={setPassword}
-        />
+          <Text style={styles.label}>Password <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <TextInput
+            style={styles.input}
+            placeholder="************"
+            secureTextEntry
+            placeholderTextColor="#999"
+            value={signupData.password}
+            onChangeText={(text) => setSignupData({ ...signupData, password: text.trim() })}
+          />
 
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Your Name"
-          placeholderTextColor="#999"
-          value={name}
-          onChangeText={setName}
-        />
+          <Text style={styles.label}>Name <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Your Name"
+            placeholderTextColor="#999"
+            value={signupData.name}
+          onChangeText={(text) => setSignupData({ ...signupData, name: text.replace(/[^a-zA-Z0-9_/ ]/g, '') })}
+          />
 
-        <Text style={styles.label}>Contact No.</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="+123 567 89000"
-          keyboardType="numeric"
-          returnKeyType="done"
-          placeholderTextColor="#999"
-          value={contact}
-          onChangeText={setContact}
-        />
-      </View>
+          <Text style={styles.label}>Contact No. <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+          <TextInput
+            style={styles.input}
+            placeholder="0123456789"
+            keyboardType="numeric"
+            returnKeyType="done"
+            placeholderTextColor="#999"
+            value={signupData.contact}
+            onChangeText={(text) => setSignupData({ ...signupData, contact: text })}
+          />
+        </View>
 
-      {/* Terms and Conditions */}
-      <Text style={styles.termsText}>
-        By continuing, you agree to{" "}
-        <Text style={styles.linkText}>Terms of Use</Text> and{" "}
-        <Text style={styles.linkText}>Privacy Policy</Text>.
-      </Text>
-
-      {/* Next Button */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("SignUpPageStep2")}
-      >
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
-
-      {/* Footer Text */}
-      <Text style={styles.footerText}>
-        Already have an account?{" "}
-        <Text style={styles.loginText} onPress={() => navigation.navigate("Login")}>
-          Log in
+        {/* Terms and Conditions */}
+        <Text style={styles.termsText}>
+          By continuing, you agree to{" "}
+          <Text style={styles.linkText}>Terms of Use</Text> and{" "}
+          <Text style={styles.linkText}>Privacy Policy</Text>.
         </Text>
-      </Text>
 
+        {/* Next Button */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={validateAndProceed}
+        >
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
+
+        {/* Footer Text */}
+        <Text style={styles.footerText}>
+          Already have an account?{" "}
+          <Text style={styles.loginText} onPress={() => navigation.navigate("Login")}>
+            Log in
+          </Text>
+        </Text>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -121,7 +135,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
-    backgroundColor: "#191919",
+    backgroundColor: "#000",
     paddingHorizontal: 15,
   },
   backButton: {
@@ -134,17 +148,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
     flex: 1,
   },
+  scrollContainer: {
+    flexGrow: 1,                
+    justifyContent: "center",   
+    alignItems: "center",       
+    paddingVertical: 20,       
+  },
   subtitle: {
     fontSize: 18,
     color: "#FFF",
     textAlign: "center",
-    marginTop: 10,
     fontWeight: "bold",
   },
   formContainer: {
     backgroundColor: "#B3A0FF",
-    padding: 20,
+    padding: 30,
+    borderRadius: 10,
     marginTop: 15,
+    width:'100%'
   },
   label: {
     fontSize: 16,

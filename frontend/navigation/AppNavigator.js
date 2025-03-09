@@ -5,20 +5,18 @@ import { NavigationContainer } from "@react-navigation/native";
 
 // Import AuthContext and AuthProvider
 import { AuthProvider, AuthContext } from "../context/AuthContext";
+import {SignupForm} from "../context/SignupForm";
 
 // Authentication Screens
 import LoginScreen from "../screens/LoginScreen";
 import OnBoardingPage from "../screens/OnBoardingPage";
 import ForgotPage from "../screens/Forgot Password/ForgotPage";
 import ResetPasswordPage from "../screens/Forgot Password/ResetPasswordPage";
-import SignUpPageStep1 from "../screens/Sign up/SignUpPageStep1";
-import SignUpPageStep2 from "../screens/Sign up/SignUpPageStep2";
-import SignUpPageStep3 from "../screens/Sign up/SignUpPageStep3";
-import SignUpPageStep4 from "../screens/Sign up/SignUpPageStep4";
-import CreatedPage from "../screens/Sign up/CreatedPage";
+import MembershipStep1 from "../screens/Profile/MembershipStep1";
 
 // App Screens
 import BottomTabNavigator from "./BottomTabNavigator";
+import SignupStack from "./SignupStack";
 
 const AuthStack = createStackNavigator();
 
@@ -28,11 +26,14 @@ const AuthStackNavigator = () => (
         <AuthStack.Screen name="OnBoardingPage" component={OnBoardingPage} />
         <AuthStack.Screen name="ForgotPage" component={ForgotPage} />
         <AuthStack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
-        <AuthStack.Screen name="SignUpPageStep1" component={SignUpPageStep1} />
-        <AuthStack.Screen name="SignUpPageStep2" component={SignUpPageStep2} />
-        <AuthStack.Screen name="SignUpPageStep3" component={SignUpPageStep3} />
-        <AuthStack.Screen name="SignUpPageStep4" component={SignUpPageStep4} />
-        <AuthStack.Screen name="CreatedPage" component={CreatedPage} />
+        <AuthStack.Screen name="MembershipStep1" component={MembershipStep1} />
+        <AuthStack.Screen name="SignupStack">
+            {() => (  // Wrap SignupStack with SignupForm
+                <SignupForm>
+                    <SignupStack />
+                </SignupForm>
+            )}
+        </AuthStack.Screen>
     </AuthStack.Navigator>
 );
 

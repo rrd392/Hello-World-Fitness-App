@@ -1,65 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   View, 
   Text, 
   TouchableOpacity, 
   StyleSheet, 
   SafeAreaView,
-  ScrollView
+  ScrollView, Alert
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useSignup } from "../../context/SignupForm";
+import API_BASE_URL from "../../env";
 
 export default function SignUpPageStep4() {
   const navigation = useNavigation();
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const { signupData, setSignupData } = useSignup();
+  const [plans, setPlans] = useState([]);
 
-  const plans = [
-    {
-      type: "Standard",
-      options: [
-        { 
-          id: "standard-monthly",
-          duration: "Monthly", 
-          price: "RM30.00", 
-          billing: "Billed Monthly",
-        },
-        { 
-          id: "standard-yearly",
-          duration: "Yearly", 
-          price: "RM300.00", 
-          billing: "Billed Annually", 
-          savings: "SAVE 16.67%",
+  useEffect(() => {
+    fetchMembershipPlan();
+  }, []); 
+
+  const fetchMembershipPlan = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/signup/displayMembership`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        if (Array.isArray(data.results)) {
+          setPlans(data.results);
+        } else if (data.results) {
+          setPlans([data.results]); 
+        } else {
+          setPlans([]); 
         }
-      ]
-    },
-    {
-      type: "Premium",
-      options: [
-        { 
-          id: "premium-monthly",
-          duration: "Monthly", 
-          price: "RM50.00", 
-          billing: "Billed Monthly",
-
-        },
-        { 
-          id: "premium-yearly",
-          duration: "Yearly", 
-          price: "RM500.00", 
-          billing: "Billed Annually", 
-          savings: "SAVE 16.67%",
-        }
-      ]
+      }
+    } catch (error) {
+      console.error("Error fetching membership plan data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
     }
-  ];
+  };
 
-  const handlePayment = () => {
-    if (!selectedPlan) {
-      alert("Please select a membership plan before proceeding.");
-      return;
+  const handlePayment = async() => {
+    if (signupData.membershipPlan === null || signupData.membershipPlan === undefined) {
+      Alert.alert("Missing Information", "Please select a membership plan.");
+      return; 
     }
-    navigation.navigate("CreatedPage");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/signup/signupProcess`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(signupData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        navigation.navigate("CreatedPage");
+      }else{
+        Alert.alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error adding user data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    }
   };
 
   return (
@@ -74,50 +87,40 @@ export default function SignUpPageStep4() {
         <Text style={styles.title}>Create Account</Text>
       </View>
 
-      <Text style={styles.mainTitle}>Select Your Membership Plan</Text>
-      <Text style={styles.subtitle}>
-        Choose the perfect membership plan for your fitness journey. Select a plan that fits your goals and lifestyle.
-      </Text>
+      <ScrollView contentContainerStyle={styles.plansContainer}>
+        <Text style={styles.mainTitle}>Select Your Membership Plan</Text>
+        <Text style={styles.subtitle}>
+          Choose the perfect membership plan for your fitness journey. Select a plan that fits your goals and lifestyle.
+        </Text>
 
-      <View style={styles.formContainer}>
-        <ScrollView contentContainerStyle={styles.plansContainer}>
-          {plans.map((planGroup) => (
-            <View key={planGroup.type} style={styles.planGroupContainer}>
-              
-              <View style={styles.optionsRow}>
-                {planGroup.options.map((option) => (
-                  <TouchableOpacity
-                    key={option.id}
-                    style={[
-                      styles.planCard,
-                      selectedPlan?.id === option.id && styles.selectedPlan
-                    ]}
-                    onPress={() => setSelectedPlan(option)}
-                  >
-                    <Text style={styles.planTypeHeader}>{planGroup.type}</Text>
-                    <Text style={styles.planDuration}>{option.duration}</Text>
-                    <Text style={styles.planPrice}>{option.price}</Text>
-
-                    {option.savings && (
-                      <Text style={styles.savingsBadge}>{option.savings}</Text>
-                    )}
-                    <Text style={styles.billingText}>{option.billing}</Text>
-                    
-                  </TouchableOpacity>
-                ))}
-              </View>
+        <View style={styles.formContainer}>
+          {plans.map((plan) => (              
+            <View key={plan.membership_id} style={styles.optionsRow}>
+              <TouchableOpacity
+                key={plan.membership_id}
+                style={[
+                  styles.planCard,
+                  signupData.membershipPlan === plan.membership_id && styles.selectedPlan
+                ]}
+                onPress={() => setSignupData({ ...signupData, membershipPlan: plan.membership_id })}
+              >
+                <Text style={styles.planTypeHeader}>{plan.plan_name}</Text>
+                <Text style={styles.planDuration}>{plan.duration} {plan.duration === 1 ? "month" : "months"}</Text>
+                <Text style={styles.planPrice}>${plan.price}</Text>
+                <Text style={styles.billingText}>Billed {plan.duration === 1 ? "Monthly" : plan.duration === 12 ? "Annually" : `Every ${plan.duration} Months`}</Text>
+                
+              </TouchableOpacity>
             </View>
           ))}
-        </ScrollView>
-      </View>
-
-      <TouchableOpacity 
-        style={styles.payButton} 
-        onPress={handlePayment}
+        </View>
         
-      >
-        <Text style={styles.payButtonText}>Pay {selectedPlan?.price}</Text>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.payButton} 
+          onPress={handlePayment}
+        >
+          <Text style={styles.payButtonText}>Pay ${plans.find(plan => plan.membership_id === signupData.membershipPlan)?.price}</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -132,7 +135,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
-    marginBottom: 20,
   },
   backButton: {
     padding: 8,
@@ -147,9 +149,13 @@ const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: "#B3A0FF",
     borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop:30,
+    paddingBottom:10,
+    width:"100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap:'wrap',
   },
   mainTitle: {
     fontSize: 20,
@@ -166,11 +172,10 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   plansContainer: {
-    flexGrow: 1,
-    paddingBottom: 20,
-  },
-  planGroupContainer: {
-    marginBottom: 30,
+    flexGrow: 1,                
+    justifyContent: "center",   
+    alignItems: "center",       
+    paddingVertical: 20,
   },
   planTypeHeader: {
     fontSize: 12,
@@ -181,15 +186,16 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   optionsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
+    width:"48%",
+    marginBottom: 20,
+    flexWrap:'wrap',
+    justifyContent: "center", 
   },
   planCard: {
     backgroundColor: "#FFF",
     borderRadius: 10,
     padding: 15,
-    width: "48%",
+    width: "100%",
     borderWidth: 2,
     borderColor: "#E2F163",
   },
@@ -211,15 +217,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 5,
     textTransform: 'uppercase',
-  },
-  savingsBadge: {
-    fontSize: 12,
-    color: "black",
-    backgroundColor:"#4CAF50",
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 5,
-    borderRadius:50,
   },
   billingText: {
     fontSize: 12,
@@ -243,6 +240,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
     marginVertical: 20,
+    width:250
   },
   payButtonText: {
     fontSize: 18,

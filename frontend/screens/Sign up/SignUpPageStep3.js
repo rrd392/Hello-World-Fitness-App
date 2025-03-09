@@ -5,61 +5,73 @@ import {
   TouchableOpacity, 
   StyleSheet, 
   SafeAreaView,
-  ScrollView
+  ScrollView,
+  Alert
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useSignup } from "../../context/SignupForm";
 
 export default function SignUpPageStep3() {
   const navigation = useNavigation();
-  const [selectedGoal, setSelectedGoal] = useState(null);
+  const { signupData, setSignupData } = useSignup();
+  
+  const validateAndProceed = () => {
+    if (
+      !signupData.goal.trim() 
+      ) {
+      Alert.alert("Missing Information", "Please select one goal.");
+      return; 
+    }
+
+    navigation.navigate("SignUpPageStep4"); 
+  };
 
   const goals = ["Lose Weight", "Gain Weight", "Muscle Mass Gain", "Shope Body", "Others"];
 
   return (
     <SafeAreaView style={styles.container}>
-    <View style={styles.header}>
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={styles.backButton}
-      >
-        <Ionicons name="chevron-back" size={26} color="#E2F163" />
-      </TouchableOpacity>
-      <Text style={styles.title}>Create Account</Text>
-    </View>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Ionicons name="chevron-back" size={26} color="#E2F163" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Create Account</Text>
+      </View>
 
-    <Text style={styles.mainTitle}>What Is Your Goal?</Text>
-    <Text style={styles.subtitle}>Choose a goal that best matches your focus</Text>
+      <ScrollView contentContainerStyle={styles.viewContainer}>
+        <Text style={styles.mainTitle}>What Is Your Goal?</Text>
+        <Text style={styles.subtitle}>Choose a goal that best matches your focus</Text>
 
-
-        <View style={styles.formContainer}>
-        <ScrollView contentContainerStyle={styles.goalsContainer}>
+        <View style={styles.goalsContainer}>
           {goals.map((goal, index) => (
             <TouchableOpacity
               key={index}
               style={[
                 styles.inputContainer,
-                selectedGoal === goal && styles.selectedGoal
+                signupData.goal === goal && styles.selectedGoal
               ]}
-              onPress={() => setSelectedGoal(goal)}
+              onPress={() => setSignupData({ ...signupData, goal: goal })}
             >
               <Text style={[
                 styles.goalText,
-                selectedGoal === goal && styles.selectedGoalText
+                signupData.goal === goal && styles.selectedGoalText
               ]}>
                 {goal}
               </Text>
             </TouchableOpacity>
           ))}
-        </ScrollView>
-      </View>
+        </View>
 
-      <TouchableOpacity 
-        style={styles.continueButton} 
-        onPress={() => navigation.navigate("SignUpPageStep4")}
-      >
-        <Text style={styles.continueText}>Continue</Text>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.continueButton} 
+          onPress={validateAndProceed}
+        >
+          <Text style={styles.continueText}>Continue</Text>
+        </TouchableOpacity> 
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -74,7 +86,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
-    marginBottom: 20,
   },
   backButton: {
     padding: 8,
@@ -86,12 +97,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     flex: 1,
   },
-  formContainer: {
+  viewContainer: {
+    flex: 1,                
+    justifyContent: "center",   
+    alignItems: "center",       
+    paddingVertical: 20,       
+  },
+  goalsContainer: {
     backgroundColor: "#B3A0FF",
+    padding: 30,
+    width:"100%",
     borderRadius: 10,
-    padding: 20,
-    marginBottom: 55,
-    flex: 1,
   },
   mainTitle: {
     fontSize: 20,
@@ -106,9 +122,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 30,
     lineHeight: 22,
-  },
-  goalsContainer: {
-    flexGrow: 1,
   },
   inputContainer: {
     backgroundColor: "#FFF",
