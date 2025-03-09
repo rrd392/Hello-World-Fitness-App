@@ -66,18 +66,33 @@ const SignUpPageStep2 = () => {
           </TouchableOpacity>
 
           <Text style={styles.label}>Date of Birth <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-          <DateTimePicker
-            value={signupData.dob || new Date()}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              if (selectedDate) {
-                setSignupData({ ...signupData, dob: selectedDate });
-              }
-            }}
-            style={styles.dateInput}
-          />
+          <TouchableOpacity style={styles.DOBContainer} >
+            <TextInput
+                style={styles.input}
+                placeholderTextColor="#777"
+                editable={false}
+            />
+            <Ionicons style={styles.calendarIcon} name="calendar-outline" size={24} color="#000" />
 
+            <DateTimePicker
+              value={signupData.dob || new Date()}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                if (selectedDate) {
+                    const fixedDate = new Date(selectedDate);
+                    fixedDate.setHours(12, 0, 0, 0);
+            
+                    console.log("Fixed Local Date:", fixedDate);
+                    console.log("Fixed Local Date (ISO):", fixedDate.toISOString());
+            
+                    setSignupData((prevData) => ({ ...prevData, dob: fixedDate }));
+                }
+              }}
+              style={styles.dateInput}
+            />
+          </TouchableOpacity>
+        
           <Text style={styles.label}>Height <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
           <TextInput 
             ref={heightInputRef}
@@ -201,11 +216,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dateInput:{
-    height: 45,
-    backgroundColor: "#FFF",
-    borderRadius: 10,
-    marginBottom: 15,
-    fontSize: 16,
+    backgroundColor:'white',
+    position:'absolute',
+    marginTop:5,
+    marginLeft:2,
+  },
+  DOBContainer: {
+    position: "relative",
+  },
+  calendarIcon: {
+    position: "absolute",
+    right: 15,
+    top: "50%",
+    transform: [{ translateY: -20 }]
   },
   inputText: {
     color: '#000',
