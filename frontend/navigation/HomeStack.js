@@ -6,6 +6,7 @@ import ProfileStack from "./ProfileStack";
 import Notification from "../screens/Home/Notification";
 import CheckIn from "../screens/Home/CheckIn";
 import Classes from "../screens/Home/ClassesPage/Classes";
+import SelectedClass from "../screens/Home/ClassesPage/SelectedClass";
 
 const HomeStackNavigator = createStackNavigator();
 
@@ -23,6 +24,10 @@ const HomeStack = () => {
       <HomeStackNavigator.Screen name="ProfileStack" component={ProfileStack} />
       <HomeStackNavigator.Screen name="CheckIn" component={CheckIn} />
       <HomeStackNavigator.Screen name="Classes" component={Classes} />
+      <HomeStackNavigator.Screen
+        name="SelectedClass"
+        component={SelectedClass}
+      />
     </HomeStackNavigator.Navigator>
   );
 };
