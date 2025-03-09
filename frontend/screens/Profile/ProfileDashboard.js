@@ -35,7 +35,7 @@ const ProfileDashboard = () => {
         {
             title: "Membership",
             icon: "star",
-            onPress: () => navigation.navigate("MembershipStep1"),
+            onPress: () => navigation.navigate("MembershipRenewal"),
         },
         {
             title: "Transaction History",
@@ -58,7 +58,7 @@ const ProfileDashboard = () => {
                 
                 <HeaderVer1
                     title="Home"
-                    onPress={() => navigation.navigate("MemberDashboard")}
+                    onPress={() => navigation.navigate('MemberDashboard')}
                 />
 
                 {/* Header Section */}

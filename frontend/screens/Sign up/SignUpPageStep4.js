@@ -106,7 +106,7 @@ export default function SignUpPageStep4() {
               >
                 <Text style={styles.planTypeHeader}>{plan.plan_name}</Text>
                 <Text style={styles.planDuration}>{plan.duration} {plan.duration === 1 ? "month" : "months"}</Text>
-                <Text style={styles.planPrice}>${plan.price}</Text>
+                <Text style={styles.planPrice}>RM {plan.price.toFixed(2)}</Text>
                 <Text style={styles.billingText}>Billed {plan.duration === 1 ? "Monthly" : plan.duration === 12 ? "Annually" : `Every ${plan.duration} Months`}</Text>
                 
               </TouchableOpacity>
@@ -118,7 +118,7 @@ export default function SignUpPageStep4() {
           style={styles.payButton} 
           onPress={handlePayment}
         >
-          <Text style={styles.payButtonText}>Pay ${plans.find(plan => plan.membership_id === signupData.membershipPlan)?.price}</Text>
+          <Text style={styles.payButtonText}>Pay RM{plans.find(plan => plan.membership_id === signupData.membershipPlan)?.price}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
     marginVertical: 20,
-    width:250
+    width:300
   },
   payButtonText: {
     fontSize: 18,

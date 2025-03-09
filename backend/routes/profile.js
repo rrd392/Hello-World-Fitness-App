@@ -85,4 +85,36 @@ router.put('/updateUser', (req, res) => {
     });
 });
 
+router.get('/displayMembershipPlan', (req, res) => {
+
+    const displayQuery = `SELECT * FROM membership`;
+
+
+    db.query(displayQuery, (error, membershipPlan)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({membershipPlan});
+    });
+});
+
+router.get('/displayUserMembership/:user_id', (req, res) => {
+    const { user_id } = req.params;
+
+    const displayQuery = `SELECT * FROM user_membership WHERE user_id = ?`;
+
+    db.query(displayQuery, [user_id], (error, results) => {
+        if (error) {
+            console.error("Database query error:", error);
+            return res.status(500).json({ error: "Database query failed" });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: "No user membership found" });
+        }
+
+        res.json( {userData : results[0]});
+    });
+});
+
 module.exports = router;

@@ -81,11 +81,7 @@ const SignUpPageStep2 = () => {
               onChange={(event, selectedDate) => {
                 if (selectedDate) {
                     const fixedDate = new Date(selectedDate);
-                    fixedDate.setHours(12, 0, 0, 0);
-            
-                    console.log("Fixed Local Date:", fixedDate);
-                    console.log("Fixed Local Date (ISO):", fixedDate.toISOString());
-            
+                    fixedDate.setHours(12, 0, 0, 0);      
                     setSignupData((prevData) => ({ ...prevData, dob: fixedDate }));
                 }
               }}
