@@ -6,6 +6,7 @@ import MembershipStep1 from "../screens/Profile/MembershipStep1";
 import TransactionHistory from "../screens/Profile/TransanctionHistory";
 import Achievement from "../screens/Profile/Achievement";
 import Leaderboard from "../screens/Profile/Leaderboard";
+import MemberDashboard from "../screens/Home/MemberDashboard";
 
 const ProfileStackNavigator = createStackNavigator();
 
@@ -21,7 +22,7 @@ const ProfileStack = () => {
             <ProfileStackNavigator.Screen name="TransactionHistory" component={TransactionHistory} />
             <ProfileStackNavigator.Screen name="Achievement" component={Achievement} />
             <ProfileStackNavigator.Screen name="Leaderboard" component={Leaderboard} />
-
+            <ProfileStackNavigator.Screen name="MemberDashboard" component={MemberDashboard} />
         </ProfileStackNavigator.Navigator>
     );
 };

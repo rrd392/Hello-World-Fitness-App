@@ -118,8 +118,8 @@ const SignUpPageStep2 = () => {
                 onValueChange={(value) => setSignupData({ ...signupData, gender: value })}
                 style={{color:'black'}}
               >
-                <Picker.Item label="Male" value="male" />
-                <Picker.Item label="Female" value="female"/>
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female"/>
               </Picker>
               <TouchableOpacity
                 style={styles.doneButton}

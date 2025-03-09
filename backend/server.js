@@ -29,6 +29,9 @@ app.use('/api/notification', notificationRoutes);
 const workoutPlanRoutes = require('./routes/workout-plan');
 app.use('/api/workout-plan', workoutPlanRoutes);
 
+const profileRoutes = require('./routes/profile');
+app.use('/api/profile', profileRoutes);
+
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads')));
 
 // Start the server
