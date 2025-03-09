@@ -4,13 +4,33 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import DateDropdown from "./DateDropdown";
+import ClassCard from "./ClassCard";
 
 function Classes() {
   const navigation = useNavigation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState("none");
 
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
+
+  const classData = [
+    {
+      title: "Yoga Flow",
+      time: "08:00 - 09:00",
+      coach: "Coach Aaron",
+      date: "2025-01-02",
+      slots: "20/20",
+      image: require("./yoga.jpg"),
+    },
+    {
+      title: "Zumba Dance",
+      time: "10:00 - 11:00",
+      coach: "Coach Aaron",
+      date: "2025-01-02",
+      slots: "15/20",
+      image: require("./yoga.jpg"),
+    },
+  ];
 
   return (
     <View style={styles.container}>
@@ -53,12 +73,11 @@ function Classes() {
           <DateDropdown onSelectDate={setSelectedDate} />
         </View>
 
-        {selectedDate && (
-          <Text style={styles.selectedText}>Selected: {selectedDate}</Text>
-        )}
-
-        <View style={styles.classesCard}>
-          <Text style={styles.cardText}>Classes will be displayed here</Text>
+        {/* Class Cards */}
+        <View style={styles.classCards}>
+          {classData.map((classItem, index) => (
+            <ClassCard key={index} {...classItem} />
+          ))}
         </View>
       </View>
     </View>
@@ -95,26 +114,18 @@ const styles = StyleSheet.create({
   },
   menuItem: { padding: 10 },
 
-  /* Title & Date Picker Styling */
-  classesSection: { padding: 20 },
+  classesSection: {},
   titleContainer: {
+    marginLeft: 20,
     flexDirection: "row",
-    justifyContent: "space-between", // Aligns "Classes" left and DateDropdown right
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   sectionTitle: { fontSize: 24, color: "white", fontWeight: "bold" },
 
-  /* Classes Card Styling */
-  classesCard: {
-    backgroundColor: "#333",
-    padding: 20,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  cardText: { color: "#fff", fontSize: 16 },
-
   selectedText: { marginTop: 10, fontSize: 16, color: "#E2F163" },
+  classCards: { marginBottom: 20, backgroundColor: "#B3A0FF", width: "100%" },
 });
 
 export default Classes;

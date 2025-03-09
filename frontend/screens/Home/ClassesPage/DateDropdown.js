@@ -53,7 +53,7 @@ const DateDropdown = ({ onSelectDate }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { position: "relative", zIndex: 10 },
+  container: { position: "relative", zIndex: 10, marginRight: 10 },
 
   dropdownButton: {
     flexDirection: "row",
