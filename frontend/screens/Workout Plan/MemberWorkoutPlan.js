@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   navText:{color:'white', fontSize:16, fontWeight:'bold'},
   selectedNavItem: {backgroundColor: "rgba(255, 255, 255, 0.5)", paddingVertical:10, width:'33%'},
   
-  levelButtons: { flexDirection: 'row', justifyContent: 'space-between', marginBottom:30},
+  levelButtons: { flexDirection: 'row', justifyContent: 'space-between', marginBottom:30, marginTop:20},
   levelItem: { alignItems: 'center', backgroundColor:'rgba(226, 241, 99, 0.5)', borderRadius:15, padding:8, width:'30%'},
   levelText: { color: '#000', fontSize:14 },
   selectedLevelItem:{backgroundColor: "rgba(226, 241, 99, 1)", width:'30%'},
