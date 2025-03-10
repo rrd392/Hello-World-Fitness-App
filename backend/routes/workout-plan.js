@@ -116,27 +116,69 @@ router.get('/displayDetailPlan/:workout_plan_id', (req, res) => {
 });
 
 router.post('/addPoints', (req, res) => {
-    const { user_id, difficulty } = req.body;
-    let points;
+    const user_id = req.body.user_id;
+    const difficulty = req.body.difficulty;
+    const workout_plan_id = req.body.workout_plan_id;
 
-    if(difficulty == "Beginner"){
-        points = 10;
-    }else if(difficulty == "Intermediate"){
-        points = 20;
-    }else if(difficulty == "Advanced"){
-        points = 30;
-    }else{
-        return res.status(400).json({ error: "Invalid difficulty level" });
+    let completedExercise = [];
+    try {
+        completedExercise = Array.isArray(req.body.completedExercise) ? req.body.completedExercise : JSON.parse(req.body.completedExercise || "[]");
+    } catch (err) {
+        return res.status(400).json({ error: "Invalid completed exercise format" });
     }
 
+    let workoutDetails = [];
+    try {
+        workoutDetails = Array.isArray(req.body.planDetails) ? req.body.planDetails : JSON.parse(req.body.planDetails || "[]");
+    } catch (err) {
+        return res.status(400).json({ error: "Invalid workout_details format" });
+    }
+
+    let progress = completedExercise.length / workoutDetails.length;
+
+    let points;
+
+    if (difficulty === "Beginner") {
+        points = Math.floor(10 * progress);
+    } else if (difficulty === "Intermediate") {
+        points = Math.floor(20 * progress);
+    } else if (difficulty === "Advanced") {
+        points = Math.floor(30 * progress);
+    } else {
+        return res.status(400).json({ error: "Invalid difficulty level" });
+    }
+    
     const addPointsQuery = `INSERT INTO points (user_id, activity_type, points, date_received)
                             VALUES (?, ?, ?, NOW())`;
+
+    const userWorkoutIdQuery =  `SELECT user_workout_id FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ?`;
     
     db.query(addPointsQuery, [user_id, 'workout', points], (error, results)=>{
         if (error) {
-            return res.status(500).json({ error: "Database query failed" });
+            return res.status(500).json({ error: "Database add points query failed" });
         }
-        res.json({success:true, points});
+        db.query(userWorkoutIdQuery, [user_id, workout_plan_id], (error, idResult)=>{
+            if (error) {
+                return res.status(500).json({ error: "Database fetch user_workout_id query failed" });
+            }
+            const user_workout_id = idResult[0].user_workout_id;
+            const queryValues = workoutDetails.map(workout => [
+                user_workout_id, 
+                workout.workout_detail_id, 
+                completedExercise.includes(workout.workout_detail_id) ? 1 : 0
+            ]);
+            const flattenedValues = queryValues.flat(); 
+
+            const addProgressQuery = `INSERT INTO user_workout_progress (user_workout_id, workout_detail_id, is_completed)
+                                    VALUES ${queryValues.map(() => "(?, ?, ?)").join(", ")}`;
+
+            db.query(addProgressQuery, flattenedValues, (error, progressResult)=>{
+                if (error) {
+                    return res.status(500).json({ error: "Database add progress query failed" });
+                }
+                res.json({success:true, points});
+            });
+        });
     });
 });
 
@@ -268,54 +310,5 @@ router.post('/createWorkoutPlan', upload.single("image"), async (req, res) => {
         return res.status(400).json({ error: "Invalid request data" });
     }
 });
-
-
-// router.post('/createWorkoutPlan', upload.single("image"), (req, res) => {
-//     try {
-//         const addData = JSON.parse(req.body.addData);
-//         const user_id = req.body.userId;
-//         const workoutDetails = JSON.parse(req.body.workout_details || "[]");
-
-//         const { name, description, difficulty, day, picture } = addData;
-//         const imageUrl = `workout_image/${req.file.filename}`;
-
-//         //Check if plan name already exist
-//         const checkPlanNameQuery = "SELECT * FROM workout_plans WHERE plan_name = ?";
-//         db.query(checkPlanNameQuery, [name], (error, result) => {
-//             if (error) {
-//                 return res.status(500).json({ error: "Database query failed" });
-//             }
-//             if(result.length > 0){
-//                 return res.status(400).json({ success:false, message: 'Plan name already exists. Please choose another one.' });
-//             }
-//             const addNewPlanQuery = `INSERT INTO workout_plans (plan_name, description, difficulty, type, workout_image)
-//                                 VALUES (?, ?, ?, ?, ?)`;
-
-//             db.query(addNewPlanQuery, [name, description, difficulty, 'Member', imageUrl], (error, results) => {
-//                 if (error) {
-//                     return res.status(500).json({ error: "Database query failed" });
-//                 }
-//                 const getWorkoutPlanID = 'SELECT workout_plan_id FROM workout_plans WHERE plan_name = ?';
-//                 db.query(getWorkoutPlanID, [name], (error, id) => {
-//                     if (error) {
-//                         return res.status(500).json({ error: "Database query failed" });
-//                     }
-//                     const workout_plan_id = id[0].workout_plan_id;
-
-//                     const addUserWorkoutPlan = `INSERT INTO user_workout_plans (user_id, workout_plan_id, is_active, day_of_week)
-//                                                 VALUES (?,?,?,?)`;
-//                     db.query(addUserWorkoutPlan, [user_id, workout_plan_id, 1, day], (error, userResult) => {
-//                         if (error) {
-//                             return res.status(500).json({ error: "Database query failed" });
-//                         }
-//                         res.json({ success: true }); 
-//                     });
-//                 });
-//             });
-//         });
-//     } catch (err) {
-//         res.status(400).json({ error: "Invalid request data" });
-//     }
-// });
 
 module.exports = router;

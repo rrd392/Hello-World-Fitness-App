@@ -24,6 +24,7 @@ const MemberDashboard = () => {
   const [classData, setClassData] = useState([]);
   const [workoutPlans, setWorkoutPlans] = useState([]);
   const [dietPlans, setDietPlans] = useState([]);
+  const [membership, setMembership] = useState("");
 
   useEffect(() => {
     async function fetchUserId() {
@@ -65,6 +66,7 @@ const MemberDashboard = () => {
           setClassData(data.disClass);
           setWorkoutPlans(data.workoutPlans);
           setDietPlans(data.diet);
+          setMembership(data.membership);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -80,7 +82,6 @@ const MemberDashboard = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB", { timeZone: "Asia/Kuala_Lumpur" });
   }
-
   //Notification icon pop up page
   const toggleNotification = () => navigation.navigate("Notification");
   const handleGoToProfile = () => navigation.navigate("ProfileStack");
@@ -101,7 +102,7 @@ const MemberDashboard = () => {
           </View>
         </View>
         <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
-        <Text style={styles.membership}>Standard Monthly</Text>
+        <Text style={styles.membership}>{membership}</Text>
         {/* Navigation Icons */}
         <View style={styles.navButtons}>
           <TouchableOpacity

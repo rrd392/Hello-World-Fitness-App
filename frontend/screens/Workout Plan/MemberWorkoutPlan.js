@@ -152,8 +152,8 @@ const MemberWorkoutPlan = () => {
   };
 
   //Navigate to workout detail page
-  function toggleWorkOutDetails(workout_plan){
-    navigation.navigate('DetailWorkoutPlan', { workout_plan });
+  function toggleWorkOutDetails(workout_plan, selected){
+    navigation.navigate('DetailWorkoutPlan', { workout_plan, selected });
   }
 
   function toggleCustomWorkOutDetails(workout_plan, selectedDay){
@@ -209,7 +209,7 @@ const MemberWorkoutPlan = () => {
                 data={generalPlans}  
                 keyExtractor={(item) => item.workout_plan_id.toString()} 
                 renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
+                  <TouchableOpacity onPress={() => toggleWorkOutDetails(item, selected)} style={styles.generalCard}>
                     <View style={styles.generalItem}>
                         <Text style={styles.generalTitle}>{item.plan_name}</Text>
                         <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
@@ -264,7 +264,7 @@ const MemberWorkoutPlan = () => {
                   data={coachPlans}  
                   keyExtractor={(item) => item.workout_plan_id.toString()} 
                   renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
+                  <TouchableOpacity onPress={() => toggleWorkOutDetails(item, selected)} style={styles.generalCard}>
                     <View style={styles.generalItem}>
                         <Text style={styles.generalTitle}>{item.plan_name}</Text>
                         <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>

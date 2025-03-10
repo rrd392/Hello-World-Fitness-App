@@ -9,7 +9,7 @@ import { getUserId } from '../getUserId';
 
 const DetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
-    const { workout_plan } = route.params;
+    const { workout_plan, category } = route.params;
 
     //Profile icon dropdown button
     const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
@@ -139,13 +139,16 @@ const DetailWorkoutPlan = ({ route }) => {
                         </View>
                     ))}
 
-                    {/* Start Button */}
-                    <TouchableOpacity style={styles.startButton} onPress={() => toggleRunWorkout(workout_plan, planDetails)}>
-                        <Text style={styles.startButtonText}>Let's Start</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.addButton}>
-                        <Text style={styles.startButtonText}>Add Workout Plan</Text>
-                    </TouchableOpacity> 
+                    {category === "Coach" ? (
+                        <TouchableOpacity style={styles.startButton} onPress={() => toggleRunWorkout(workout_plan, planDetails)}>
+                            <Text style={styles.startButtonText}>Let's Start</Text>
+                        </TouchableOpacity>
+                    ):(
+                        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.addButton}>
+                            <Text style={styles.startButtonText}>Add Workout Plan</Text>
+                        </TouchableOpacity> 
+                    )}
+                    
                     {/* Modal */}
                     <Modal 
                         animationType="slide" 
