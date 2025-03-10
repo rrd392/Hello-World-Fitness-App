@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useContext } from 'react';
-import { ScrollView,View, Image, Text, StyleSheet, TouchableOpacity, Modal, TextInput, FlatList } from 'react-native';
+import { ScrollView,View, Image, Text, StyleSheet, TouchableOpacity, Modal, TextInput, FlatList, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -65,6 +65,7 @@ const AddWorkoutPlan = () => {
         name: "",
         description: "",
         difficulty: "",
+        day:"",
         image: "",
     });
 
@@ -86,6 +87,18 @@ const AddWorkoutPlan = () => {
         { label: 'Beginner', value: 'Beginner' },
         { label: 'Intermediate', value: 'Intermediate' },
         { label: 'Advanced', value: 'Advanced' },
+    ];
+
+    const [showDayDropdown, setShowDayDropdown] = useState(false);
+    const day =[
+        { label: 'Select level', value: '', disabled: true },
+        { label: 'Monday', value: 'Monday' },
+        { label: 'Tuesday', value: 'Tuesday' },
+        { label: 'Wednesday', value: 'Wednesday' },
+        { label: 'Thursday', value: 'Thursday' },
+        { label: 'Friday', value: 'Friday' },
+        { label: 'Saturday', value: 'Saturday' },
+        { label: 'Sunday', value: 'Sunday' },
     ];
 
     const deleteItem = (itemToDelete) => {
@@ -119,59 +132,19 @@ const AddWorkoutPlan = () => {
         }        
     };
 
-    // const createWorkoutPlan = async (addData, workout_details, formData) => {
-    //     if (
-    //         !addData.name.trim() ||
-    //         !addData.description.trim() ||
-    //         !addData.difficulty.trim() ||
-    //         !addData.image.trim() 
-    //     ) {
-    //         Alert.alert("Missing Information", "Please fill in all required fields.");
-    //         return; 
-    //     }
-    //     formData.append("image", {
-    //         uri: addData.image,
-    //         type: "image/jpeg",
-    //         name: `${addData.name}.jpg`,
-    //     });
-    //     formData.append("addData", JSON.stringify(addData));
-    //     formData.append("workout_details", JSON.stringify(workout_details));
-    //     try {
-    //     const response = await fetch(`${API_BASE_URL}/api/workout-plan/createWorkoutPlan`, {
-    //         method: "POST",
-    //         headers: { "Content-Type": "application/json" },
-    //         body: formData
-    //     });
-    
-    //     if (!response.ok) {
-    //         const text = await response.text();
-    //         throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-    //     }
-    
-    //     const data = await response.json();
-    
-    //     if (data.success) {
-    //         alert("Workout Plan successfully created.");
-    //     }
-    //     } catch (error) {
-    //         console.error("Error creating workout plan:", error);
-    //         Alert.alert("Error", error.message || "Network request failed");
-    //     }
-    // };
-
     const createWorkoutPlan = async (addData, workout_details) => {
-        console.log("hi");
         // Ensure addData exists before validating properties
         if (!addData || 
-            !addData.name?.trim() || 
-            !addData.description?.trim() || 
-            !addData.difficulty?.trim() || 
-            !addData.image?.trim()
+            addData.name.trim() === "" || 
+            addData.description.trim() === "" || 
+            addData.difficulty.trim() === "" || 
+            addData.day.trim() === "" || 
+            addData.image.trim() === ""
         ) {
             Alert.alert("Missing Information", "Please fill in all required fields.");
-            return; 
+            return;
         }
-        console.log("helo");
+
         // Initialize FormData properly
         const formData = new FormData();
     
@@ -185,6 +158,7 @@ const AddWorkoutPlan = () => {
         // Append JSON data as a string
         formData.append("addData", JSON.stringify(addData));
         formData.append("workout_details", JSON.stringify(workout_details));
+        formData.append("userId", userId);
     
         try {
             const response = await fetch(`${API_BASE_URL}/api/workout-plan/createWorkoutPlan`, {
@@ -192,15 +166,14 @@ const AddWorkoutPlan = () => {
                 body: formData,
             });
     
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-            }
-    
             const data = await response.json();
     
             if (data.success) {
                 Alert.alert("Success", "Workout Plan successfully created.");
+                onClose();
+                navigation.navigate('MemberWorkoutPlan');
+            }else{
+                Alert.alert(data.message);
             }
         } catch (error) {
             console.error("Error creating workout plan:", error);
@@ -280,9 +253,9 @@ const AddWorkoutPlan = () => {
 
                         {/* Name & Description Inputs */}
                         <Text style={styles.inputText}>Name <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-                        <TextInput style={styles.input} placeholder="Name" onChangeText={(text) =>setAddData((prevData) => ({...prevData,name: text.replace(/[^a-zA-Z0-9_/()[] ]/g, ''),}))}/>
+                        <TextInput style={styles.input} value={addData.name} placeholder="Name" onChangeText={(text) =>setAddData((prevData) => ({...prevData,name: text.replace(/[^a-zA-Z0-9_/()[] ]/g, ''),}))}/>
                         <Text style={styles.inputText}>Description <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-                        <TextInput style={styles.input} placeholder="Description" multiline onChangeText={(text) =>setAddData((prevData) => ({...prevData,name: text.replace(/[^a-zA-Z0-9_/()[] ]/g, ''),}))}/>
+                        <TextInput style={styles.input} value={addData.description} placeholder="Description" multiline onChangeText={(text) =>setAddData((prevData) => ({...prevData,description: text.replace(/[^a-zA-Z0-9_/()[] ]/g, ''),}))}/>
                         <Text style={styles.inputText}>Difficulty <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
                         <DropDownPicker
                             open={showDifficultyDropdown}
@@ -300,7 +273,26 @@ const AddWorkoutPlan = () => {
                             listMode="SCROLLVIEW"
                             style={styles.dropdown}
                             textStyle={styles.dropdownText}
-                            containerStyle={{ marginBottom: 16 }}
+                            containerStyle={{ marginBottom: 16, zIndex:100 }}
+                        />
+                        <Text style={styles.inputText}>Select day <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                        <DropDownPicker
+                            open={showDayDropdown}
+                            value={addData.day}
+                            items={day}
+                            setOpen={setShowDayDropdown}
+                            setValue={(callback) => 
+                                setAddData(prevData => ({
+                                    ...prevData,
+                                    day: callback(prevData.day) 
+                                }))
+                            }
+                            placeholder="Select level"
+                            nestedScrollEnabled={true}
+                            listMode="SCROLLVIEW"
+                            style={styles.dropdown}
+                            textStyle={styles.dropdownText}
+                            containerStyle={{ marginBottom: 16, zIndex:90 }}
                         />
                         <Text style={styles.inputText}>Upload Image <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
                         <TouchableOpacity style={styles.input} onPress={pickImage}><Ionicons name="image" size={20}>  <Text style={{fontSize:16}}>{addData.image? `Image uploaded`: `Upload Image`}</Text></Ionicons></TouchableOpacity>
@@ -334,7 +326,7 @@ const AddWorkoutPlan = () => {
                         />
 
                         {/* Create Button */}
-                        <TouchableOpacity style={styles.createButton} onPress={() => createWorkoutPlan(addData, pressedItems)}>
+                        <TouchableOpacity style={styles.createButton} onPress={() => {console.log("Button pressed"); createWorkoutPlan(addData, pressedItems);}}>
                             <Text style={styles.createButtonText}>Create</Text>
                         </TouchableOpacity>
                     </View>
@@ -431,7 +423,7 @@ const styles = StyleSheet.create({
         right: 15,
     },
     section2Title:{
-        color: "#000",fontSize: 24, marginBottom: 10, textAlign:'center', fontWeight:'bold', marginTop:20
+        color: "#000",fontSize: 24, marginBottom: 10, textAlign:'center', fontWeight:'bold', marginTop:10
     },
     title: {
         fontSize: 22,

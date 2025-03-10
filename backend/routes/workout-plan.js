@@ -192,29 +192,130 @@ router.get('/displayWorkoutDetail', (req, res) => {
 });
 
 const storage = multer.diskStorage({
-    destination: path.resolve(__dirname, '../../../uploads/workout_image'), 
+    destination: path.resolve(__dirname, '../../../uploads/workout_image'),
     filename: (req, file, cb) => {
-        cb(null, file.originalname); 
+        cb(null, file.originalname);
     },
 });
 
 const upload = multer({ storage });
 
-router.post('/createWorkoutPlan', upload.single("image"), (req, res) => {
-    const { name, description, difficulty, image } = req.body.addData;
-    const {workoutDetails} = req.body.workout_details;
+router.post('/createWorkoutPlan', upload.single("image"), async (req, res) => {
+    try {
+        const addData = JSON.parse(req.body.addData);
+        const user_id = req.body.userId; 
 
-    const imageUrl = `workout_image/${req.file.filename}`;
-
-    const addNewPlanQuery = `INSERT INTO workout_plans (plan_name, description, difficulty, type, workout_image)
-                            VALUES (?, ?, ?, ?, ?)`;
-    
-    db.query(addNewPlanQuery, [name, description, difficulty, 'Member', imageUrl], (error, results)=>{
-        if (error) {
-            return res.status(500).json({ error: "Database query failed" });
+        let workoutDetails = [];
+        try {
+            workoutDetails = Array.isArray(req.body.workout_details) ? req.body.workout_details : JSON.parse(req.body.workout_details || "[]");
+        } catch (err) {
+            return res.status(400).json({ error: "Invalid workout_details format" });
         }
-        res.json({success:true, points});
-    });
+
+        const { name, description, difficulty, day } = addData;
+        const imageUrl = `workout_image/${req.file.filename}`;
+
+        // Check if plan name already exists
+        const checkPlanNameQuery = "SELECT * FROM workout_plans WHERE plan_name = ?";
+        db.query(checkPlanNameQuery, [name], (error, result) => {
+            if (error) return res.status(500).json({ error: "Database query failed" });
+
+            if (result.length > 0) {
+                return res.status(400).json({ success: false, message: 'Plan name already exists. Please choose another one.' });
+            }
+
+            // Insert new workout plan
+            const addNewPlanQuery = `INSERT INTO workout_plans (plan_name, description, difficulty, type, workout_image)
+                                     VALUES (?, ?, ?, ?, ?)`;
+
+            db.query(addNewPlanQuery, [name, description, difficulty, 'Member', imageUrl], (error, results) => {
+                if (error) return res.status(500).json({ error: "Database query failed" });
+
+                // Retrieve new workout plan ID
+                const getWorkoutPlanID = 'SELECT workout_plan_id FROM workout_plans WHERE plan_name = ?';
+                db.query(getWorkoutPlanID, [name], (error, idResult) => {
+                    if (error) return res.status(500).json({ error: "Database query failed" });
+
+                    const workout_plan_id = idResult[0].workout_plan_id;
+
+                    // Insert into user_workout_plans
+                    const addUserWorkoutPlan = `INSERT INTO user_workout_plans (user_id, workout_plan_id, is_active, day_of_week)
+                                                VALUES (?, ?, ?, ?)`;
+                    db.query(addUserWorkoutPlan, [user_id, workout_plan_id, 1, day], (error) => {
+                        if (error) return res.status(500).json({ error: "Database query failed" });
+
+                        // Loop through workoutDetails array and insert each workout_detail_id
+                        if (workoutDetails.length > 0) {
+                            const addWorkoutDetailQuery = `INSERT INTO workout_plan_details (workout_detail_id, workout_plan_id)
+                                                           VALUES ?`;
+
+                            const workoutDetailValues = workoutDetails.map(workout_detail_id => [workout_detail_id, workout_plan_id]);
+
+                            db.query(addWorkoutDetailQuery, [workoutDetailValues], (error) => {
+                                if (error) return res.status(500).json({ error: "Failed to insert workout details" });
+
+                                return res.json({ success: true, message: "Workout plan created successfully!" });
+                            });
+                        } else {
+                            return res.json({ success: true, message: "Workout plan created successfully, but no workout details added." });
+                        }
+                    });
+                });
+            });
+        });
+
+    } catch (err) {
+        return res.status(400).json({ error: "Invalid request data" });
+    }
 });
+
+
+// router.post('/createWorkoutPlan', upload.single("image"), (req, res) => {
+//     try {
+//         const addData = JSON.parse(req.body.addData);
+//         const user_id = req.body.userId;
+//         const workoutDetails = JSON.parse(req.body.workout_details || "[]");
+
+//         const { name, description, difficulty, day, picture } = addData;
+//         const imageUrl = `workout_image/${req.file.filename}`;
+
+//         //Check if plan name already exist
+//         const checkPlanNameQuery = "SELECT * FROM workout_plans WHERE plan_name = ?";
+//         db.query(checkPlanNameQuery, [name], (error, result) => {
+//             if (error) {
+//                 return res.status(500).json({ error: "Database query failed" });
+//             }
+//             if(result.length > 0){
+//                 return res.status(400).json({ success:false, message: 'Plan name already exists. Please choose another one.' });
+//             }
+//             const addNewPlanQuery = `INSERT INTO workout_plans (plan_name, description, difficulty, type, workout_image)
+//                                 VALUES (?, ?, ?, ?, ?)`;
+
+//             db.query(addNewPlanQuery, [name, description, difficulty, 'Member', imageUrl], (error, results) => {
+//                 if (error) {
+//                     return res.status(500).json({ error: "Database query failed" });
+//                 }
+//                 const getWorkoutPlanID = 'SELECT workout_plan_id FROM workout_plans WHERE plan_name = ?';
+//                 db.query(getWorkoutPlanID, [name], (error, id) => {
+//                     if (error) {
+//                         return res.status(500).json({ error: "Database query failed" });
+//                     }
+//                     const workout_plan_id = id[0].workout_plan_id;
+
+//                     const addUserWorkoutPlan = `INSERT INTO user_workout_plans (user_id, workout_plan_id, is_active, day_of_week)
+//                                                 VALUES (?,?,?,?)`;
+//                     db.query(addUserWorkoutPlan, [user_id, workout_plan_id, 1, day], (error, userResult) => {
+//                         if (error) {
+//                             return res.status(500).json({ error: "Database query failed" });
+//                         }
+//                         res.json({ success: true }); 
+//                     });
+//                 });
+//             });
+//         });
+//     } catch (err) {
+//         res.status(400).json({ error: "Invalid request data" });
+//     }
+// });
 
 module.exports = router;

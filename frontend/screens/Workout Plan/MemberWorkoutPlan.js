@@ -323,7 +323,7 @@ const MemberWorkoutPlan = () => {
             data={customPlans}  
             keyExtractor={(item) => item.workout_plan_id.toString()} 
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => toggleCustomWorkOutDetails(item, selectedDay)} style={styles.generalCard}>
+              <TouchableOpacity onPress={() => toggleCustomWorkOutDetails(item, selectedDay)} style={styles.generalCard} key={item.workout_plan_id}>
                 <View style={styles.generalItem}>
                     <Text style={styles.generalTitle}>{item.plan_name}</Text>
                     <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>

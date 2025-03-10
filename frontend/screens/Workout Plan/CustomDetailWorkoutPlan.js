@@ -77,6 +77,7 @@ const CustomDetailWorkoutPlan = ({ route }) => {
     
         if (data.success) {
             alert("Workout Plan successfully deleted.");
+            navigation.navigate('MemberWorkoutPlan');
         }
         } catch (error) {
         console.error("Error deleting workout plan:", error);
