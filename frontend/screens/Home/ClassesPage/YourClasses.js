@@ -13,7 +13,7 @@ import HeaderVer1 from "../../HeaderVer1";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-
+import RatingPopup from "./RatingPopup";
 function YourClasses() {
   const navigation = useNavigation();
   const [showCancelClass, setShowCancelClass] = useState(false);
@@ -62,6 +62,8 @@ function YourClasses() {
     },
   ];
   const item = classData[0];
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedClass, setSelectedClass] = useState(null);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
       {/* Fixed Header */}
@@ -146,6 +148,10 @@ function YourClasses() {
               </View>
               <TouchableOpacity
                 style={item.rated ? styles.ratedButton : styles.rateButton}
+                onPress={() => {
+                  setSelectedClass(item);
+                  setModalVisible(true);
+                }}
               >
                 <Text
                   style={
@@ -155,12 +161,19 @@ function YourClasses() {
                   {item.rated ? "Rated" : "Rate"}
                 </Text>
               </TouchableOpacity>
+              {selectedClass && (
+                <RatingPopup
+                  visible={modalVisible}
+                  onClose={() => setModalVisible(false)}
+                  classData={selectedClass}
+                />
+              )}
             </View>
           ))}
         </View>
       </ScrollView>
 
-      {/* Cancel Class Modal */}
+      {/* Cancel Class popup */}
       <Modal visible={showCancelClass} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
