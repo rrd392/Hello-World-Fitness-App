@@ -38,11 +38,14 @@ const FeedbackCard = ({ item }) => {
     <View style={styles.card}>
       {/* User Info & Date */}
       <View style={styles.header}>
-        <Image source={item.userImage} style={styles.userImage} />
-        <View>
-          <Text style={styles.userName}>{item.userName}</Text>
-          <Text style={styles.email}>{item.email}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Image source={item.userImage} style={styles.userImage} />
+          <View>
+            <Text style={styles.userName}>{item.userName}</Text>
+            <Text style={styles.email}>{item.email}</Text>
+          </View>
         </View>
+
         <Text style={styles.date}>{item.daysAgo}</Text>
       </View>
 
@@ -56,6 +59,7 @@ const FeedbackCard = ({ item }) => {
             imageSize={15}
             readonly
             startingValue={item.classRating}
+            tintColor="#4A4A4A"
           />
         </View>
 
@@ -67,6 +71,7 @@ const FeedbackCard = ({ item }) => {
             imageSize={15}
             readonly
             startingValue={item.coachRating}
+            tintColor="#4A4A4A"
           />
         </View>
       </View>
@@ -85,7 +90,6 @@ const MemberFeedback = () => {
         data={feedbackData}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <FeedbackCard item={item} />}
-        nestedScrollEnabled={true}
       />
     </View>
   );
@@ -143,6 +147,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
+    backgroundColor: "transparent",
   },
   className: {
     color: "white",
