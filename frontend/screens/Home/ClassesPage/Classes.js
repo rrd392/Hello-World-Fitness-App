@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import DateDropdown from "./DateDropdown";
 import ClassCard from "./ClassCard";
+import HeaderVer2 from "../../HeaderVer2";
 
 function Classes() {
   const navigation = useNavigation();
@@ -36,34 +37,8 @@ function Classes() {
     <View style={styles.container}>
       {/* Header Section */}
       <SafeAreaView>
-        <View style={styles.headerRow}>
-          {/* Back Button */}
-          <TouchableOpacity
-            style={styles.homeButton}
-            onPress={() => navigation.navigate("MemberDashboard")}
-          >
-            <Ionicons name="caret-back" size={20} color="#E2F163" />
-            <Text style={styles.homeText}>Home</Text>
-          </TouchableOpacity>
-          <View style={styles.iconRow}>
-            <TouchableOpacity>
-              <Ionicons name="notifications" size={24} color="#896CFE" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={toggleDropdown}>
-              <Ionicons name="person" size={24} color="#896CFE" />
-            </TouchableOpacity>
-            {dropdownVisible && (
-              <View style={styles.dropdown}>
-                <TouchableOpacity style={styles.menuItem}>
-                  <Text>Profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
-                  <Text>Logout</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        </View>
+        <HeaderVer2 title="Home"
+          onPress={() => navigation.goBack()} />
       </SafeAreaView>
 
       {/* Classes Section */}
@@ -85,36 +60,11 @@ function Classes() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#232323" },
 
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 20,
+  classesSection: {
+    marginTop: 20,
   },
-
-  homeButton: { flexDirection: "row", alignItems: "center", gap: 3 },
-  homeText: { fontSize: 24, color: "#896CFE", fontWeight: "bold" },
-
-  iconRow: { flexDirection: "row", gap: 20 },
-  dropdown: {
-    position: "absolute",
-    top: 30,
-    right: 0,
-    backgroundColor: "white",
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-    padding: 10,
-    width: 100,
-    zIndex: 10,
-  },
-  menuItem: { padding: 10 },
-
-  classesSection: {},
   titleContainer: {
     marginLeft: 20,
     flexDirection: "row",

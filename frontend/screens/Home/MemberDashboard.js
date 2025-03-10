@@ -162,7 +162,7 @@ const MemberDashboard = () => {
             </TouchableOpacity>
           ) : (
             <View style={styles.classCard}>
-              <Text style={styles.noClassTitle}>No upcoming classes</Text>{" "}
+              <Text style={styles.noClassTitle}>No upcoming classes</Text>
             </View>
           )}
 

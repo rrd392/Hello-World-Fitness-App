@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import MemberFeedback from "./MemberFeedback";
 import { KeyboardAvoidingView, Platform } from "react-native";
+import HeaderVer2 from "../../HeaderVer2";
 
 function SelectedClass() {
   const navigation = useNavigation();
@@ -53,34 +54,9 @@ function SelectedClass() {
   const [failModalVisible, setFailModalVisible] = useState(false);
   const [classFull, setClassFull] = useState(false); // Set to true to show fail modal and alse to show success modal
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity
-          style={styles.homeButton}
-          onPress={() => navigation.navigate("Classes")}
-        >
-          <Ionicons name="caret-back" size={20} color="#E2F163" />
-          <Text style={styles.homeText}>Classes</Text>
-        </TouchableOpacity>
-        <View style={styles.iconRow}>
-          <TouchableOpacity>
-            <Ionicons name="notifications" size={24} color="#896CFE" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={toggleDropdown}>
-            <Ionicons name="person" size={24} color="#896CFE" />
-          </TouchableOpacity>
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <TouchableOpacity style={styles.menuItem}>
-                <Text>Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.menuItem}>
-                <Text>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#232323" }}>
+      <HeaderVer2 title="Classes"
+        onPress={() => navigation.goBack()} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -92,7 +68,9 @@ function SelectedClass() {
           renderItem={({ item }) => (
             <View style={styles.container}>
               <View style={styles.pageContent}>
+
                 <Image source={item.image} style={styles.classImage} />
+
                 <View style={styles.classCard}>
                   <View style={styles.headerRow}>
                     <Text style={styles.classTitle}>{item.title}</Text>
@@ -143,6 +121,7 @@ function SelectedClass() {
                     </View>
                   </View>
                 </View>
+
                 <TouchableOpacity
                   style={styles.signUpButton}
                   onPress={() => {
@@ -225,7 +204,7 @@ function SelectedClass() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#232323" },
 
   headerRow: {
     alignItems: "center",
@@ -234,8 +213,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 
-  homeButton: { flexDirection: "row", alignItems: "center", gap: 3 },
-  homeText: { fontSize: 24, color: "#896CFE", fontWeight: "bold" },
 
   iconRow: { flexDirection: "row", gap: 5 },
   dropdown: {
@@ -257,7 +234,8 @@ const styles = StyleSheet.create({
 
   pageContent: {
     alignItems: "center",
-    marginTop: 0,
+    gap:10,
+    padding:20,
     backgroundColor: "#B3A0FF",
   },
   classInfo: {
@@ -278,10 +256,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   classCard: {
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#232323",
     padding: 10,
     borderRadius: 15,
-    width: "95%",
+    width: "100%",
   },
   classTitle: { fontSize: 34, color: "#E2F163", fontWeight: "bold" },
   classDescription: { fontSize: 14, color: "white", marginTop: 10 },
@@ -306,8 +284,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 40,
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
   },
   signUpText: { fontSize: 18, color: "#E2F163", fontWeight: "bold" },
 
