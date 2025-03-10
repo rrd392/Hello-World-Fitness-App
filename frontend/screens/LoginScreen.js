@@ -77,6 +77,7 @@ const LoginScreen = ({ navigation }) => {
               style={styles.input}
               placeholder="Username"
               placeholderTextColor="#999"
+              autoCapitalize="none"
               onChangeText={setUsername}
               value={username}
             />
@@ -88,6 +89,7 @@ const LoginScreen = ({ navigation }) => {
               style={styles.input}
               placeholder="*************"
               placeholderTextColor="#999"
+              autoCapitalize="none"
               secureTextEntry
               onChangeText={setPassword}
               value={password}
