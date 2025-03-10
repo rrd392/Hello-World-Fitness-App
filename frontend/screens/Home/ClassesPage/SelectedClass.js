@@ -5,13 +5,15 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  ScrollView,
+  FlatList,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import MemberFeedback from "./MemberFeedback";
 import { KeyboardAvoidingView, Platform } from "react-native";
+import HeaderVer2 from "../../HeaderVer2";
 
 function SelectedClass() {
   const navigation = useNavigation();
@@ -21,7 +23,6 @@ function SelectedClass() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
-  // Class Data
   const classData = [
     {
       title: "Yoga Flow",
@@ -49,150 +50,169 @@ function SelectedClass() {
   ];
 
   const selectedClass = classData.find((cls) => cls.title === className);
-
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [failModalVisible, setFailModalVisible] = useState(false);
+  const [classFull, setClassFull] = useState(false); // Set to true to show fail modal and alse to show success modal
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
-      {/* Header */}
-      <View style={styles.headerRow}>
-        <TouchableOpacity
-          style={styles.homeButton}
-          onPress={() => navigation.navigate("Classes")}
-        >
-          <Ionicons name="caret-back" size={20} color="#E2F163" />
-          <Text style={styles.homeText}>Classes</Text>
-        </TouchableOpacity>
-        <View style={styles.iconRow}>
-          <TouchableOpacity>
-            <Ionicons name="notifications" size={24} color="#896CFE" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={toggleDropdown}>
-            <Ionicons name="person" size={24} color="#896CFE" />
-          </TouchableOpacity>
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <TouchableOpacity style={styles.menuItem}>
-                <Text>Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.menuItem}>
-                <Text>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#232323" }}>
+      <HeaderVer2 title="Classes" onPress={() => navigation.goBack()} />
 
-      {/* Wrap ScrollView with KeyboardAvoidingView */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
-          <View style={styles.container}>
-            {/* Page Content */}
-            <View style={styles.pageContent}>
-              {selectedClass ? (
-                <>
-                  <Image
-                    source={selectedClass.image}
-                    style={styles.classImage}
-                  />
-                  <View style={styles.classCard}>
-                    <View style={styles.headerRow}>
-                      <Text style={styles.classTitle}>
-                        {selectedClass.title}
+        <FlatList
+          data={selectedClass ? [selectedClass] : []}
+          keyExtractor={(item) => item.title}
+          renderItem={({ item }) => (
+            <View style={styles.container}>
+              <View style={styles.pageContent}>
+                <Image source={item.image} style={styles.classImage} />
+
+                <View style={styles.classCard}>
+                  <View style={styles.headerRow}>
+                    <Text style={styles.classTitle}>{item.title}</Text>
+                    <View style={styles.iconRow}>
+                      <Ionicons
+                        name="calendar-outline"
+                        size={20}
+                        color="white"
+                      />
+                      <Text style={styles.classDate}>{item.date}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.classInfo}>
+                    <View style={{ flex: 1, maxWidth: "65%", gap: 5 }}>
+                      <Text style={styles.classDescription}>
+                        {item.description}
                       </Text>
-                      <View style={styles.iconRow}>
+                      <View style={styles.infoRow}>
+                        <Ionicons name="time-outline" size={18} color="white" />
+                        <Text style={styles.classTime}>{item.time}</Text>
+                      </View>
+                      <View style={styles.infoRow}>
                         <Ionicons
-                          name="calendar-outline"
-                          size={20}
+                          name="person-outline"
+                          size={18}
                           color="white"
                         />
-                        <Text style={styles.classDate}>
-                          {selectedClass.date}
-                        </Text>
+                        <Text style={styles.classSlots}>{item.slots}</Text>
                       </View>
                     </View>
-                    <View style={styles.classInfo}>
-                      <View style={{ flex: 1, maxWidth: "65%", gap: 5 }}>
-                        <Text style={styles.classDescription}>
-                          {selectedClass.description}
-                        </Text>
-                        <View style={styles.infoRow}>
-                          <Ionicons
-                            name="time-outline"
-                            size={18}
-                            color="white"
-                          />
-                          <Text style={styles.classTime}>
-                            {selectedClass.time}
-                          </Text>
-                        </View>
-                        <View style={styles.infoRow}>
-                          <Ionicons
-                            name="person-outline"
-                            size={18}
-                            color="white"
-                          />
-                          <Text style={styles.classSlots}>
-                            {selectedClass.slots}
-                          </Text>
-                        </View>
-                      </View>
 
-                      {/* Right side - Coach Info */}
-                      <View style={styles.coachCard}>
-                        <View style={styles.coachProfile}>
-                          <Image
-                            source={require("./coach.jpg")}
-                            style={styles.coachImage}
-                          />
-                          <View>
-                            <Text style={styles.coachName}>
-                              {selectedClass.coach}
-                            </Text>
-                            <Text style={styles.coachEmail}>
-                              {selectedClass.coachEmail}
-                            </Text>
-                            <Text style={styles.coachNumber}>
-                              {selectedClass.coachNumber}
-                            </Text>
-                          </View>
+                    <View style={styles.coachCard}>
+                      <View style={styles.coachProfile}>
+                        <Image
+                          source={require("./coach.jpg")}
+                          style={styles.coachImage}
+                        />
+                        <View>
+                          <Text style={styles.coachName}>{item.coach}</Text>
+                          <Text style={styles.coachEmail}>
+                            {item.coachEmail}
+                          </Text>
+                          <Text style={styles.coachNumber}>
+                            {item.coachNumber}
+                          </Text>
                         </View>
                       </View>
                     </View>
                   </View>
+                </View>
 
-                  {/* Sign-Up Button */}
-                  <TouchableOpacity style={styles.signUpButton}>
-                    <Text style={styles.signUpText}>Sign Up For Class</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <Text style={styles.errorText}>Class not found</Text>
-              )}
+                <TouchableOpacity
+                  style={styles.signUpButton}
+                  onPress={() => {
+                    if (classFull) {
+                      setFailModalVisible(true); // Show fail modal if class is full
+                    } else {
+                      setSuccessModalVisible(true); // Show success modal if class is not full
+                    }
+                  }}
+                >
+                  <Text style={styles.signUpText}>Sign Up For Class</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{ height: "100%" }}>
+                <MemberFeedback />
+              </View>
+              <Modal
+                visible={successModalVisible}
+                transparent
+                animationType="slide"
+              >
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <TouchableOpacity
+                      style={styles.closeButton}
+                      onPress={() => setSuccessModalVisible(false)}
+                    >
+                      <Ionicons name="close" size={20} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.modalText}>
+                      Successfully Signed Up For Class
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.viewMoreButton}
+                      onPress={() => {
+                        setSuccessModalVisible(false);
+                        setFailModalVisible(false);
+                        navigation.navigate("Classes");
+                      }}
+                    >
+                      <Text style={styles.viewMoreText}>View More Classes</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
+              <Modal
+                visible={failModalVisible}
+                transparent
+                animationType="slide"
+              >
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <TouchableOpacity
+                      style={styles.closeButton}
+                      onPress={() => setFailModalVisible(false)}
+                    >
+                      <Ionicons name="close" size={20} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.modalText}>Sorry, Class is Full.</Text>
+                    <TouchableOpacity
+                      style={styles.viewMoreButton}
+                      onPress={() => {
+                        setModalVisible(false);
+                        navigation.navigate("Classes");
+                      }}
+                    >
+                      <Text style={styles.viewMoreText}>View More Classes</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
             </View>
-
-            {/* Members Feedback */}
-            <MemberFeedback />
-          </View>
-        </ScrollView>
+          )}
+          ListEmptyComponent={
+            <Text style={styles.errorText}>Class not found</Text>
+          }
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#232323" },
 
   headerRow: {
+    alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 20,
+    padding: 10,
   },
 
-  homeButton: { flexDirection: "row", alignItems: "center", gap: 3 },
-  homeText: { fontSize: 24, color: "#896CFE", fontWeight: "bold" },
-
-  iconRow: { flexDirection: "row", gap: 20 },
+  iconRow: { flexDirection: "row", gap: 5 },
   dropdown: {
     position: "absolute",
     top: 30,
@@ -212,7 +232,8 @@ const styles = StyleSheet.create({
 
   pageContent: {
     alignItems: "center",
-    marginTop: 0,
+    gap: 10,
+    padding: 20,
     backgroundColor: "#B3A0FF",
   },
   classInfo: {
@@ -220,7 +241,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center", // Ensures items don't stretch
     gap: 10, // Adds spacing between description and coach card
-    padding: 5,
+    paddingLeft: 15,
+    paddingRight: 10,
+    paddingBottom: 10,
   },
 
   classImage: {
@@ -231,26 +254,26 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   classCard: {
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#232323",
     padding: 10,
     borderRadius: 15,
-    width: "95%",
+    width: "100%",
   },
   classTitle: { fontSize: 34, color: "#E2F163", fontWeight: "bold" },
-  classDescription: { fontSize: 16, color: "white", marginTop: 10 },
+  classDescription: { fontSize: 14, color: "white", marginTop: 10 },
   infoRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 5 },
-  classTime: { fontSize: 16, color: "white" },
-  classSlots: { fontSize: 16, color: "red", fontWeight: "bold" },
+  classTime: { fontSize: 14, color: "white" },
+  classSlots: { fontSize: 14, color: "red", fontWeight: "bold" },
   classDate: { fontSize: 16, color: "white" },
   coachCard: {
     backgroundColor: "#C4E538",
     borderRadius: 10,
     padding: 10,
-    marginTop: 15,
+    marginTop: 60,
   },
   coachProfile: { flexDirection: "row", alignItems: "center", gap: 10 },
   coachImage: { width: 40, height: 40, borderRadius: 20 },
-  coachName: { fontSize: 16, fontWeight: "bold" },
+  coachName: { fontSize: 18, fontWeight: "500" },
   coachEmail: { fontSize: 10, color: "#444" },
   coachNumber: { fontSize: 10, color: "#444" },
 
@@ -259,12 +282,46 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 40,
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
   },
   signUpText: { fontSize: 18, color: "#E2F163", fontWeight: "bold" },
 
   errorText: { fontSize: 18, color: "red", textAlign: "center", marginTop: 20 },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#E2F163",
+    padding: 20,
+    borderRadius: 15,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "black",
+  },
+  viewMoreButton: {
+    backgroundColor: "black",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  viewMoreText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+  },
 });
 
 export default SelectedClass;
