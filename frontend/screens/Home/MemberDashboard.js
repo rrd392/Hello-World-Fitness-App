@@ -119,7 +119,10 @@ const MemberDashboard = () => {
             <Ionicons name="barbell" size={30} color="#B3A0FF" />
             <Text style={styles.navText}>Classes</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
+          <TouchableOpacity 
+            style={styles.navItem}
+            onPress={() => navigation.navigate("Nutrition")}
+            >
             <Ionicons name="nutrition" size={30} color="#B3A0FF" />
             <Text style={styles.navText}>Nutrition</Text>
           </TouchableOpacity>
