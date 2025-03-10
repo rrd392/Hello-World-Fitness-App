@@ -55,8 +55,7 @@ function SelectedClass() {
   const [classFull, setClassFull] = useState(false); // Set to true to show fail modal and alse to show success modal
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#232323" }}>
-      <HeaderVer2 title="Classes"
-        onPress={() => navigation.goBack()} />
+      <HeaderVer2 title="Classes" onPress={() => navigation.goBack()} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -68,7 +67,6 @@ function SelectedClass() {
           renderItem={({ item }) => (
             <View style={styles.container}>
               <View style={styles.pageContent}>
-
                 <Image source={item.image} style={styles.classImage} />
 
                 <View style={styles.classCard}>
@@ -157,6 +155,7 @@ function SelectedClass() {
                     <TouchableOpacity
                       style={styles.viewMoreButton}
                       onPress={() => {
+                        setSuccessModalVisible(false);
                         setFailModalVisible(false);
                         navigation.navigate("Classes");
                       }}
@@ -213,7 +212,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 
-
   iconRow: { flexDirection: "row", gap: 5 },
   dropdown: {
     position: "absolute",
@@ -234,8 +232,8 @@ const styles = StyleSheet.create({
 
   pageContent: {
     alignItems: "center",
-    gap:10,
-    padding:20,
+    gap: 10,
+    padding: 20,
     backgroundColor: "#B3A0FF",
   },
   classInfo: {

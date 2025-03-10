@@ -166,8 +166,11 @@ const MemberDashboard = () => {
             </View>
           )}
 
-          <TouchableOpacity style={styles.moreButton}>
-            <Text style={styles.moreButtonText}>More</Text>
+          <TouchableOpacity
+            style={styles.moreButton}
+            onPress={() => navigation.navigate("YourClasses")}
+          >
+            <Text style={styles.moreButtonText}>Your Classes</Text>
           </TouchableOpacity>
         </View>
 
