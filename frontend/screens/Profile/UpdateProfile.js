@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
         width: 120,
         height: 120,
         borderRadius: 75,
-        overflow: 'hidden', // Ensures round shape if the image is round
+        overflow: 'hidden', 
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         width: 110,
-        height: 30, // half the height for a semicircle
+        height: 30, 
         backgroundColor: 'rgba(0,0,0,0.4)',
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
