@@ -7,6 +7,10 @@ router.get('/display/:user_id', (req, res) => {
 
     const userQuery = `SELECT name FROM user WHERE user_id = ?`;
 
+    const membershipQuery = `SELECT m.plan_name FROM user_membership um
+                            INNER JOIN membership m ON um.membership_id = m.membership_id 
+                            WHERE user_id = ?`;
+
     const query = `
         SELECT c.class_name, c.schedule_date, c.start_time, c.end_time, c.class_image, f.name AS trainerName
         FROM class_participants cp 
@@ -47,8 +51,14 @@ router.get('/display/:user_id', (req, res) => {
                             console.error("Database error:", error);
                             return res.status(500).json({ success: false, message: "Internal server error" });
                         }
+                        db.query(membershipQuery, [user_id], (error, membership) => {
+                            if (error) {
+                                console.error("Database error:", error);
+                                return res.status(500).json({ success: false, message: "Internal server error" });
+                            }
 
-                        res.json({ success: true, classes: results[0], userName, disClass: classes, workoutPlans: workoutPlans, diet:diet});
+                            res.json({ success: true, classes: results[0], userName, disClass: classes, workoutPlans: workoutPlans, diet:diet, membership:membership[0].plan_name});
+                        });
                     });
                 });
             });

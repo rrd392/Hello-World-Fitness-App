@@ -15,12 +15,17 @@ import * as SecureStore from 'expo-secure-store';
 import { AuthContext } from "../../context/AuthContext";
 import LogoutModal from './LogoutModal';
 import HeaderVer1 from '../HeaderVer1';
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
+
 
 
 const ProfileDashboard = () => {
     const navigation = useNavigation();
     const { logoutContext } = useContext(AuthContext);
-    const [showLogoutModel,setShowLogoutModal]=useState(false);
+    const [showLogoutModel, setShowLogoutModal] = useState(false);
+    const [userId, setUserId] = useState("");
+    const [userData, setUserData] = useState(null);
 
 
     async function logout() {
@@ -29,13 +34,48 @@ const ProfileDashboard = () => {
         console.log("Logged out, token removed.");
     }
 
+    useEffect(() => {
+        async function fetchUserId() {
+            const token = await getUserId();
+            setUserId(token.id);
+        }
+        fetchUserId();
+    }, []);
+
+    useEffect(() => {
+        if (userId) {
+            fetchUserData();
+        }
+    }, [userId]);
+
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/profile/displayUserData/${userId}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+            }
+            const data = await response.json();
+            setUserData(data);
+
+
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+
 
     const menuItems = [
         { title: "Profile", icon: "person", onPress: () => navigation.navigate("UpdateProfile") },
         {
             title: "Membership",
             icon: "star",
-            onPress: () => navigation.navigate("MembershipStep1"),
+            onPress: () => navigation.navigate("MembershipRenewal"),
         },
         {
             title: "Transaction History",
@@ -47,45 +87,61 @@ const ProfileDashboard = () => {
             icon: "trophy",
             onPress: () => navigation.navigate("Achievement"),
         },
-        { title: "Logout", icon: "exit", onPress:()=> setShowLogoutModal(true) },
+        { title: "Logout", icon: "exit", onPress: () => setShowLogoutModal(true) },
     ];
 
-    
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-GB", { timeZone: "Asia/Kuala_Lumpur" });
+    }
+
+    function calculateAge(dobString) {
+        const dob = new Date(dobString);
+        const diffMs = Date.now() - dob.getTime();
+        const ageDate = new Date(diffMs); // miliseconds from epoch
+        return Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
+
+    // Check if userData is null before accessing properties
+    if (!userData) {
+        return <Text>Loading user data...</Text>;
+    }
 
     return (
         <ScrollView style={styles.container}>
             <SafeAreaView>
-                
+
                 <HeaderVer1
                     title="Home"
-                    onPress={() => navigation.navigate("MemberDashboard")}
+                    onPress={() => navigation.navigate("Home", { screen: "MemberDashboard" })}
                 />
 
                 {/* Header Section */}
                 <View style={styles.headerSection}>
-                    <Text style={styles.uidText}>ID: 1</Text>
+                    <Text style={styles.uidText}>ID: {userData.user_id}</Text>
                     <Image
-                        source={require("../../assets/icon.png")} //put profile image here
+                        source={userData.profile_picture? { uri: `${API_BASE_URL}/uploads/${userData.profile_picture}?t=${Date.now()}`}
+                        : require("../../assets/icon.png")} //put profile image here
                         style={styles.profileImage}
                     />
-                    <Text style={styles.userName}>Madison Smith</Text>
-                    <Text style={styles.userEmail}>madison@example.com</Text>
-                    <Text style={styles.userBirthday}>Birthday: April 1st</Text>
-                    <Text style={styles.membershipBadge}>Standard Monthly</Text>
+                    <Text style={styles.userName}>{userData.name}</Text>
+                    <Text style={styles.userEmail}>{userData.email}</Text>
+                    <Text style={styles.userBirthday}>Birthday: {formatDate(userData.date_of_birth)} </Text>
+                    <Text style={styles.membershipBadge}>{userData.plan_name}</Text>
 
                     <View style={styles.statsContainer}>
                         <View style={styles.statBox}>
-                            <Text style={styles.statNumber}>75 Kg</Text>
+                            <Text style={styles.statNumber}>{userData.weight} Kg</Text>
                             <Text style={styles.statLabel}>Weight</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.statBox}>
-                            <Text style={styles.statNumber}>28</Text>
+                            <Text style={styles.statNumber}>{calculateAge(userData.date_of_birth)}</Text>
                             <Text style={styles.statLabel}>Years Old</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.statBox}>
-                            <Text style={styles.statNumber}>1.65 CM</Text>
+                            <Text style={styles.statNumber}>{userData.height} CM</Text>
                             <Text style={styles.statLabel}>Height</Text>
                         </View>
                     </View>
@@ -109,13 +165,13 @@ const ProfileDashboard = () => {
                 </View>
 
                 <LogoutModal
-                visible={showLogoutModel}
-                onCancel={()=>setShowLogoutModal(false)}
-                onConfirm={()=>{
-                    setShowLogoutModal(false);
-                    logout();
-                }}
-                
+                    visible={showLogoutModel}
+                    onCancel={() => setShowLogoutModal(false)}
+                    onConfirm={() => {
+                        setShowLogoutModal(false);
+                        logout();
+                    }}
+
                 ></LogoutModal>
             </SafeAreaView>
         </ScrollView>
@@ -136,7 +192,7 @@ const styles = StyleSheet.create({
     headerSection: {
         alignItems: "center",
         backgroundColor: "#B3A0FF",
-        paddingTop:15,
+        paddingTop: 15,
         paddingBottom: 50,
     },
 
@@ -199,8 +255,8 @@ const styles = StyleSheet.create({
         padding: 15,
         borderBottomColor: "#333",
         borderBottomWidth: 1,
-        width:"90%",
-        alignSelf:"center"
+        width: "90%",
+        alignSelf: "center"
     },
     menuIconContainer: {
         width: 40,

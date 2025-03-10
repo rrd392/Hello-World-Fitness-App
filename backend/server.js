@@ -29,6 +29,9 @@ app.use('/api/notification', notificationRoutes);
 const workoutPlanRoutes = require('./routes/workout-plan');
 app.use('/api/workout-plan', workoutPlanRoutes);
 
+const attendanceRoutes = require('./routes/attendance');
+app.use('/api/attendance', attendanceRoutes);
+
 const profileRoutes = require('./routes/profile');
 app.use('/api/profile', profileRoutes);
 

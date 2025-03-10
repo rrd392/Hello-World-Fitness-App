@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView,View, Image, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
 
-const DetailWorkoutPlan = ({ route }) => {
+const CustomDetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
-    const { workout_plan, category } = route.params;
+    const { workout_plan, selectedDay } = route.params;
 
     //Profile icon dropdown button
     const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
@@ -61,18 +60,10 @@ const DetailWorkoutPlan = ({ route }) => {
         navigation.navigate('RunWorkoutPlan', { workout_plan, planDetails})
     }
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedDay, setSelectedDay] = useState("Monday");
-
-    const handleConfirm = () => {
-        setModalVisible(false);
-        onAddWorkout(userId, workout_plan.workout_plan_id, selectedDay); 
-    };
-
-    const onAddWorkout = async (user_id, workout_plan_id, selectedDay) => {
+    const deleteWorkoutPlan = async (user_id, workout_plan_id, selectedDay) => {
         try {
-        const response = await fetch(`${API_BASE_URL}/api/workout-plan/addUserWorkoutPlan`, {
-            method: "POST",
+        const response = await fetch(`${API_BASE_URL}/api/workout-plan/deleteUserWorkoutPlan`, {
+            method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({user_id, workout_plan_id, selectedDay})
         });
@@ -85,10 +76,11 @@ const DetailWorkoutPlan = ({ route }) => {
         const data = await response.json();
     
         if (data.success) {
-            alert("Workout Plan successfully added.");
+            alert("Workout Plan successfully deleted.");
+            navigation.navigate('MemberWorkoutPlan');
         }
         } catch (error) {
-        console.error("Error adding workout plan:", error);
+        console.error("Error deleting workout plan:", error);
         Alert.alert("Error", error.message || "Network request failed");
         }
     };
@@ -139,51 +131,13 @@ const DetailWorkoutPlan = ({ route }) => {
                         </View>
                     ))}
 
-                    {category === "Coach" ? (
-                        <TouchableOpacity style={styles.startButton} onPress={() => toggleRunWorkout(workout_plan, planDetails)}>
-                            <Text style={styles.startButtonText}>Let's Start</Text>
-                        </TouchableOpacity>
-                    ):(
-                        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.addButton}>
-                            <Text style={styles.startButtonText}>Add Workout Plan</Text>
-                        </TouchableOpacity> 
-                    )}
-                    
-                    {/* Modal */}
-                    <Modal 
-                        animationType="slide" 
-                        transparent={true} 
-                        visible={modalVisible} 
-                        onRequestClose={() => setModalVisible(false)}
-                    >
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>Select a Day</Text>
-
-                                {/* Picker Dropdown */}
-                                <Picker
-                                    selectedValue={selectedDay}
-                                    onValueChange={(itemValue) => setSelectedDay(itemValue)}
-                                    style={styles.picker}
-                                    itemStyle={{ color: "black" }} 
-                                >
-                                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                                        <Picker.Item key={day} label={day} value={day} />
-                                    ))}
-                                </Picker>
-
-                                {/* Buttons */}
-                                <View style={styles.buttonContainer}>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                                        <Text style={styles.buttonText}>Cancel</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-                                        <Text style={styles.buttonText}>Confirm</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
+                    {/* Start Button */}
+                    <TouchableOpacity style={styles.startButton} onPress={() => toggleRunWorkout(workout_plan, planDetails)}>
+                        <Text style={styles.startButtonText}>Let's Start</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => deleteWorkoutPlan(userId, workout_plan.workout_plan_id, selectedDay)} style={styles.addButton}>
+                        <Text style={styles.startButtonText}>Delete Workout Plan</Text>
+                    </TouchableOpacity> 
                 </View>
             </ScrollView>
         </View>
@@ -281,58 +235,14 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     addButton: {
-        backgroundColor: "#E2F163",
+        backgroundColor: "rgb(252, 93, 93)",
         padding: 15,
         borderRadius: 20,
         marginTop: 20,
         marginBottom:30,
         alignItems: "center",
     },
-
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-        width: 350,
-        backgroundColor: '#fff',
-        padding: 20,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    picker: {
-        width: "100%",
-        height: 150,
-        color:'black'
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 100,
-    },
-    cancelButton: {
-        backgroundColor: 'red',
-        padding: 10,
-        borderRadius: 5,
-        marginRight: 10,
-    },
-    confirmButton: {
-        backgroundColor: 'green',
-        padding: 10,
-        borderRadius: 5,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-    },
 });
 
 
-export default DetailWorkoutPlan;
+export default CustomDetailWorkoutPlan;

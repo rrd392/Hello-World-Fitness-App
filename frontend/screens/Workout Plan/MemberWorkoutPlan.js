@@ -1,6 +1,6 @@
-import React, { useState, useEffect,useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Image, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
@@ -34,13 +34,27 @@ const MemberWorkoutPlan = () => {
     fetchUserId();
   }, []);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   fetchGeneralPlan();
+  //   if (userId) {  
+  //     fetchCoachPlan();
+  //     fetchCustomPlan();
+  //   }
+  // }, [selectedLevel, userId, selectedDay]); 
+  const fetchData = async () => {
     fetchGeneralPlan();
-    if (userId) {  
+    if (userId) {
       fetchCoachPlan();
       fetchCustomPlan();
     }
-  }, [selectedLevel, userId, selectedDay]); 
+  };
+
+  // Reload data when the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [userId, selectedLevel, selectedDay])
+  );
 
   const fetchGeneralPlan = async () => {
     try {
@@ -138,8 +152,16 @@ const MemberWorkoutPlan = () => {
   };
 
   //Navigate to workout detail page
-  function toggleWorkOutDetails(workout_plan){
-    navigation.navigate('DetailWorkoutPlan', { workout_plan });
+  function toggleWorkOutDetails(workout_plan, selected){
+    navigation.navigate('DetailWorkoutPlan', { workout_plan, selected });
+  }
+
+  function toggleCustomWorkOutDetails(workout_plan, selectedDay){
+    navigation.navigate('CustomDetailWorkoutPlan', { workout_plan, selectedDay });
+  }
+
+  function toggleAddWorkoutPlan(){
+    navigation.navigate('AddWorkoutPlan');
   }
   
   return (
@@ -166,66 +188,10 @@ const MemberWorkoutPlan = () => {
             </TouchableOpacity>
           ))}
         </View>
-      </SafeAreaView>
         
-      {selected === "General" && (
-        generalPlans.length > 0 ? (
-          <View>
-            <View style={styles.levelButtons}>
-              {["Beginner", "Intermediate", "Advanced"].map((item) => (
-                <TouchableOpacity
-                  key={item}
-                  style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
-                  onPress={() => setSelectedLevel(item)}
-                >
-                  <Text style={styles.levelText}>{item}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <Text style={styles.contentTitle}>Let's Go {userName}</Text>
-            <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
-            <FlatList
-              data={generalPlans}  
-              keyExtractor={(item) => item.workout_plan_id.toString()} 
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
-                  <View style={styles.generalItem}>
-                      <Text style={styles.generalTitle}>{item.plan_name}</Text>
-                      <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
-                      <Text><Ionicons name="accessibility" size={13}></Ionicons>  {item.count} Exercises</Text>
-                  </View>
-                  <View style={styles.imageContainer}>
-                    <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.workoutImage} />
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>{item.difficulty}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-              contentContainerStyle={styles.listSection}
-            />
-          </View>
-        ):(
-          <View>
-            <View style={styles.levelButtons}>
-              {["Beginner", "Intermediate", "Advanced"].map((item) => (
-                <TouchableOpacity
-                  key={item}
-                  style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
-                  onPress={() => setSelectedLevel(item)}
-                >
-                  <Text style={styles.levelText}>{item}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
-          </View>
-        )
-        )
-      }
-      {selected === "Coach" && (
-          coachPlans.length > 0 ? (
-            <View>
+        {selected === "General" && (
+          generalPlans.length > 0 ? (
+            <View style={{ flex: 1 }}>
               <View style={styles.levelButtons}>
                 {["Beginner", "Intermediate", "Advanced"].map((item) => (
                   <TouchableOpacity
@@ -240,10 +206,124 @@ const MemberWorkoutPlan = () => {
               <Text style={styles.contentTitle}>Let's Go {userName}</Text>
               <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
               <FlatList
-              data={coachPlans}  
+                data={generalPlans}  
+                keyExtractor={(item) => item.workout_plan_id.toString()} 
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => toggleWorkOutDetails(item, selected)} style={styles.generalCard}>
+                    <View style={styles.generalItem}>
+                        <Text style={styles.generalTitle}>{item.plan_name}</Text>
+                        <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
+                        <Text><Ionicons name="accessibility" size={13}></Ionicons>  {item.count} Exercises</Text>
+                    </View>
+                    <View style={styles.imageContainer}>
+                      <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.workoutImage} />
+                      <View style={styles.badge}>
+                        <Text style={styles.badgeText}>{item.difficulty}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                contentContainerStyle={styles.listSection}
+              />
+            </View>
+          ):(
+            <View style={{ flex: 1 }}>
+              <View style={styles.levelButtons}>
+                {["Beginner", "Intermediate", "Advanced"].map((item) => (
+                  <TouchableOpacity
+                    key={item}
+                    style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
+                    onPress={() => setSelectedLevel(item)}
+                  >
+                    <Text style={styles.levelText}>{item}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text style={styles.contentText}>No Workout Plans Available.</Text>
+            </View>
+          )
+          )
+        }
+        {selected === "Coach" && (
+            coachPlans.length > 0 ? (
+              <View style={{ flex: 1 }}>
+                <View style={styles.levelButtons}>
+                  {["Beginner", "Intermediate", "Advanced"].map((item) => (
+                    <TouchableOpacity
+                      key={item}
+                      style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
+                      onPress={() => setSelectedLevel(item)}
+                    >
+                      <Text style={styles.levelText}>{item}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <Text style={styles.contentTitle}>Let's Go {userName}</Text>
+                <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
+                <FlatList
+                  data={coachPlans}  
+                  keyExtractor={(item) => item.workout_plan_id.toString()} 
+                  renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => toggleWorkOutDetails(item, selected)} style={styles.generalCard}>
+                    <View style={styles.generalItem}>
+                        <Text style={styles.generalTitle}>{item.plan_name}</Text>
+                        <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
+                        <Text><Ionicons name="accessibility" size={13}></Ionicons>  {item.count} Exercises</Text>
+                    </View>
+                    <View style={styles.imageContainer}>
+                      <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.workoutImage} />
+                      <View style={styles.badge}>
+                        <Text style={styles.badgeText}>{item.difficulty}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                contentContainerStyle={styles.listSection}
+                />
+              </View>
+            ):(
+              <View style={{ flex: 1 }}>
+                <View style={styles.levelButtons}>
+                  {["Beginner", "Intermediate", "Advanced"].map((item) => (
+                    <TouchableOpacity
+                      key={item}
+                      style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
+                      onPress={() => setSelectedLevel(item)}
+                    >
+                      <Text style={styles.levelText}>{item}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <Text style={styles.contentText}>No Workout Plans Available.</Text>
+              </View>
+            )
+        )}
+        {selected === "Custom" && (
+          customPlans.length > 0 ? (
+            <View style={{ flex: 1 }}>
+              <ModalDropdown
+                options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
+                defaultValue="All"
+                style={{marginTop:30}}
+                textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
+                dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
+                dropdownTextStyle={{
+                  fontSize: 16, 
+                  color: "#000", 
+                  textAlign: "center", 
+                  paddingVertical: 10, 
+                  borderRadius:10
+                }}
+                onSelect={(index, value) => setSelectedDay(value)}
+              />
+
+              <Text style={styles.contentTitle}>Let's Go {userName}</Text>
+              <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
+              <FlatList
+              data={customPlans}  
               keyExtractor={(item) => item.workout_plan_id.toString()} 
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
+                <TouchableOpacity onPress={() => toggleCustomWorkOutDetails(item, selectedDay)} style={styles.generalCard} key={item.workout_plan_id}>
                   <View style={styles.generalItem}>
                       <Text style={styles.generalTitle}>{item.plan_name}</Text>
                       <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
@@ -259,94 +339,44 @@ const MemberWorkoutPlan = () => {
               )}
               contentContainerStyle={styles.listSection}
               />
+              <TouchableOpacity style={styles.addButton} onPress={() => toggleAddWorkoutPlan()}>
+                <Ionicons name="add" size={35} marginTop={7}></Ionicons>
+              </TouchableOpacity>
             </View>
           ):(
-            <View>
-              <View style={styles.levelButtons}>
-                {["Beginner", "Intermediate", "Advanced"].map((item) => (
-                  <TouchableOpacity
-                    key={item}
-                    style={[styles.levelItem, selectedLevel === item && styles.selectedLevelItem]} 
-                    onPress={() => setSelectedLevel(item)}
-                  >
-                    <Text style={styles.levelText}>{item}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
+            <View style={{ flex: 1 }}>
+              <ModalDropdown
+                options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
+                defaultValue="All"
+                style={{marginTop:30}}
+                textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
+                dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
+                dropdownTextStyle={{
+                  fontSize: 16, 
+                  color: "#000", 
+                  textAlign: "center", 
+                  paddingVertical: 10, 
+                  borderRadius:10
+                }}
+                onSelect={(index, value) => setSelectedDay(value)}
+              />
+              <Text style={styles.contentText}>No Workout Plans Available.</Text>
+              <TouchableOpacity style={styles.addButton} onPress={() => toggleAddWorkoutPlan()}>
+                <Ionicons name="add" size={35} marginTop={7}></Ionicons>
+              </TouchableOpacity>
             </View>
           )
-      )}
-      {selected === "Custom" && (
-        customPlans.length > 0 ? (
-          <View>
-            <ModalDropdown
-              options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
-              defaultValue="All"
-              textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
-              dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
-              dropdownTextStyle={{
-                fontSize: 16, 
-                color: "#000", 
-                textAlign: "center", 
-                paddingVertical: 10, 
-                borderRadius:10
-              }}
-              onSelect={(index, value) => setSelectedDay(value)}
-            />
-
-            <Text style={styles.contentTitle}>Let's Go {userName}</Text>
-            <Text style={styles.contentSubTitle}>Explore Different Workout Styles</Text>
-            <FlatList
-            data={customPlans}  
-            keyExtractor={(item) => item.workout_plan_id.toString()} 
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => toggleWorkOutDetails(item)} style={styles.generalCard}>
-                <View style={styles.generalItem}>
-                    <Text style={styles.generalTitle}>{item.plan_name}</Text>
-                    <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
-                    <Text><Ionicons name="accessibility" size={13}></Ionicons>  {item.count} Exercises</Text>
-                </View>
-                <View style={styles.imageContainer}>
-                  <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.workoutImage} />
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{item.difficulty}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            )}
-            contentContainerStyle={styles.listSection}
-            />
-          </View>
-        ):(
-          <View>
-            <ModalDropdown
-              options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
-              defaultValue="All"
-              textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
-              dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
-              dropdownTextStyle={{
-                fontSize: 16, 
-                color: "#000", 
-                textAlign: "center", 
-                paddingVertical: 10, 
-                borderRadius:10
-              }}
-              onSelect={(index, value) => setSelectedDay(value)}
-            />
-            <Text style={styles.contentText}>No Workout Plans Available for this level.</Text>
-          </View>
-        )
-      )}
-
+        )}
+      </SafeAreaView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', paddingBottom:270, padding: 20},
+  container: { flex: 1, backgroundColor: '#000', padding: 20, paddingBottom:0, marginBottom:-30},
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
+  header:{flex:1},
   headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
   iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
   navButtons:{flexDirection: 'row', justifyContent: 'space-between', marginTop: 20},
@@ -354,11 +384,12 @@ const styles = StyleSheet.create({
   navText:{color:'white', fontSize:16, fontWeight:'bold'},
   selectedNavItem: {backgroundColor: "rgba(255, 255, 255, 0.5)", paddingVertical:10, width:'33%'},
   
-  levelButtons: { flexDirection: 'row', justifyContent: 'space-between', marginBottom:30, marginTop:-15},
+  levelButtons: { flexDirection: 'row', justifyContent: 'space-between', marginBottom:30, marginTop:20},
   levelItem: { alignItems: 'center', backgroundColor:'rgba(226, 241, 99, 0.5)', borderRadius:15, padding:8, width:'30%'},
   levelText: { color: '#000', fontSize:14 },
   selectedLevelItem:{backgroundColor: "rgba(226, 241, 99, 1)", width:'30%'},
 
+  listSection:{},
   dropdown: {
     position: "absolute",
     top: 30,
@@ -376,7 +407,6 @@ const styles = StyleSheet.create({
   },
   menuItem: {padding: 10,},
 
-  // content: { alignItems: "center",},
   contentTitle:{color:'#E2F163', fontSize:20, textAlign:'left', marginBottom: 10, fontWeight:'bold'},
   contentSubTitle:{fontSize: 14, color: '#fff', marginBottom: 30, textAlign:'left'},
   contentText: {color: "white", fontSize: 16,},
@@ -399,6 +429,16 @@ const styles = StyleSheet.create({
   badgeText: {
     color: "#000",
     fontSize: 12,
+  },
+  addButton:{
+    borderRadius:"50%",
+    backgroundColor:"#E2F163",
+    width:50,
+    height:50,
+    alignItems:"center",
+    position:'absolute',
+    bottom:20,
+    right:0
   },
   
 });

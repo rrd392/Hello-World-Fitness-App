@@ -13,10 +13,6 @@ const RunWorkoutPlan = ({ route }) => {
     const { workout_plan, planDetails } = route.params;
 
     //Profile icon dropdown button
-    const [dropdownVisible, setDropdownVisible] = useState(false);
-
-    const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
-
     const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
 
     //Notification icon pop up page
@@ -73,17 +69,15 @@ const RunWorkoutPlan = ({ route }) => {
         }
     };
 
-    // Check if all exercises are completed
-    const allExercisesCompleted = planDetails.every(
-        workout => (clickCounts[workout.workout_detail_id] || 0) >= workout.sets
-    );
+    const [completedExercise, setCompleteExercise] = useState([]);
 
-    const addPoints = async (user_id, difficulty) => {
+    const addPoints = async (user_id, difficulty, completedExercise, planDetails) => {
+        let workout_plan_id = workout_plan.workout_plan_id;
         try {
             const response = await fetch(`${API_BASE_URL}/api/workout-plan/addPoints`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({user_id, difficulty})
+              body: JSON.stringify({user_id, difficulty, completedExercise, planDetails, workout_plan_id})
             });
       
             if (!response.ok) {
@@ -95,6 +89,7 @@ const RunWorkoutPlan = ({ route }) => {
       
             if (data.success) {
               alert(`You just earned ${data.points} points!`);
+              navigation.navigate('MemberWorkoutPlan');
             }
           } catch (error) {
             console.error("Error adding points:", error);
@@ -144,6 +139,12 @@ const RunWorkoutPlan = ({ route }) => {
                             outputRange: ["0deg", "360deg"],
                         }) || "0deg";
 
+                        useEffect(() => {
+                            if (isCompleted) {
+                                setCompleteExercise(prev => [...prev, workoutId]);
+                            }
+                        }, [isCompleted, workoutId]);
+
                         return (
                             <View key={workoutId} style={styles.workoutItem}>
                                 <TouchableOpacity
@@ -175,9 +176,9 @@ const RunWorkoutPlan = ({ route }) => {
 
                     {/* Complete Button */}
                     <TouchableOpacity 
-                        onPress={() => addPoints(userId, workout_plan.difficulty)}
-                        disabled={!allExercisesCompleted}
-                        style={[styles.startButton, { backgroundColor: allExercisesCompleted ? "rgba(226, 241, 99, 1)" : "rgba(226, 241, 99, 0.5)" }]}
+                        onPress={() => addPoints(userId, workout_plan.difficulty, completedExercise, planDetails)}
+                        disabled={completedExercise.length == 0}
+                        style={[styles.startButton, { backgroundColor: completedExercise.length > 0 ? "rgba(226, 241, 99, 1)" : "rgba(226, 241, 99, 0.5)" }]}
                     >
                         <Text style={styles.startButtonText}>Complete</Text>
                     </TouchableOpacity>

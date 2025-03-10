@@ -6,7 +6,8 @@ import ProfileDashboard from "../screens/Profile/ProfileDashboard";
 import Notification from "../screens/Home/Notification";
 import DetailWorkoutPlan from "../screens/Workout Plan/DetailWorkoutPlan";
 import RunWorkoutPlan from "../screens/Workout Plan/RunWorkoutPlan";
-// import AddWorkoutPlanModal from "../screens/Workout Plan/AddWorkoutPlanModal";
+import CustomDetailWorkoutPlan from "../screens/Workout Plan/CustomDetailWorkoutPlan";
+import AddWorkoutPlan from "../screens/Workout Plan/AddWorkoutPlan";
 
 const WorkoutPlanStackNavigator = createStackNavigator();
 
@@ -21,7 +22,8 @@ const WorkoutPlanStack = () => {
             <WorkoutPlanStackNavigator.Screen name="ProfileDashboard" component={ProfileDashboard} />
             <WorkoutPlanStackNavigator.Screen name="DetailWorkoutPlan" component={DetailWorkoutPlan} />
             <WorkoutPlanStackNavigator.Screen name="RunWorkoutPlan" component={RunWorkoutPlan} />
-            {/* <WorkoutPlanStackNavigator.Screen name="AddWorkoutPlanModal" component={AddWorkoutPlanModal} /> */}
+            <WorkoutPlanStackNavigator.Screen name="CustomDetailWorkoutPlan" component={CustomDetailWorkoutPlan} />
+            <WorkoutPlanStackNavigator.Screen name="AddWorkoutPlan" component={AddWorkoutPlan} />
         </WorkoutPlanStackNavigator.Navigator>
     );
 };

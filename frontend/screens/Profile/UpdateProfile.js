@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     TextInput,
     ScrollView,
+    Alert
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,7 +17,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import HeaderVer1 from "../HeaderVer1";
 import { getUserId } from '../getUserId';
 import API_BASE_URL from "../../env";
-import * as ImagePicker from "react-native-image-picker";
+import * as ImagePicker from "expo-image-picker";
 
 const UpdateProfile = () => {
 
@@ -75,7 +76,7 @@ const UpdateProfile = () => {
                 password: "", 
                 name: data.name || "",
                 contact: data.contact_number || "",
-                dob: data.date_of_birth ? new Date(data.date_of_birth) : new Date(), 
+                dob: data.date_of_birth ? new Date(data.date_of_birth) : new Date(),
                 gender: data.gender || "",
                 height: data.height || "",
                 weight: data.weight || "",
@@ -90,8 +91,6 @@ const UpdateProfile = () => {
           Alert.alert("Error", error.message || "Network request failed");
         }
     };
-
-    const [showDatePicker, setShowDatePicker] = useState(false);
 
     //fitness goal dropdown
     const [showFitnessGoalDropdown, setShowFitnessGoalDropdown] = useState(false);
@@ -131,28 +130,29 @@ const UpdateProfile = () => {
             quality: 1,
         });
     
-        if (!result.canceled) {
-            setUpdateData((prev) => ({ ...prev, profileImage: result.assets[0].uri }));
-            await uploadImage(result.assets[0].uri);
-        }
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            await uploadImage(result.assets[0].uri, updateData.username);
+        }        
     };
 
-    const uploadImage = async (imageUri) => {
+    const uploadImage = async (imageUri, username) => {
         setUploading(true);
     
         let formData = new FormData();
         formData.append("image", {
             uri: imageUri,
             type: "image/jpeg",
-            name: "profile.jpg",
+            name: `${username}.jpg`,
         });
+        formData.append("userId", userId); 
     
         try {
-            let response = await fetch(`${API_BASE_URL}/upload`, {
+            let response = await fetch(`${API_BASE_URL}/api/profile/uploadImage`, {
                 method: "POST",
                 body: formData,
                 headers: {
                     "Content-Type": "multipart/form-data",
+                    "Accept": "application/json",
                 },
             });
     
@@ -160,8 +160,8 @@ const UpdateProfile = () => {
             setUploading(false);
     
             if (response.ok) {
+                ((prev) => ({ ...prev, profileImage: result.imageUrl })); 
                 Alert.alert("Success", "Image uploaded successfully!");
-                setUpdateData((prev) => ({ ...prev, profileImage: result.imageUrl })); // Use server image URL
             } else {
                 Alert.alert("Error", result.message);
             }
@@ -172,9 +172,26 @@ const UpdateProfile = () => {
         }
     };    
 
-    const handleUpdateProfile = () => {
-        // Handle profile update logic
-        console.log('Profile Updated!');
+    const handleUpdateProfile = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/profile/updateUser`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ updateData, userId })
+            });
+      
+            const data = await response.json();
+      
+            if (data.success) {
+                Alert.alert(data.message);
+                fetchUserData();
+            }else{
+                Alert.alert(data.message);
+            }
+        } catch (error) {
+        console.error("Error updating user data:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
     };
 
     return (
@@ -190,7 +207,7 @@ const UpdateProfile = () => {
                         <TouchableOpacity style={styles.profileImageContainer} onPress={pickImage} disabled={uploading}>
                             <Image
                                 source={updateData.profileImage
-                                    ? { uri: updateData.profileImage }
+                                    ? { uri: `${API_BASE_URL}/uploads/${updateData.profileImage}?t=${Date.now()}`}
                                     : require("../../assets/icon.png")}
                                 style={styles.profileImage}
                             />
@@ -199,20 +216,9 @@ const UpdateProfile = () => {
                                 <Ionicons name="camera-outline" size={24} color="#fff" />
                             </View>
                         </TouchableOpacity>
-                        {/* <TouchableOpacity style={styles.profileImageContainer} onPress={() => console.log("Profile image")}>
-                            <Image
-                                source={updateData.profileImage ? {uri: `${API_BASE_URL}/uploads/${upcomingClassData[0].class_image}`}
-                                  :require("../../assets/icon.png")} 
-                                style={styles.profileImage}
-                            />
-                            <View style={styles.semiCircleShadow} />
-                            <View style={styles.cameraIconContainer}>
-                                <Ionicons name="camera-outline" size={24} color="#fff" />
-                            </View>
-                        </TouchableOpacity> */}
 
                         <View style={styles.profileInfo}>
-                            <Text style={styles.userName}>{updateData.name}</Text>
+                            <Text style={styles.userName}>{updateData.username}</Text>
                             <Text style={styles.userSubtitle}>Hello World Fitness</Text>
                             <Text style={styles.userSubtitle}>Member Since {updateData.dateJoined.toLocaleDateString('en-GB')}</Text>
                             <Text style={styles.membershipBadge}>{updateData.membershipPlan}</Text>
@@ -275,28 +281,28 @@ const UpdateProfile = () => {
                         />
 
                         <Text style={styles.label}>Date of Birth</Text>
-                        <TouchableOpacity style={styles.DOBContainer} onPress={() => setShowDatePicker(true)} >
+                        <TouchableOpacity style={styles.DOBContainer} >
                             <TextInput
                                 style={styles.input}
-                                value={updateData.dob.toLocaleDateString('en-GB')}
-                                placeholder="Select Date of Birth"
                                 placeholderTextColor="#777"
                                 editable={false}
                             />
                             <Ionicons style={styles.calendarIcon} name="calendar-outline" size={24} color="#000" />
 
-                            {showDatePicker && (
-                                <DateTimePicker
-                                    value={updateData.dob}
-                                    mode="date"
-                                    display="default"
-                                    onChange={(event, selectedDate) => {
-                                        if (selectedDate) { setUpdateData((prevData) => ({...prevData,dob: selectedDate}));}
-                                    }}
-                                    maximumDate={new Date()} 
-                                    style={styles.picker}
-                                />
-                            )}
+                            <DateTimePicker
+                                value={updateData.dob}
+                                mode="date"
+                                display="default"
+                                onChange={(event, selectedDate) => {
+                                    if (selectedDate) {
+                                        const fixedDate = new Date(selectedDate);
+                                        fixedDate.setHours(12, 0, 0, 0);
+                                        setUpdateData((prevData) => ({ ...prevData, dob: fixedDate }));
+                                    }
+                                }}                                                                                                                       
+                                maximumDate={new Date()} 
+                                style={styles.picker}
+                            />
                         </TouchableOpacity>
 
                         <Text style={styles.label}>Weight</Text>
@@ -484,7 +490,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-
+    picker:{
+        backgroundColor:'white',
+        position:'absolute',
+        marginTop:8,
+        marginLeft:5
+    }
 
 });
 export default UpdateProfile;
