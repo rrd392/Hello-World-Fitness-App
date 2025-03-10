@@ -83,7 +83,8 @@ const MembershipRenewal = () => {
                 {/* Profile Section */}
                 <View style={styles.profileSection}>
                     <Text style={styles.uidText}>ID: {userId}</Text>
-                    <Image source={require("../../assets/icon.png")} style={styles.profileImage} />
+                    <Image source={userData.profile_picture? { uri: `${API_BASE_URL}/uploads/${userData.profile_picture}`}
+                        : require("../../assets/icon.png")} style={styles.profileImage} />
                     <Text style={styles.userName}>{userName}</Text>
                     <View style={styles.membershipContainer}>
                         <Text style={styles.membershipBadge}>

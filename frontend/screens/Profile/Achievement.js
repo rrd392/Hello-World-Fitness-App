@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Image } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Image, Alert } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,10 +7,75 @@ import loyalMember from "../../assets/badges/loyal_member.png";
 import firstStep from "../../assets/badges/first_step.png";
 import feedback from "../../assets/badges/feedback.png";
 import unknownBadge from "../../assets/badges/unknown_badge.png";
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
 
 const Achievement = () => {
     const navigation = useNavigation();
+    const [userId, setUserId] = useState("");
+    const [userData, setUserData] = useState([]);
+    const [points, setUserPoints] = useState("");
+    
+    useEffect(() => {
+        async function fetchUserId() {
+            const token = await getUserId();
+            setUserId(token.id);
+        }
+        fetchUserId();
+    }, []);
 
+    useEffect(() => {
+        if(userId){
+            fetchUserData();
+            fetchPoints();
+        }
+    }, [userId]);
+
+    const fetchUserData = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/profile/displayUserData/${userId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+    
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+          }
+    
+          const data = await response.json();
+    
+          if (data) {
+            setUserData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+
+    const fetchPoints = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/profile/displayPoints/${userId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+    
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+          }
+    
+          const data = await response.json();
+    
+          if (data) {
+            setUserPoints(data.points);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
     const [achievedBadges, setAchievedBadges] = useState([]);
 
     const unlockBadge = () => {
@@ -54,11 +119,12 @@ const Achievement = () => {
 
                 <ScrollView style={{marginBottom: 40}}>
                 <View style={styles.profileSection}>
-                    <Image source={require("../../assets/icon.png")} style={styles.profileImage} />
-                    <Text style={styles.nameText}>Madison Smith</Text>
+                    <Image source={userData.profile_picture? { uri: `${API_BASE_URL}/uploads/${userData.profile_picture}`}
+                        : require("../../assets/icon.png")} style={styles.profileImage} />
+                    <Text style={styles.nameText}>{userData.name}</Text>
                     <View style={styles.pointsContainer}>
                         <Ionicons name="flame" size={20} color="#F24814" paddingLeft={5} />
-                        <Text style={styles.pointsText}>200 Points</Text>
+                        <Text style={styles.pointsText}>{points} Points</Text>
                     </View>
                 </View>
 
