@@ -1,10 +1,52 @@
-import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Image, SafeAreaView } from "react-native";
+import { ScrollView, StyleSheet, View, Text, Image, SafeAreaView } from "react-native";
 import HeaderVer1 from "../HeaderVer1"
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
+import React, { useState, useEffect } from "react";
 
 const Leaderboard = () => {
     const navigation = useNavigation();
+    const [userId, setUserId] = useState("");
+    const [userPoints, setUserPoints] = useState([]);
+    
+    useEffect(() => {
+        async function fetchUserId() {
+            const token = await getUserId();
+            setUserId(token.id);
+        }
+        fetchUserId();
+    }, []);
+
+    useEffect(() => {
+        if(userId){
+            fetchUserPoints();
+        }
+    }, [userId]);
+
+    const fetchUserPoints = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/profile/displayUserPoints`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+    
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+          }
+    
+          const data = await response.json();
+    
+          if (data) {
+            setUserPoints(data.results);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
     
     const users = [
         { id: 2, name: "Eiden", score: 2349, rank: 2, color: "#6C6EC6", badgeColor: "#5CE1E6", height: 140 },
@@ -19,8 +61,9 @@ const Leaderboard = () => {
         { id: 10, name: "Sebastian", score: 600, rank: 10 },
     ];
 
-    const top3 = users.filter(user => user.rank <= 3);
-    const rank4Nbelow = users.filter(user => user.rank >= 4);
+    const top3 = userPoints.slice(0, 3);
+    const rank4Nbelow = userPoints.slice(3);
+    console.log(userPoints);
 
     return (
         <View style={styles.container}>
@@ -33,23 +76,24 @@ const Leaderboard = () => {
                 <Text style={styles.title}>Leaderboard</Text>
 
                 <View style={styles.podium}>
-                    {top3.map((user) => (
+                    {userPoints.slice(0,3).map((user, index) => (
                         <View
-                            key={user.id} style={[ styles.podiumBlock, {backgroundColor: user.color, height: user.height }]}
+                            key={user.user_id} style={[ styles.podiumBlock, {backgroundColor: user.color, height: user.height }]}
                         >
                             <View style={styles.profileContainer}>
-                                <Image source={require("../../assets/icon.png")} style={styles.profileImage(user.rank)} />
+                                <Image source={user.profile_picture? { uri: `${API_BASE_URL}/uploads/${user.profile_picture}`}
+                        : require("../../assets/icon.png")} style={styles.profileImage(user.rank)} />
                                 <View style={[styles.rankBadge, { backgroundColor: user.badgeColor }]}>
-                                    <Text style={styles.rankText}>{user.rank}</Text>
+                                    <Text style={styles.rankText}>{index+1}</Text>
                                 </View>
                             </View>
                             <View style={[styles.textContainer, { marginTop: user.height * 0.2}]}>
                                 <Text style={styles.username}>{user.name}</Text>
                                 <View style={styles.pointsContainer}>
                                     <Ionicons name="flame" size={24} color="#F24814" />
-                                    <Text style={[styles.score, { color: user.badgeColor }]}>{user.score}</Text>
+                                    <Text style={[styles.score, { color: user.badgeColor }]}>{user.totalPoints}</Text>
                                 </View>
-                                <Text style={styles.usernameTag}>@username</Text>
+                                <Text style={styles.usernameTag}>@{user.username}</Text>
                             </View> 
                         </View>
                     ))}
@@ -120,7 +164,7 @@ const styles = StyleSheet.create({
         borderColor: rank === 1 ? "#6FCF97" : rank === 2 ? "#56CCF2" : "#F2C94C", 
     }),
 
-    username: { color: "white", fontSize: 16, fontWeight: "bold",marginBottom: 2 },
+    username: { color: "white", fontSize: 16, fontWeight: "bold",marginBottom: 2, textAlign:'center' },
     pointsContainer: { flexDirection: 'row', gap: 3},
     score: { fontSize: 19, fontWeight: "bold", marginTop: 2 },
     usernameTag: { color: "#DFDADA", fontSize: 12, },

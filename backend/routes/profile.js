@@ -101,7 +101,9 @@ router.get('/displayMembershipPlan', (req, res) => {
 router.get('/displayUserMembership/:user_id', (req, res) => {
     const { user_id } = req.params;
 
-    const displayQuery = `SELECT * FROM user_membership WHERE user_id = ?`;
+    const displayQuery = `SELECT *, u.profile_picture FROM user_membership um 
+                        INNER JOIN user u ON um.user_id = u.user_id
+                        WHERE u.user_id = ?`;
 
     db.query(displayQuery, [user_id], (error, results) => {
         if (error) {
@@ -138,5 +140,34 @@ router.get('/displayTransactions/:user_id', (req, res) => {
     });
 });
 
+router.get('/displayPoints/:user_id', (req, res) => {
+    const {user_id} = req.params;
+
+    const displayQuery = `SELECT SUM(points) AS totalPoints FROM points 
+                        WHERE user_id = ?`;
+
+
+    db.query(displayQuery, [user_id], (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({points:results[0].totalPoints});
+    });
+});
+
+router.get('/displayUserPoints', (req, res) => {
+
+    const displayQuery = `SELECT user.*, SUM(points) AS totalPoints FROM points 
+                        INNER JOIN user ON points.user_id = user.user_id
+                        GROUP BY points.user_id ORDER BY totalPoints DESC`;
+
+
+    db.query(displayQuery, (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({results});
+    });
+});
 
 module.exports = router;
