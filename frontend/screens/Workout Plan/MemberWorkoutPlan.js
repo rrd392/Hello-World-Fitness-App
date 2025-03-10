@@ -305,7 +305,7 @@ const MemberWorkoutPlan = () => {
             <ModalDropdown
               options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
               defaultValue="All"
-              style={{marginTop:20}}
+              style={{marginTop:30}}
               textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
               dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
               dropdownTextStyle={{
@@ -349,7 +349,7 @@ const MemberWorkoutPlan = () => {
             <ModalDropdown
               options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
               defaultValue="All"
-              style={{marginTop:20}}
+              style={{marginTop:30}}
               textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
               dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
               dropdownTextStyle={{
