@@ -1,13 +1,52 @@
 import HeaderVer2 from "../../HeaderVer2";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import mealPlans from "./mealPlans";
+import API_BASE_URL from "../../../env";
+import { getUserId } from '../../getUserId';
 
 const Nutrition = () => {
     const navigation = useNavigation();
+    const [userId, setUserId] = useState("");
+    const [mealData, setMealData] = useState([]);
+    
+    useEffect(() => {
+        async function fetchUserId() {
+            const token = await getUserId();
+            setUserId(token.id);
+        }
+        fetchUserId();
+    }, []);
+
+     useEffect(() => {
+        if(userId){
+            fetchMealData();
+        }
+    }, [userId]);
+
+    const fetchMealData = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/nutrition/displayMealData/${userId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+    
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+          }
+    
+          const data = await response.json();
+    
+          if (data) {
+            setMealData(data.meal);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -27,14 +66,15 @@ const Nutrition = () => {
             </View>
             <ScrollView style={styles.scrollContainer}>
                 <Text style={styles.suggestMealText}>Suggested Meal For You</Text>
-                {mealPlans.loseWeight.map((meal) => (
+                {mealData.map((meal) => (
                     <View key={meal.id} style={styles.mealContainer}>
                         <Text style={styles.mealTitle}>{meal.title}</Text>
                         <View style={styles.mealItems}>
                             {meal.items.map((item, index) => (
                                 <React.Fragment key={index}>
                                     <View style={styles.mealItem}>
-                                        <Image source={item.image} style={styles.mealImage} />
+                                    <Image source={item.image? { uri: `${API_BASE_URL}/uploads/${item.image}`}
+                            : require("../../../assets/icon.png")} style={styles.mealImage} />
                                         <Text style={styles.mealName} numberOfLines={2} >{item.name}</Text>
                                         <Text style={styles.mealPortion}>{item.portion}</Text>
                                     </View>
@@ -55,16 +95,16 @@ const Nutrition = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#000'},
-    calculateSection: { backgroundColor: '#B3A0FF', padding: 15, height: 130,},
+    calculateSection: { backgroundColor: '#B3A0FF', padding: 15, height: 130, marginTop:-10},
     sectionTitle: { fontSize: 24, color: 'black', textAlign: 'center' },
     calculateButton: { marginTop: 20, alignSelf: 'center', backgroundColor: '#000', paddingHorizontal: 25, paddingVertical: 8, borderRadius: 15 },
     calculateButtonText: { color: '#E2F163', fontWeight: 'bold', fontSize: 17 },
 
-    suggestMealText: { color: '#E2F163', fontSize: 20, textAlign: 'center', marginTop: 20, fontWeight: 'bold'},
+    suggestMealText: { color: '#E2F163', fontSize: 20, textAlign: 'center', marginTop: 20, fontWeight: 'bold', marginBottom:10},
     scrollContainer: { marginTop: 10 },
 
     mealContainer: { margin: 10 },
-    mealTitle: { width: 70, marginLeft: 3, backgroundColor: "#E2F163", paddingVertical: 1, paddingHorizontal: 10, borderRadius: 20, alignSelf: "flex-center", fontWeight: "bold", marginBottom: 10, textAlign: 'center' },
+    mealTitle: { width: "50%", marginLeft: 3, backgroundColor: "#E2F163", paddingVertical: 1, paddingHorizontal: 10, borderRadius: 20, alignSelf: "flex-center", fontWeight: "bold", marginBottom: 10, textAlign: 'center' },
     
     mealItems: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
     mealItem: { alignItems: "center" },

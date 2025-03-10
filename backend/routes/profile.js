@@ -219,7 +219,6 @@ router.get('/displayUserBadge/:user_id', (req, res) => {
                         return res.status(500).json({ error: "Failed to insert new badges" });
                     }
 
-                    // Step 7: Fetch updated user badges
                     fetchAndReturnUserBadges(user_id, nonEligibleBadges, res);
                 });
             });
@@ -227,14 +226,11 @@ router.get('/displayUserBadge/:user_id', (req, res) => {
     });
 });
 
-// Helper function to fetch and return user badges
 function fetchAndReturnUserBadges(user_id, nonEligibleBadges, res) {
     const displayQuery = `
         SELECT * FROM user_badge ub
         INNER JOIN badge b ON ub.badge_id = b.badge_id
         WHERE ub.user_id = ?`;
-
-    
 
     db.query(displayQuery, [user_id], (error, results) => {
         if (error) {
