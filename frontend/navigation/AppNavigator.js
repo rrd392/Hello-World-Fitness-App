@@ -12,7 +12,9 @@ import LoginScreen from "../screens/LoginScreen";
 import OnBoardingPage from "../screens/OnBoardingPage";
 import ForgotPage from "../screens/Forgot Password/ForgotPage";
 import ResetPasswordPage from "../screens/Forgot Password/ResetPasswordPage";
-import MembershipStep1 from "../screens/Profile/MembershipStep1";
+import MembershipStatus from "../screens/Profile/MembershipStatus";
+
+import MembershipRenew from "../screens/Profile/MembershipRenew";
 
 // App Screens
 import BottomTabNavigator from "./BottomTabNavigator";
@@ -26,7 +28,8 @@ const AuthStackNavigator = () => (
         <AuthStack.Screen name="OnBoardingPage" component={OnBoardingPage} />
         <AuthStack.Screen name="ForgotPage" component={ForgotPage} />
         <AuthStack.Screen name="ResetPasswordPage" component={ResetPasswordPage} />
-        <AuthStack.Screen name="MembershipStep1" component={MembershipStep1} />
+        <AuthStack.Screen name="MembershipStatus" component={MembershipStatus} />
+        <AuthStack.Screen name="MembershipRenew" component={MembershipRenew} />
         <AuthStack.Screen name="SignupStack">
             {() => (  // Wrap SignupStack with SignupForm
                 <SignupForm>
