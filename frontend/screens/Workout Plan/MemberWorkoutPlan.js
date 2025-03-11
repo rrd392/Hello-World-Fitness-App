@@ -304,6 +304,7 @@ const MemberWorkoutPlan = () => {
               <ModalDropdown
                 options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
                 defaultValue="All"
+                initialScrollIndex={0}
                 style={{marginTop:30}}
                 textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
                 dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
@@ -373,7 +374,7 @@ const MemberWorkoutPlan = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', padding: 20, paddingBottom:0, marginBottom:-30},
+  container: { flex: 1, backgroundColor: '#212020', padding: 20, paddingBottom:0, marginBottom:-30},
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
   header:{flex:1},

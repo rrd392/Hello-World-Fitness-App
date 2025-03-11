@@ -119,7 +119,7 @@ const CalculateMeal = ()=> {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000'},
+    container: { flex: 1, backgroundColor: '#212020'},
     sectionTitle: { marginTop: 5, fontSize: 24, color: '#E2F163', textAlign: 'center' },
 
     scrollContainer: { flex: 1, padding: 20,},
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     servingText: { fontWeight: 'bold', marginRight: 5},
     input: { width: 60, borderWidth: 1, textAlign: 'center', backgroundColor: 'white', marginHorizontal: 5, borderRadius: 5},
     qtyText: { fontWeight: 'bold'},
-    addButton: { backgroundColor: '#000', paddingVertical: 10, paddingHorizontal: 40, borderRadius: 10, marginTop: 5},
+    addButton: { backgroundColor: '#212020', paddingVertical: 10, paddingHorizontal: 40, borderRadius: 10, marginTop: 5},
     addButtonText: { color: 'white', fontWeight: 'bold'},
 });
 

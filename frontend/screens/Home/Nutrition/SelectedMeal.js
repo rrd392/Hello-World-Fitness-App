@@ -77,7 +77,7 @@ const SelectedMeal = ({route}) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000'},
+    container: { flex: 1, backgroundColor: '#212020'},
     sectionTitle: { marginTop: 10, fontSize: 24, color: '#E2F163', textAlign: 'center' },
     listMealContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 20},
     countingColumn: { borderColor: 'white', borderWidth: 1, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 25, left: 10},
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     closeText: {fontSize: 34},
     title: { fontSize: 20, fontWeight: 'bold', marginBottom: 20},
     totalCalinput: { textAlign: 'center', width: "70%", backgroundColor: 'white', borderWidth: 1, borderRadius: 2, fontSize:20, padding:10, marginBottom:5},
-    addButton: { backgroundColor: '#000', width: "50%", height: 30, borderRadius: 10, marginTop: 10},
+    addButton: { backgroundColor: '#212020', width: "50%", height: 30, borderRadius: 10, marginTop: 10},
     addButtonText: { color: 'white', textAlign: 'center', fontWeight: 'bold', padding: 5},
 });
 

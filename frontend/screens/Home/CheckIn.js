@@ -3,15 +3,11 @@ import { View, StyleSheet, Text, TouchableOpacity, TextInput, ScrollView} from '
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import HeaderVer2 from '../HeaderVer2';
 
 const CheckIn = () => {
 
     const navigation = useNavigation();
-
-    //Profile icon dropdown button
-    const [dropdownVisible, setDropdownVisible] = useState(false);
-
-    const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
     // OTP State
     const [otp, setOtp] = useState(["", "", ""]);
@@ -51,32 +47,11 @@ const CheckIn = () => {
     return (
         <View style={styles.container}>
             {/* Header Section */}
-            <SafeAreaView style={styles.header}>
-                <View style={styles.headerRow}>
-                    {/* Back Button */}
-                    <TouchableOpacity style={styles.homeButton} onPress={() => navigation.navigate('MemberDashboard')}>
-                        <Ionicons name="caret-back" size={20} color="#E2F163"/>
-                        <Text style={styles.homeText}>Home</Text>
-                    </TouchableOpacity>                    
-                    <View style={styles.iconRow}>
-                        <TouchableOpacity>
-                            <Ionicons name="notifications" size={24} color="#896CFE" />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={toggleDropdown}>
-                            <Ionicons name="person" size={24} color="#896CFE" />
-                        </TouchableOpacity>
-                        {dropdownVisible && (
-                            <View style={styles.dropdown}>
-                                <TouchableOpacity style={styles.menuItem}>
-                                    <Text>Profile</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.menuItem}>
-                                    <Text>Logout</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                    </View>
-                </View>
+            <SafeAreaView>
+                <HeaderVer2
+                    title="Home" style={styles.header}
+                    onPress={() => navigation.navigate("MemberDashboard")}
+                />
             </SafeAreaView>
 
             {/* OTP Section */}
@@ -103,7 +78,7 @@ const CheckIn = () => {
             
             {/* Attendance History */}
             <View style={styles.attendanceHSection}>
-                <Text style={styles.attendanceHTitle}>Attandance History</Text>
+                <Text style={styles.attendanceHTitle}>Attendance History</Text>
                 <View style={styles.divider} />
 
                 <ScrollView style={{ maxHeight: 400 }}>
@@ -128,22 +103,14 @@ const CheckIn = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000'},
-    header: { padding: 20, marginBottom:-30},
-    homeButton: { flexDirection: 'row', alignItems: 'center', gap: 3, marginLeft: -10},
-    homeText: { fontSize: 24, color: '#896CFE', fontWeight: 'bold' },
-    headerRow: { flexDirection: 'row', justifyContent: 'space-between'},
-    iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
-    dropdown: { position: "absolute", top: 30, right: 0, backgroundColor: "white", borderRadius: 5,
-        shadowColor: "#000",shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 3,
-        elevation: 5, padding: 10, width: 100,},
-    menuItem: { padding: 10,},
+    container: { flex: 1, backgroundColor: '#212020'},
+    
 
-    otpSection: { backgroundColor: '#B3A0FF', padding: 15, marginTop: 30, height: 225},
+    otpSection: { backgroundColor: '#B3A0FF', padding: 15, height: 225},
     sectionTitle: { fontSize: 24, color: 'black', marginBottom: 10, textAlign: 'center' },
     otpCard: { flexDirection: 'row', gap: 10, alignSelf: 'center'},
-    otpInput: { width: 50, height: 60, marginTop: 10, alignSelf: 'center', backgroundColor: '#000', borderRadius: 10, fontSize: 30, color: '#fff', textAlign: 'center'},
-    checkInButton: { marginTop: 35, alignSelf: 'center', backgroundColor: '#000', paddingHorizontal: 30, paddingVertical: 10, borderRadius: 20 },
+    otpInput: { width: 50, height: 60, marginTop: 10, alignSelf: 'center', backgroundColor: '#282828', borderRadius: 10, fontSize: 30, color: '#fff', textAlign: 'center'},
+    checkInButton: { marginTop: 35, alignSelf: 'center', backgroundColor: '#282828', paddingHorizontal: 30, paddingVertical: 10, borderRadius: 20 },
     checkInButtonText: { color: '#E2F163', fontWeight: 'bold', fontSize: 17 },
 
     attendanceHSection: { padding: 15, marginTop: 10, },

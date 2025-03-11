@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     marginTop: 15, // Adds spacing between card and buttons
   },
   button: {
-    backgroundColor: "#111",
+    backgroundColor: "#212020",
     paddingHorizontal: 25,
     paddingVertical: 10,
     borderRadius: 25,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   viewMoreButton: {
-    backgroundColor: "black",
+    backgroundColor: "#212020",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
