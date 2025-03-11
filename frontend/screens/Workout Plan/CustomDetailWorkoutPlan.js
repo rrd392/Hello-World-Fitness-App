@@ -145,7 +145,7 @@ const CustomDetailWorkoutPlan = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000'},
+    container: { flex: 1, backgroundColor: '#212020'},
     header: { padding: 20, marginBottom:-30 },
     header3:{padding:20},
     greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
