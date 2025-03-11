@@ -54,7 +54,7 @@ function SelectedClass() {
   const [failModalVisible, setFailModalVisible] = useState(false);
   const [classFull, setClassFull] = useState(false); // Set to true to show fail modal and alse to show success modal
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#232323" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#212020" }}>
       <HeaderVer2 title="Classes" onPress={() => navigation.goBack()} />
 
       <KeyboardAvoidingView
@@ -203,7 +203,7 @@ function SelectedClass() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#232323" },
+  container: { flex: 1, backgroundColor: "#212020" },
 
   headerRow: {
     alignItems: "center",
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   coachNumber: { fontSize: 10, color: "#444" },
 
   signUpButton: {
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#212020",
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 40,
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   viewMoreButton: {
-    backgroundColor: "black",
+    backgroundColor: "#212020",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,

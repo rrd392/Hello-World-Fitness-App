@@ -50,7 +50,7 @@ const Nutrition = () => {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView style={styles.header}>
+            <SafeAreaView>
                 <HeaderVer2
                     title="Home" style={styles.header}
                     onPress={() => navigation.navigate("MemberDashboard")}
@@ -94,10 +94,10 @@ const Nutrition = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000'},
-    calculateSection: { backgroundColor: '#B3A0FF', padding: 15, height: 130, marginTop:-10},
+    container: { flex: 1, backgroundColor: '#212020'},
+    calculateSection: { backgroundColor: '#B3A0FF', padding: 15, height: 130, marginTop:0},
     sectionTitle: { fontSize: 24, color: 'black', textAlign: 'center' },
-    calculateButton: { marginTop: 20, alignSelf: 'center', backgroundColor: '#000', paddingHorizontal: 25, paddingVertical: 8, borderRadius: 15 },
+    calculateButton: { marginTop: 20, alignSelf: 'center', backgroundColor: '#212020', paddingHorizontal: 25, paddingVertical: 8, borderRadius: 15 },
     calculateButtonText: { color: '#E2F163', fontWeight: 'bold', fontSize: 17 },
 
     suggestMealText: { color: '#E2F163', fontSize: 20, textAlign: 'center', marginTop: 20, fontWeight: 'bold', marginBottom:10},

@@ -165,13 +165,13 @@ const Achievement = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000',padding: 20, },
+  container: { flex: 1, backgroundColor: '#212020',padding: 20, },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between'},
     homeButton: { flexDirection: 'row', alignItems: 'center', gap: 3, marginLeft: -10 },
-    homeText: { fontSize: 24, color: 'white', fontWeight: 'bold' },
+  homeText: { fontSize: 24, color: '#896CFE', fontWeight: 'bold' },
     iconRow: { flexDirection: 'row', alignItems: 'center', },
 
-    profileSection: { alignItems: "center", padding: 20, backgroundColor: "black" },
+    profileSection: { alignItems: "center", padding: 20 },
     profileImage: { width: 100, height: 100, borderRadius: 50, marginVertical: 10},
     nameText: { color: 'white', fontSize: 16, fontWeight: 'bold'},
     pointsContainer: { backgroundColor: 'white', borderRadius: 15, flexDirection: 'row', width: 120, gap: 10, padding: 3, marginTop: 5},
