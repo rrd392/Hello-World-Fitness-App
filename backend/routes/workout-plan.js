@@ -195,23 +195,68 @@ router.post('/addUserWorkoutPlan', (req, res) => {
     });
 });
 
+const fs = require('fs');
+const util = require('util');
+const unlinkAsync = util.promisify(fs.unlink);
+
 router.delete('/deleteUserWorkoutPlan', (req, res) =>{
     const { user_id, workout_plan_id, selectedDay } = req.body;
     let deleteUserWorkoutPlanQuery;
     let parameters = [user_id, workout_plan_id];
-    
-    if(selectedDay == "All"){
-        deleteUserWorkoutPlanQuery = `DELETE FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ?`;
-    }else{
-        deleteUserWorkoutPlanQuery = `DELETE FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ? AND day_of_week = ?`;
-        parameters.push(selectedDay)
-    }
-    
-    db.query(deleteUserWorkoutPlanQuery, parameters, (error, results)=>{
+
+    const planTypeQuery = `SELECT type FROM workout_plans WHERE workout_plan_id = ?`;
+
+    db.query(planTypeQuery, [workout_plan_id], (error, typeResult)=>{
         if (error) {
             return res.status(500).json({ error: "Database query failed" });
         }
-        res.json({success:true});
+        const type = typeResult[0].type;
+
+        if (type == "General"){
+            if(selectedDay == "All"){
+                deleteUserWorkoutPlanQuery = `DELETE FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ?`;
+            }else{
+                deleteUserWorkoutPlanQuery = `DELETE FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ? AND day_of_week = ?`;
+                parameters.push(selectedDay)
+            }
+            
+            db.query(deleteUserWorkoutPlanQuery, parameters, (error, results)=>{
+                if (error) {
+                    return res.status(500).json({ error: "Database query failed" });
+                }
+                res.json({success:true});
+            });
+        }else if(type == "Member"){
+            const selectImageQuery = `SELECT workout_image FROM workout_plans WHERE workout_plan_id = ? `;
+
+            db.query(selectImageQuery, [workout_plan_id], (error, imageResults)=>{
+                if (error) {
+                    return res.status(500).json({ error: "Database query failed" });
+                }
+
+                const workout_image = imageResults[0].workout_image;
+    
+                const filePath = path.join(__dirname, '../../../uploads', workout_image);
+                if (fs.existsSync(filePath)) {
+                    unlinkAsync(filePath);
+                }
+
+                deleteUserWorkoutPlanQuery = `DELETE FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ?`;
+                const deleteWorkoutPlanQuery = `DELETE FROM workout_plans WHERE workout_plan_id = ?`;
+                
+                db.query(deleteUserWorkoutPlanQuery, parameters, (error, results)=>{
+                    if (error) {
+                        return res.status(500).json({ error: "Database query failed" });
+                    }
+                    db.query(deleteWorkoutPlanQuery, [workout_plan_id], (error, deleteResults)=>{
+                        if (error) {
+                            return res.status(500).json({ error: "Database query failed" });
+                        }
+                        res.json({success:true});
+                    });
+                });
+            });
+        }
     });
 });
 
