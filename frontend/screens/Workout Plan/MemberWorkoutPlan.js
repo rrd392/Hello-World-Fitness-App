@@ -178,7 +178,7 @@ const MemberWorkoutPlan = () => {
         <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
         {/* Navigation Icons */}
         <View style={styles.navButtons}>
-          {["General", "Coach", "Custom"].map((item) => (
+          {["General", "Coach", "My Plan"].map((item) => (
             <TouchableOpacity
               key={item}
               style={[styles.navItem, selected === item && styles.selectedNavItem]} 
@@ -298,7 +298,7 @@ const MemberWorkoutPlan = () => {
               </View>
             )
         )}
-        {selected === "Custom" && (
+        {selected === "My Plan" && (
           customPlans.length > 0 ? (
             <View style={{ flex: 1 }}>
               <ModalDropdown

@@ -210,8 +210,8 @@ const AddWorkoutPlan = () => {
                                 .filter((details) => details.exercise_type === type.exercise_type)
                                 .map((details) => (
                                     <View key={details.workout_detail_id} style={styles.workoutItem}>
-                                        <View>
-                                            <Text style={styles.workoutItemText}>
+                                        <View style={{width:"60%"}}>
+                                            <Text style={styles.workoutItemText} numberOfLines={1} ellipsizeMode="tail">
                                             {details.exercise_name} {details.reps ? `${details.reps} Reps` : `${details.duration_minutes} Minutes`}
                                             </Text>
                                             <Text style={styles.restTime}><Ionicons name="time" size={13}></Ionicons> {details.rest_time_seconds}s Rest Time</Text>
@@ -250,85 +250,83 @@ const AddWorkoutPlan = () => {
 
                         {/* Title */}
                         <Text style={styles.title}>Custom Workout</Text>
+                        <ScrollView style={{width:"100%"}}>
 
-                        {/* Name & Description Inputs */}
-                        <Text style={styles.inputText}>Name <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-                        <TextInput style={styles.input} value={addData.name} placeholder="Name" onChangeText={(text) =>setAddData((prevData) => ({...prevData,name: text.replace(/[^a-zA-Z0-9_/()[] ]/g, ''),}))}/>
-                        <Text style={styles.inputText}>Description <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-                        <TextInput style={styles.input} value={addData.description} placeholder="Description" multiline onChangeText={(text) =>setAddData((prevData) => ({...prevData,description: text.replace(/[^a-zA-Z0-9_/()[] ]/g, ''),}))}/>
-                        <Text style={styles.inputText}>Difficulty <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-                        <DropDownPicker
-                            open={showDifficultyDropdown}
-                            value={addData.difficulty}
-                            items={difficulty}
-                            setOpen={setShowDifficultyDropdown}
-                            setValue={(callback) => 
-                                setAddData(prevData => ({
-                                    ...prevData,
-                                    difficulty: callback(prevData.difficulty) 
-                                }))
-                            }
-                            placeholder="Select level"
-                            nestedScrollEnabled={true}
-                            listMode="SCROLLVIEW"
-                            style={styles.dropdown}
-                            textStyle={styles.dropdownText}
-                            containerStyle={{ marginBottom: 16, zIndex:100 }}
-                        />
-                        <Text style={styles.inputText}>Select day <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-                        <DropDownPicker
-                            open={showDayDropdown}
-                            value={addData.day}
-                            items={day}
-                            setOpen={setShowDayDropdown}
-                            setValue={(callback) => 
-                                setAddData(prevData => ({
-                                    ...prevData,
-                                    day: callback(prevData.day) 
-                                }))
-                            }
-                            placeholder="Select level"
-                            nestedScrollEnabled={true}
-                            listMode="SCROLLVIEW"
-                            style={styles.dropdown}
-                            textStyle={styles.dropdownText}
-                            containerStyle={{ marginBottom: 16, zIndex:90 }}
-                        />
-                        <Text style={styles.inputText}>Upload Image <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-                        <TouchableOpacity style={styles.input} onPress={pickImage}><Ionicons name="image" size={20}>  <Text style={{fontSize:16}}>{addData.image? `Image uploaded`: `Upload Image`}</Text></Ionicons></TouchableOpacity>
+                            {/* Name & Description Inputs */}
+                            <Text style={styles.inputText}>Name <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                            <TextInput style={styles.input} value={addData.name} placeholder="Name" onChangeText={(text) =>setAddData((prevData) => ({...prevData,name: text.replace(/[^a-zA-Z0-9_/()[] ]/g, ''),}))}/>
+                            <Text style={styles.inputText}>Description <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                            <TextInput style={styles.input} value={addData.description} placeholder="Description" multiline onChangeText={(text) =>setAddData((prevData) => ({...prevData,description: text.replace(/[^a-zA-Z0-9_/()[] ]/g, ''),}))}/>
+                            <Text style={styles.inputText}>Difficulty <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                            <DropDownPicker
+                                open={showDifficultyDropdown}
+                                value={addData.difficulty}
+                                items={difficulty}
+                                setOpen={setShowDifficultyDropdown}
+                                setValue={(callback) => 
+                                    setAddData(prevData => ({
+                                        ...prevData,
+                                        difficulty: callback(prevData.difficulty) 
+                                    }))
+                                }
+                                placeholder="Select level"
+                                nestedScrollEnabled={true}
+                                listMode="SCROLLVIEW"
+                                style={styles.dropdown}
+                                textStyle={styles.dropdownText}
+                                containerStyle={{ marginBottom: 16, zIndex:100 }}
+                            />
+                            <Text style={styles.inputText}>Select day <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                            <DropDownPicker
+                                open={showDayDropdown}
+                                value={addData.day}
+                                items={day}
+                                setOpen={setShowDayDropdown}
+                                setValue={(callback) => 
+                                    setAddData(prevData => ({
+                                        ...prevData,
+                                        day: callback(prevData.day) 
+                                    }))
+                                }
+                                placeholder="Select level"
+                                nestedScrollEnabled={true}
+                                listMode="SCROLLVIEW"
+                                style={styles.dropdown}
+                                textStyle={styles.dropdownText}
+                                containerStyle={{ marginBottom: 16, zIndex:90 }}
+                            />
+                            <Text style={styles.inputText}>Upload Image <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                            <TouchableOpacity style={styles.input} onPress={pickImage}><Ionicons name="image" size={20}>  <Text style={{fontSize:16}}>{addData.image? `Image uploaded`: `Upload Image`}</Text></Ionicons></TouchableOpacity>
 
-                        {/* Selected Workouts Section */}
-                        <Text style={styles.section2Title}>Your Selected Workout</Text>
+                            {/* Selected Workouts Section */}
+                            <Text style={styles.section2Title}>Your Selected Workout</Text>
 
-                        <FlatList
-                        data={selectedDetails}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => ( 
-                            <View key={item.workout_detail_id} style={styles.workoutItem}>
-                                <View>
-                                    <Text style={styles.workoutItemText}>
-                                        {item.exercise_name} {item.reps ? `${item.reps} Reps` : `${item.duration_minutes} Minutes`}
-                                    </Text>
-                                    <Text style={styles.restTime}>
-                                        <Ionicons name="time" size={13} /> {item.rest_time_seconds}s Rest Time
-                                    </Text>
+                            {selectedDetails.map((item, index) => (
+                                <View key={item.workout_detail_id} style={styles.workoutItem}>
+                                    <View style={{width:"50%"}}>
+                                        <Text style={styles.workoutItemText} numberOfLines={2} ellipsizeMode="tail">
+                                            {item.exercise_name} {item.reps ? `${item.reps} Reps` : `${item.duration_minutes} Minutes`}
+                                        </Text>
+                                        <Text style={styles.restTime}>
+                                            <Ionicons name="time" size={13} /> {item.rest_time_seconds}s Rest Time
+                                        </Text>
+                                    </View>
+                                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
+                                        <Text style={styles.setCount}>Sets {item.sets}x</Text>
+                                        <TouchableOpacity
+                                            onPress={() => deleteItem(item)}
+                                        >                                                
+                                            <Ionicons name="trash-outline" color={"black"} size={30} style={{ marginTop: 5 }} />
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
-                                    <Text style={styles.setCount}>Sets {item.sets}x</Text>
-                                    <TouchableOpacity
-                                        onPress={() => deleteItem(item)}
-                                    >                                                
-                                        <Ionicons name="trash-outline" color={"black"} size={30} style={{ marginTop: 5 }} />
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        )}
-                        />
+                            ))}                            
 
-                        {/* Create Button */}
-                        <TouchableOpacity style={styles.createButton} onPress={() => {console.log("Button pressed"); createWorkoutPlan(addData, pressedItems);}}>
-                            <Text style={styles.createButtonText}>Create</Text>
-                        </TouchableOpacity>
+                            {/* Create Button */}
+                            <TouchableOpacity style={styles.createButton} onPress={() => {console.log("Button pressed"); createWorkoutPlan(addData, pressedItems);}}>
+                                <Text style={styles.createButtonText}>Create</Text>
+                            </TouchableOpacity>
+                        </ScrollView>
                     </View>
                 </View>
             </Modal>
@@ -410,7 +408,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     modalContainer: {
-        width: "90%",
+        width:"90%",
         height:"80%",
         backgroundColor: "#E2F163", 
         borderRadius: 20,
