@@ -35,6 +35,9 @@ app.use('/api/attendance', attendanceRoutes);
 const profileRoutes = require('./routes/profile');
 app.use('/api/profile', profileRoutes);
 
+const nutritionRoutes = require('./routes/nutrition');
+app.use('/api/nutrition', nutritionRoutes);
+
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads')));
 
 // Start the server

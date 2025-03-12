@@ -105,7 +105,7 @@ const Notification = () => {
 
 const styles = StyleSheet.create({
 
-    container: { flex: 1, backgroundColor: '#000' },
+    container: { flex: 1, backgroundColor: '#212020' },
     header: { padding: 20, marginBottom: -30 },
     headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     titleContainer: { flex: 1, alignItems: 'center' },

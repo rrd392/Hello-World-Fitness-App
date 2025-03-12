@@ -7,6 +7,10 @@ import Notification from "../screens/Home/Notification";
 import CheckIn from "../screens/Home/CheckIn";
 import Classes from "../screens/Home/ClassesPage/Classes";
 import SelectedClass from "../screens/Home/ClassesPage/SelectedClass";
+import Nutrition from "../screens/Home/Nutrition/Nutrition";
+import CalculateMeal from "../screens/Home/Nutrition/CalculateMeal";
+import SelectedMeal from "../screens/Home/Nutrition/SelectedMeal";
+import YourClasses from "../screens/Home/ClassesPage/YourClasses";
 
 const HomeStackNavigator = createStackNavigator();
 
@@ -28,6 +32,13 @@ const HomeStack = () => {
         name="SelectedClass"
         component={SelectedClass}
       />
+      <HomeStackNavigator.Screen name="YourClasses" component={YourClasses} />
+      <HomeStackNavigator.Screen name="Nutrition" component={Nutrition} />
+      <HomeStackNavigator.Screen
+        name="CalculateMeal"
+        component={CalculateMeal}
+      />
+      <HomeStackNavigator.Screen name="SelectedMeal" component={SelectedMeal} />
     </HomeStackNavigator.Navigator>
   );
 };

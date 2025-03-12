@@ -130,10 +130,10 @@ const TransactionHistory = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000'},
+    container: { flex: 1, backgroundColor: '#212020'},
     header: { padding: 20, marginBottom:-30},
     ProfileButton: { flexDirection: 'row', alignItems: 'center', gap: 3, marginLeft: -10},
-    ProfileText: { fontSize: 24, color: 'white', fontWeight: 'bold' },
+    ProfileText: { fontSize: 24, color: '#896CFE', fontWeight: 'bold' },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between'},
     iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
 

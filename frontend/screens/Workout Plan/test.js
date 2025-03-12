@@ -68,7 +68,7 @@ const RunWorkoutPlan = ({ route }) => {
             });
         }
     };
-
+    
     const [completedExercise, setCompleteExercise] = useState([]);
 
     const addPoints = async (user_id, difficulty, completedExercise, planDetails) => {
@@ -135,6 +135,10 @@ const RunWorkoutPlan = ({ route }) => {
 
                         const isCompleted = clickCounts[workoutId] >= workout.sets;
 
+                        // Create an animated value for the progress bar
+                        const progressRatio = (clickCounts[workoutId] || 0) / workout.sets;
+                        const animatedProgress = useRef(new Animated.Value(0)).current;
+
                         const restProgress = useRef(new Animated.Value(0)).current;
                         useEffect(() => {
                             if (isResting[workoutId]) {
@@ -151,6 +155,14 @@ const RunWorkoutPlan = ({ route }) => {
                             }
                         }, [isResting[workoutId]]);
 
+
+                        useEffect(() => {
+                            Animated.timing(animatedProgress, {
+                                toValue: progressRatio,
+                                duration: 300,
+                                useNativeDriver: false, // width animation requires useNativeDriver false
+                            }).start();
+                        }, [progressRatio]);
 
                         const progressBarWidth = restProgress.interpolate({
                             inputRange: [0, 1],
@@ -184,9 +196,8 @@ const RunWorkoutPlan = ({ route }) => {
                                             <Ionicons name="checkmark-circle" size={50} color="#E2F163" />
                                         ) : (
                                             <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
-                                                <Ionicons name="caret-forward-circle" size={50} color={"#000"} />
+                                                <Ionicons name="caret-forward-circle" size={50} color={isAnyResting ? "gray" : "#000"} />
                                             </Animated.View>
-
                                         )}
                                     </TouchableOpacity>
 
@@ -220,7 +231,7 @@ const RunWorkoutPlan = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020' },
+    container: { flex: 1, backgroundColor: '#000' },
     header: { padding: 20, marginBottom: -30 },
     header3: { padding: 20 },
     greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
@@ -277,11 +288,13 @@ const styles = StyleSheet.create({
     workoutItem: {
         flexDirection: "row",
         backgroundColor: "white",
+        padding: 15,
+        // paddingRight: 30,
         borderRadius: 40,
         marginTop: 20,
         alignItems: 'center',
         position: 'relative',  // Required for absolute positioning of the overlay
-        overflow: 'hidden',
+        overflow: 'hidden'
     },
 
     progressOverlay: {
@@ -289,18 +302,17 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         bottom: 0,
-        right: 0,
         // This background color can be adjusted to your desired progress fill color and opacity.
-        backgroundColor: 'rgba(137, 108, 254, 0.3)',
+        backgroundColor: '#E2F163',
         zIndex: 0,
+        borderWidth:1,
+        borderColor:"red",
     },
     contentContainer: {
         zIndex: 1,
         flex: 1,
         flexDirection: "row",
         alignItems: 'center',
-        padding: 15,
-
     },
 
     playButton: {
@@ -321,7 +333,8 @@ const styles = StyleSheet.create({
         color: "#896CFE",
         fontWeight: "bold",
         fontSize: 16,
-        marginRight: 20,
+        // right: 0,
+        marginRight:20,
     },
 
     startButton: {

@@ -119,7 +119,10 @@ const MemberDashboard = () => {
             <Ionicons name="barbell" size={30} color="#B3A0FF" />
             <Text style={styles.navText}>Classes</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={() => navigation.navigate("Nutrition")}
+          >
             <Ionicons name="nutrition" size={30} color="#B3A0FF" />
             <Text style={styles.navText}>Nutrition</Text>
           </TouchableOpacity>
@@ -163,8 +166,11 @@ const MemberDashboard = () => {
             </View>
           )}
 
-          <TouchableOpacity style={styles.moreButton}>
-            <Text style={styles.moreButtonText}>More</Text>
+          <TouchableOpacity
+            style={styles.moreButton}
+            onPress={() => navigation.navigate("YourClasses")}
+          >
+            <Text style={styles.moreButtonText}>Your Classes</Text>
           </TouchableOpacity>
         </View>
 
@@ -300,7 +306,7 @@ const MemberDashboard = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#212020" },
   header: { padding: 20, marginBottom: -30 },
   greeting: {
     fontSize: 24,
@@ -340,7 +346,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#000",
+    backgroundColor: "#212020",
     borderRadius: 10,
   },
   classTitle: {
@@ -363,7 +369,7 @@ const styles = StyleSheet.create({
   moreButton: {
     marginTop: 10,
     alignSelf: "center",
-    backgroundColor: "#000",
+    backgroundColor: "#212020",
     paddingHorizontal: 30,
     paddingVertical: 8,
     borderRadius: 20,
@@ -376,7 +382,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontWeight: "bold",
   },
-  announcementSection: { backgroundColor: "#111", padding: 15, marginTop: 20 },
+  announcementSection: { backgroundColor: "#252525", padding: 15, marginTop: 20 },
   announcementImage: {
     width: "100%",
     height: "100%",
@@ -405,20 +411,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     borderRadius: 10,
   },
-  dropdown: {
-    position: "absolute",
-    top: 30,
-    right: 0,
-    backgroundColor: "white",
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-    padding: 10,
-    width: 100,
-  },
+
+
   menuItem: {
     padding: 10,
   },

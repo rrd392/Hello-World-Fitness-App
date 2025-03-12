@@ -101,7 +101,9 @@ router.get('/displayMembershipPlan', (req, res) => {
 router.get('/displayUserMembership/:user_id', (req, res) => {
     const { user_id } = req.params;
 
-    const displayQuery = `SELECT * FROM user_membership WHERE user_id = ?`;
+    const displayQuery = `SELECT *, u.profile_picture FROM user_membership um 
+                        INNER JOIN user u ON um.user_id = u.user_id
+                        WHERE u.user_id = ?`;
 
     db.query(displayQuery, [user_id], (error, results) => {
         if (error) {
@@ -138,5 +140,104 @@ router.get('/displayTransactions/:user_id', (req, res) => {
     });
 });
 
+router.get('/displayPoints/:user_id', (req, res) => {
+    const {user_id} = req.params;
+
+    const displayQuery = `SELECT SUM(points) AS totalPoints FROM points 
+                        WHERE user_id = ?`;
+
+
+    db.query(displayQuery, [user_id], (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({points:results[0].totalPoints});
+    });
+});
+
+router.get('/displayUserPoints', (req, res) => {
+
+    const displayQuery = `SELECT user.*, SUM(points) AS totalPoints FROM points 
+                        INNER JOIN user ON points.user_id = user.user_id
+                        GROUP BY points.user_id ORDER BY totalPoints DESC`;
+
+
+    db.query(displayQuery, (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({results});
+    });
+});
+
+router.get('/displayUserBadge/:user_id', (req, res) => {
+    const { user_id } = req.params;
+
+    const pointsQuery = `SELECT SUM(points) AS totalPoints FROM points WHERE user_id = ?`;
+
+    db.query(pointsQuery, [user_id], (error, points) => {
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+
+        const totalPoints = points[0].totalPoints || 0; 
+
+        const badgesQuery = `SELECT * FROM badge`;
+
+        db.query(badgesQuery, (error, badgeResult) => {
+            if (error) {
+                return res.status(500).json({ error: "Database query failed" });
+            }
+
+            const allBadges = badgeResult;
+
+            const userCurrentBadgeQuery = `SELECT badge_id FROM user_badge WHERE user_id = ?`;
+
+            db.query(userCurrentBadgeQuery, [user_id], (error, currentResult) => {
+                if (error) {
+                    return res.status(500).json({ error: "Database query failed" });
+                }
+
+                const userBadges = currentResult.map(row => row.badge_id); 
+
+                const missingBadges = allBadges.filter(badge => !userBadges.includes(badge.badge_id));
+
+                const eligibleBadges = missingBadges.filter(badge => totalPoints >= badge.points_needed);
+
+                const nonEligibleBadges = missingBadges.filter(badge => totalPoints < badge.points_needed);
+
+                if (eligibleBadges.length === 0) {
+                    return fetchAndReturnUserBadges(user_id, nonEligibleBadges, res);
+                }
+                const currentDate = new Date();
+
+                const insertQuery = `INSERT INTO user_badge (user_id, badge_id, earned_date) VALUES ?`;
+                const insertValues = eligibleBadges.map(badge => [user_id, badge.badge_id, currentDate]);
+
+                db.query(insertQuery, [insertValues], (error) => {
+                    if (error) {
+                        return res.status(500).json({ error: "Failed to insert new badges" });
+                    }
+
+                    fetchAndReturnUserBadges(user_id, nonEligibleBadges, res);
+                });
+            });
+        });
+    });
+});
+
+function fetchAndReturnUserBadges(user_id, nonEligibleBadges, res) {
+    const displayQuery = `
+        SELECT * FROM user_badge ub
+        INNER JOIN badge b ON ub.badge_id = b.badge_id
+        WHERE ub.user_id = ?`;
+
+    db.query(displayQuery, [user_id], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({ badges: results, other:nonEligibleBadges });
+    });
+}
 
 module.exports = router;

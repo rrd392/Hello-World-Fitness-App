@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 10,
         paddingVertical: 10,
-        backgroundColor: '#232323',
+        backgroundColor: '#212020',
     },
     headerBack: {
         flexDirection: 'row',

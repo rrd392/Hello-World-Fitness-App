@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Image, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,6 +12,7 @@ const MemberWorkoutPlan = () => {
   const [selected, setSelected] = useState("General");
   const [selectedLevel, setSelectedLevel] = useState("");
   const [selectedDay, setSelectedDay] = useState("All");
+  const [userPlan, setUserPlan] = useState("");
 
   //Profile icon button
   const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
@@ -34,16 +35,10 @@ const MemberWorkoutPlan = () => {
     fetchUserId();
   }, []);
 
-  // useEffect(() => {
-  //   fetchGeneralPlan();
-  //   if (userId) {  
-  //     fetchCoachPlan();
-  //     fetchCustomPlan();
-  //   }
-  // }, [selectedLevel, userId, selectedDay]); 
   const fetchData = async () => {
     fetchGeneralPlan();
     if (userId) {
+      fetchUserPlan();
       fetchCoachPlan();
       fetchCustomPlan();
     }
@@ -82,6 +77,29 @@ const MemberWorkoutPlan = () => {
         } else {
           setGeneralPlans([]); 
         }
+      }
+    } catch (error) {
+      console.error("Error fetching general workout plan data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    }
+  };
+
+  const fetchUserPlan = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/workout-plan/displayUserPlan/${userId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        setUserPlan(data.plan_name);
       }
     } catch (error) {
       console.error("Error fetching general workout plan data:", error);
@@ -178,15 +196,29 @@ const MemberWorkoutPlan = () => {
         <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
         {/* Navigation Icons */}
         <View style={styles.navButtons}>
-          {["General", "Coach", "Custom"].map((item) => (
-            <TouchableOpacity
-              key={item}
-              style={[styles.navItem, selected === item && styles.selectedNavItem]} 
-              onPress={() => setSelected(item)}
-            >
-              <Text style={styles.navText}>{item}</Text>
-            </TouchableOpacity>
-          ))}
+        {["General", "Coach", "My Plan"].map((item) => {
+          if (userPlan.split(" ")[0] === "Standard" && item === "Coach") {
+            return (
+              <TouchableOpacity
+                key={item}
+                style={[styles.navItem, selected === item && styles.selectedNavItem]} 
+                onPress={() => Alert.alert("Upgrade to premium to unlock this feature!")}
+              >
+                <Text style={[styles.navText , {color:"grey"}]}>{item}</Text>
+              </TouchableOpacity>
+            );
+          } else {
+            return (
+              <TouchableOpacity
+                key={item}
+                style={[styles.navItem, selected === item && styles.selectedNavItem]} 
+                onPress={() => setSelected(item)}
+              >
+                <Text style={styles.navText}>{item}</Text>
+              </TouchableOpacity>
+            );
+          }
+        })}
         </View>
         
         {selected === "General" && (
@@ -298,12 +330,13 @@ const MemberWorkoutPlan = () => {
               </View>
             )
         )}
-        {selected === "Custom" && (
+        {selected === "My Plan" && (
           customPlans.length > 0 ? (
             <View style={{ flex: 1 }}>
               <ModalDropdown
                 options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
                 defaultValue="All"
+                initialScrollIndex={0}
                 style={{marginTop:30}}
                 textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
                 dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
@@ -348,6 +381,7 @@ const MemberWorkoutPlan = () => {
               <ModalDropdown
                 options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
                 defaultValue="All"
+                initialScrollIndex="0"
                 style={{marginTop:30}}
                 textStyle={{ fontSize: 16, color: "#000", backgroundColor: "#E2F163", paddingVertical:5,  borderRadius:10, marginLeft:'auto', fontWeight:400, width:"100%", textAlign:'center', marginTop:-10, marginBottom:30}}
                 dropdownStyle={{ width: "90%", height: 180,right:0, marginTop:-20, borderRadius:10}}
@@ -373,7 +407,7 @@ const MemberWorkoutPlan = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', padding: 20, paddingBottom:0, marginBottom:-30},
+  container: { flex: 1, backgroundColor: '#212020', padding: 20, paddingBottom:0, marginBottom:-30},
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
   header:{flex:1},

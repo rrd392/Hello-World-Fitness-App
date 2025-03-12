@@ -1,26 +1,86 @@
-import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Image, SafeAreaView } from "react-native";
+import { ScrollView, StyleSheet, View, Text, Image, SafeAreaView } from "react-native";
 import HeaderVer1 from "../HeaderVer1"
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
+import React, { useState, useEffect } from "react";
 
 const Leaderboard = () => {
     const navigation = useNavigation();
+    const [userId, setUserId] = useState("");
+    const [userPoints, setUserPoints] = useState([]);
     
-    const users = [
-        { id: 2, name: "Eiden", score: 2349, rank: 2, color: "#6C6EC6", badgeColor: "#5CE1E6", height: 140 },
-        { id: 1, name: "Eiden", score: 2430, rank: 1, color: "#4A7BFF", badgeColor: "#9FFFA4", height: 160 },
-        { id: 3, name: "Eiden", score: 2268, rank: 3, color: "#6C6EC6", badgeColor: "#FFD700", height: 120 },
-        { id: 4, name: "Sebastian", score: 2187, rank: 4 },
-        { id: 5, name: "Sebastian", score: 1879, rank: 5 },
-        { id: 6, name: "Sebastian", score: 1526, rank: 6 },
-        { id: 7, name: "Sebastian", score: 918, rank: 7 },
-        { id: 8, name: "Sebastian", score: 832, rank: 8 },
-        { id: 9, name: "Sebastian", score: 725, rank: 9 },
-        { id: 10, name: "Sebastian", score: 600, rank: 10 },
-    ];
+    useEffect(() => {
+        async function fetchUserId() {
+            const token = await getUserId();
+            setUserId(token.id);
+        }
+        fetchUserId();
+    }, []);
 
-    const top3 = users.filter(user => user.rank <= 3);
-    const rank4Nbelow = users.filter(user => user.rank >= 4);
+    useEffect(() => {
+        if(userId){
+            fetchUserPoints();
+        }
+    }, [userId]);
+
+    const fetchUserPoints = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/profile/displayUserPoints`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+    
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+          }
+    
+          const data = await response.json();
+    
+          if (data) {
+            setUserPoints(assignColors(data.results));
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+    
+    const assignColors = (users) => {
+        return users.map((user, index) => ({
+            ...user,
+            rank: index + 1, 
+            color: getColorByRank(index + 1),
+            badgeColor: getBadgeColorByRank(index + 1),
+            height: getHeightByRank(index + 1),
+        }));
+    };
+
+    const getColorByRank = (rank) => {
+        if (rank === 1) return "#4A7BFF";  
+        if (rank === 2) return "#6C6EC6";  
+        if (rank === 3) return "#6C6EC6";  
+    };
+    
+    const getBadgeColorByRank = (rank) => {
+        if (rank === 1) return "#9FFFA4";
+        if (rank === 2) return "#5CE1E6";
+        if (rank === 3) return "#FFD700";
+    };
+    
+    const getHeightByRank = (rank) => {
+        if (rank === 1) return 180;
+        if (rank === 2) return 160;
+        if (rank === 3) return 140;
+    };
+
+    const reorderedPodium = (users) => {
+        if (!users || users.length < 3) return []; 
+    
+        return [users[1], users[0], users[2],...users.slice(3)];
+    };
 
     return (
         <View style={styles.container}>
@@ -33,12 +93,13 @@ const Leaderboard = () => {
                 <Text style={styles.title}>Leaderboard</Text>
 
                 <View style={styles.podium}>
-                    {top3.map((user) => (
+                    {reorderedPodium(userPoints).slice(0,3).map((user, index) => (
                         <View
-                            key={user.id} style={[ styles.podiumBlock, {backgroundColor: user.color, height: user.height }]}
+                            key={user.user_id} style={[ styles.podiumBlock, {backgroundColor: user.color, height: user.height }]}
                         >
                             <View style={styles.profileContainer}>
-                                <Image source={require("../../assets/icon.png")} style={styles.profileImage(user.rank)} />
+                                <Image source={user.profile_picture? { uri: `${API_BASE_URL}/uploads/${user.profile_picture}`}
+                        : require("../../assets/icon.png")} style={styles.profileImage(user.rank)} />
                                 <View style={[styles.rankBadge, { backgroundColor: user.badgeColor }]}>
                                     <Text style={styles.rankText}>{user.rank}</Text>
                                 </View>
@@ -47,9 +108,9 @@ const Leaderboard = () => {
                                 <Text style={styles.username}>{user.name}</Text>
                                 <View style={styles.pointsContainer}>
                                     <Ionicons name="flame" size={24} color="#F24814" />
-                                    <Text style={[styles.score, { color: user.badgeColor }]}>{user.score}</Text>
+                                    <Text style={[styles.score, { color: user.badgeColor }]}>{user.totalPoints}</Text>
                                 </View>
-                                <Text style={styles.usernameTag}>@username</Text>
+                                <Text style={styles.usernameTag}>@{user.username}</Text>
                             </View> 
                         </View>
                     ))}
@@ -57,20 +118,21 @@ const Leaderboard = () => {
 
                 <View style={styles.rank4NbelowContainer}>
                     <ScrollView style={{ maxHeight: 400 }}>
-                        {rank4Nbelow.map((user, index) => (
-                            <View key={user.id}>
+                        {userPoints.slice(3).map((user, index) => (
+                            <View key={user.user_id}>
                                 <View style={styles.rankCard}>
-                                    <Image source={require("../../assets/icon.png")} style={styles.rank4NbelowprofileImage} />
+                                    <Image source={user.profile_picture? { uri: `${API_BASE_URL}/uploads/${user.profile_picture}`}
+                        : require("../../assets/icon.png")} style={styles.rank4NbelowprofileImage} />
                                     <View style={styles.userInfo}>
-                                        <Text style={styles.username}>{user.name}</Text>
-                                        <Text style={styles.usernameTag}>@username</Text>
+                                        <Text style={styles.username2}>{user.name}</Text>
+                                        <Text style={styles.usernameTag}>@{user.username}</Text>
                                     </View>
                                     <View style={styles.pointsContainer}>
                                         <Ionicons name="flame" size={18} color="#F24814" />
-                                        <Text style={styles.rank4Nbelowscore}>{user.score}</Text>
+                                        <Text style={styles.rank4Nbelowscore}>{user.totalPoints}</Text>
                                     </View>
                                 </View>
-                                {index !== rank4Nbelow.length - 1 && <View style={styles.divider} />}
+                                {index !== userPoints.slice(3).length - 1 && <View style={styles.divider} />}
                             </View>
                         ))}
                         
@@ -82,7 +144,7 @@ const Leaderboard = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000' },
+    container: { flex: 1, backgroundColor: '#212020' },
     header: { paddingTop: 40, marginBottom:-30, padding: 10},
     title: { color: "white", fontSize: 24, fontWeight: "bold", textAlign: "center", textShadowColor: "#896CFE", textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 5, marginBottom: 10, },
 
@@ -120,7 +182,8 @@ const styles = StyleSheet.create({
         borderColor: rank === 1 ? "#6FCF97" : rank === 2 ? "#56CCF2" : "#F2C94C", 
     }),
 
-    username: { color: "white", fontSize: 16, fontWeight: "bold",marginBottom: 2 },
+    username: { color: "white", fontSize: 16, fontWeight: "bold",marginBottom: 2, textAlign:'center' },
+    username2:{color: "white", fontSize: 16, fontWeight: "bold",marginBottom: 2,},
     pointsContainer: { flexDirection: 'row', gap: 3},
     score: { fontSize: 19, fontWeight: "bold", marginTop: 2 },
     usernameTag: { color: "#DFDADA", fontSize: 12, },
@@ -131,10 +194,10 @@ const styles = StyleSheet.create({
     userInfo: { flex: 1},
     rank4Nbelowscore: { fontSize: 15, color: 'white', fontWeight: 'bold'},
     divider: {
-        height: 1,  // Thickness of the line
-        backgroundColor: "#FFFFFF30",  // White with transparency
-        marginHorizontal: 10,  // Space from left & right edges
-        marginBottom: 5,  // Space between items
+        height: 1,  
+        backgroundColor: "#FFFFFF30",  
+        marginHorizontal: 10,  
+        marginBottom: 5,  
     },
 });
 

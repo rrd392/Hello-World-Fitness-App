@@ -6,19 +6,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
+import HeaderVer2 from '../HeaderVer2'
 
 const DetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
     const { workout_plan, category } = route.params;
 
-    //Profile icon dropdown button
-    const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
-
-    //Notification icon pop up page
-    const toggleNotification = () => navigation.navigate('Notification');
-
     const [userId, setUserId] = useState("");
-    const [userName, setUserName] = useState("");
     const [planDetails, setPlanDetails] = useState([]);
 
     useEffect(() => {
@@ -96,15 +90,11 @@ const DetailWorkoutPlan = ({ route }) => {
     return (
         <View style={styles.container}>
             {/* Header Section */}
-            <SafeAreaView style={styles.header}>
-                <View style={styles.headerRow}>
-                    <Text style={styles.greeting}>Hi, {userName}</Text>
-                    <View style={styles.iconRow}>
-                        <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
-                        <TouchableOpacity onPress={handleGoToProfile}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
-                    </View>
-                </View>
-                <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
+            <SafeAreaView style={styles.headertop}>
+                <HeaderVer2
+                    title="Workout Plans" style={styles.header}
+                    onPress={() => navigation.goBack()}
+                />
             </SafeAreaView>
 
             <ScrollView>
@@ -191,8 +181,8 @@ const DetailWorkoutPlan = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000'},
-    header: { padding: 20, marginBottom:-30 },
+    container: { flex: 1, backgroundColor: '#212020'},
+    // headertop:{marginBottom:10},
     header3:{padding:20},
     greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
     subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
