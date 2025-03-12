@@ -75,7 +75,7 @@ const ProfileDashboard = () => {
         {
             title: "Membership",
             icon: "star",
-            onPress: () => navigation.navigate("MembershipRenewal"),
+            onPress: () => navigation.navigate("MembershipStatus"),
         },
         {
             title: "Transaction History",

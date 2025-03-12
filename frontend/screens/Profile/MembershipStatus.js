@@ -1,61 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
 
 const MembershipStatus = () => {
   const navigation = useNavigation();
-  const [selectedPlan, setSelectedPlan] = useState(2);
+  const [userId, setUserId] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const [isExpired, setIsExpired] = useState(false);
-  const [expiryDate, setExpiryDate] = useState('2025-03-15'); // Replace with actual expiry date from API
+  const [expiryDate, setExpiryDate] = useState('');
+  const [membershipPlans, setMembershipPlans] = useState([]);
 
-  // Check membership status on mount
   useEffect(() => {
-    const checkExpiry = () => {
-      const currentDate = new Date();
-      const expiry = new Date(expiryDate);
-      setIsExpired(expiry < currentDate);
+    const fetchUserData = async () => {
+      try {
+        const userData = await getUserId();
+        if (!userData?.id) {
+          Alert.alert("Error", "Invalid user ID.");
+          return;
+        }
+        const userId = userData.id;
+        setUserId(userId);
+
+        // Fetch user membership data
+        const response = await fetch(`${API_BASE_URL}/api/profile/displayUserData/${userId}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Membership fetch failed: ${errorText}`);
+        }
+
+        const data = await response.json();
+        //console.log("User membership response:", data);
+
+        if (data?.membership_id) {
+          setSelectedPlan(data.membership_id);
+          setExpiryDate(data.expiry_date);
+        } else {
+          setIsExpired(true);
+          setExpiryDate('');
+        }
+
+        // Fetch available membership plans
+        const plansResponse = await fetch(`${API_BASE_URL}/api/profile/displayMembershipPlan`);
+        if (!plansResponse.ok) {
+          const plansError = await plansResponse.text();
+          throw new Error(`Plans fetch failed: ${plansError}`);
+        }
+        
+        const plansData = await plansResponse.json();
+       // console.log("Membership plans response:", plansData);
+        setMembershipPlans(plansData.membershipPlan || []);
+        
+      } catch (error) {
+        console.error("Full error details:", error);
+        Alert.alert("Error", error.message || "Failed to load data");
+      }
     };
-    
-    checkExpiry();
+
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    if (expiryDate) {
+      const today = new Date();
+      const expiry = new Date(expiryDate);
+      setIsExpired(expiry < today);
+    } else {
+      setIsExpired(true);
+    }
   }, [expiryDate]);
 
-  const membershipPlans = [
-    {
-      id: 1,
-      name: 'Standard Monthly',
-      price: 30,
-      features: ['Basic Access', 'Group Classes', 'Locker Rooms'],
-      gradient: ['#1A1A1A', '#2D2D2D']
-    },
-    {
-      id: 2,
-      name: 'Premium Monthly',
-      price: 50,
-      features: ['Personal Trainer', 'Priority Booking', 'Spa Access'],
-      gradient: ['#2D2D2D', '#4D4D4D']
-    },
-    {
-      id: 3,
-      name: 'Standard Yearly',
-      price: 300,
-      features: ['Annual Discount', '2 Guest Passes', 'Event Access'],
-      gradient: ['#1A1A1A', '#2D2D2D']
-    },
-    {
-      id: 4,
-      name: 'Premium Yearly',
-      price: 500,
-      features: ['4 Guest Passes', 'Merch Discounts', 'VIP Events'],
-      gradient: ['#2D2D2D', '#4D4D4D']
-    }
-  ];
+  const getCurrentPlanDetails = () => {
+    if (!selectedPlan) return { name: 'No Active Plan', expiry: '' };
+    
+    const plan = membershipPlans.find(p => p.membership_id === selectedPlan);
+    return {
+      name: plan?.plan_name || 'Unknown Plan',
+      expiry: expiryDate ? new Date(expiryDate).toLocaleDateString() : 'N/A'
+    };
+  };
 
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={28} color="#E2F163" />
@@ -64,24 +94,26 @@ const MembershipStatus = () => {
           <View style={{ width: 28 }} />
         </View>
 
-        {/* Current Plan Card */}
         <View style={styles.currentPlanCard}>
-          <LinearGradient
-            colors={['#1A1A1A', '#2D2D2D']}
-            style={styles.currentPlanGradient}
-          >
+          <LinearGradient colors={['#1A1A1A', '#2D2D2D']} style={styles.currentPlanGradient}>
             <Text style={[styles.currentBadge, isExpired && styles.expiredBadge]}>
               {isExpired ? 'EXPIRED' : 'ACTIVE'}
             </Text>
-            <Text style={styles.currentPlan}>Premium Monthly</Text>
-            <Text style={styles.expiryDate}>
-              {isExpired ? 'Expired on ' : 'Renews: '}
-              {new Date(expiryDate).toLocaleDateString()}
+            <Text style={styles.currentPlan}>
+              {getCurrentPlanDetails().name}
             </Text>
+            <Text style={styles.expiryDate}>
+              {isExpired 
+                ? (!expiryDate || expiryDate === 'N/A' || expiryDate.trim() === '') 
+                ? 'Renew the membership plan to get more benefits' 
+                : `Expired on ${getCurrentPlanDetails().expiry}`
+                : `Renews: ${getCurrentPlanDetails().expiry}`}
+            </Text>
+
           </LinearGradient>
         </View>
 
-        {/* Membership Plans */}
+
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
@@ -89,55 +121,68 @@ const MembershipStatus = () => {
         >
           {membershipPlans.map((plan) => (
             <TouchableOpacity 
-              key={plan.id}
+              key={plan.membership_id}
               style={styles.planContainer}
-              onPress={() => setSelectedPlan(plan.id)}
+              onPress={() => setSelectedPlan(plan.membership_id)}
             >
-              <LinearGradient 
-                colors={plan.gradient}
-                style={[
-                  styles.planCard,
-                  selectedPlan === plan.id && styles.selectedPlan
-                ]}
+              <LinearGradient
+                colors={plan.membership_id % 2 === 0 ? ['#404040', '#505050'] : ['#303030', '#404040']}
+                style={[styles.planCard, selectedPlan === plan.membership_id && styles.selectedPlan]}
               >
-
-
                 <View style={styles.planHeader}>
-                  <Text style={styles.planName}>{plan.name}</Text>
-                  {plan.name.includes('Premium') && (
+                  <Text style={styles.planName}>{plan.plan_name}</Text>
+                  {plan.plan_name.includes('Premium') && (
                     <Ionicons name="diamond" size={16} color="#E2F163" />
                   )}
                 </View>
                 <Text style={styles.planPrice}>RM{plan.price}</Text>
-                <Text style={styles.planDuration}>
-                  {plan.duration} Month{plan.duration > 1 ? 's' : ''}
-                </Text>
+                <Text style={styles.durationText}>{plan.duration} Month{plan.duration > 1 ? 's' : ''}</Text>
                 
-                <View style={styles.featuresContainer}>
-                  {plan.features.map((feature, index) => (
-                    <View key={index} style={styles.featureItem}>
-                      <Ionicons name="checkmark" size={14} color="#E2F163" />
-                      <Text style={styles.featureText}>{feature}</Text>
-                    </View>
-                  ))}
-                </View>
+                {/* Description with tick marks */}
+                <View style={styles.descriptionContainer}>
+                    {plan.description.split(',').map((feature, index) => (
+                     <View key={index} style={styles.descriptionItem}>
+                    <Ionicons name="checkmark-circle" size={18} color="#E2F163" style={styles.checkIcon} />
+                    <Text style={styles.descriptionText}>{feature.trim()}</Text>
+                 </View>
+                 ))}
+
+            </View>
               </LinearGradient>
             </TouchableOpacity>
+
+                 
+
+
           ))}
+
+
+
+
+
+
+
         </ScrollView>
 
-        {/* Bottom CTA Button with padding */}
-        <View style={styles.ctaContainer}>
-          <TouchableOpacity 
-            style={styles.ctaButton}
-            onPress={() => navigation.navigate('MembershipRenew')}
-          >
-            <Text style={styles.ctaText}>
-              {isExpired ? 'Renew Membership' : 'Upgrade Plan'}
-            </Text>
-            <Ionicons name="arrow-forward" size={20} color="#000" />
-          </TouchableOpacity>
-        </View>
+
+
+        <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                    style={isExpired ? styles.renewButton : styles.upgradeButton}
+                    onPress={() => {
+                        const selectedPlanDetails = membershipPlans.find(p => p.membership_id === selectedPlan);
+                        if (selectedPlanDetails) {
+                            navigation.navigate("MembershipRenew", { plan: selectedPlanDetails, userId });
+                        } else {
+                            Alert.alert("Error", "Please select a membership plan.");
+                        }
+                        }}
+>
+  <Text style={styles.buttonText}>{isExpired ? "Renew" : "Upgrade"}</Text>
+  <Ionicons name="arrow-forward" size={18} color="#000" style={styles.buttonIcon} />
+</TouchableOpacity>
+            </View>
+
       </SafeAreaView>
     </View>
   );
@@ -151,18 +196,19 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     padding: 16,
-    paddingBottom: 40 // Add space for bottom navigation
+    paddingBottom: 40
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 24
   },
   headerTitle: {
     color: '#E2F163',
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#E2F163',
   },
   currentPlanCard: {
     borderRadius: 16,
@@ -170,93 +216,122 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   currentPlanGradient: {
-    padding: 24,
+    padding: 24
   },
   currentBadge: {
     color: '#E2F163',
     fontSize: 12,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 16
   },
   expiredBadge: {
-    color: '#FF4444',
-    fontSize: 12,
-    marginBottom: 16,
-    width:"16%",
+    color: '#FF4444'
   },
   currentPlan: {
     color: '#FFF',
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 8
   },
   expiryDate: {
     color: '#D2D2D2',
-    fontSize: 14,
+    fontSize: 14
+  },
+  plansContainer: {
+    paddingHorizontal: 8
   },
   planContainer: {
-    marginHorizontal: 8,
     width: 280,
+    marginRight: 16
   },
   planCard: {
+    borderRadius: 12,
     padding: 20,
-    borderRadius: 16,
-    height: 320,
-    justifyContent: 'space-between',
+    height: 320
   },
   selectedPlan: {
     borderWidth: 2,
-    borderColor: '#E2F163',
+    borderColor: '#E2F163'
   },
   planHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 16
   },
   planName: {
     color: '#FFF',
     fontSize: 18,
-    fontWeight: 'bold',
-    flex: 1,
+    fontWeight: '600',
+    flex: 1
   },
   planPrice: {
     color: '#E2F163',
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 8
   },
-  planDuration: {
-    color: '#D2D2D2',
-    fontSize: 14,
-    marginBottom: 16,
+durationText: {
+  color: '#FFF', // Changed to white
+  fontSize: 16,
+  fontWeight: 'bold',
+  marginBottom: 8
+},
+descriptionContainer: {
+  marginTop: 12
+},
+descriptionItem: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 6
+},
+checkIcon: {
+  marginRight: 6
+},
+descriptionText: {
+  color: '#E2E2E2',
+  fontSize: 14, // Increased font size for better readability
+  fontWeight: '500'
+},
+
+buttonContainer: {
+    position: 'absolute',
+    bottom: 20, // Adjust spacing from bottom
+    left: 0,
+    right: 0,
+    alignItems: 'center', // Center button horizontally
   },
-  featuresContainer: {
-    gap: 12,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  featureText: {
-    color: '#D2D2D2',
-    fontSize: 14,
-  },
-  ctaContainer: {
-    paddingTop: 24,
-    paddingBottom: 40 // Extra padding for bottom nav
-  },
-  ctaButton: {
+  renewButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
     backgroundColor: '#E2F163',
+    borderRadius: 25,
+    paddingVertical: 14,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 18,
-    borderRadius: 12,
   },
-  ctaText: {
+  upgradeButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    backgroundColor: '#E2F163',
+    borderRadius: 25,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
     color: '#000',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
+  },
+  buttonIcon: {
+    marginLeft: 8,
   },
 });
 
