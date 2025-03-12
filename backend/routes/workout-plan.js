@@ -356,4 +356,19 @@ router.post('/createWorkoutPlan', upload.single("image"), async (req, res) => {
     }
 });
 
+router.get('/displayUserPlan/:user_id', (req, res) => {
+    const {user_id} = req.params;
+
+    const userPlanQuery = `SELECT plan_name FROM membership m
+                            INNER JOIN user_membership um ON m.membership_id = um.membership_id
+                            WHERE um.user_id = ?`;
+    
+    db.query(userPlanQuery, [user_id], (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json({plan_name : results[0].plan_name});
+    });
+});
+
 module.exports = router;
