@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
   Modal,
+  Alert
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,45 +15,52 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import MemberFeedback from "./MemberFeedback";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import HeaderVer2 from "../../HeaderVer2";
+import API_BASE_URL from "../../../env";
+import { getUserId } from "../../getUserId";
 
 function SelectedClass() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { className } = route.params || {};
+  const { classData } = route.params || {};
 
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
-
-  const classData = [
-    {
-      title: "Yoga Flow",
-      description:
-        "A Relaxing Yoga Session Focused on Flexibility and Mindfulness.",
-      time: "08:00 - 09:00",
-      coach: "Coach Aaron",
-      coachEmail: "aaron122@gmail.com",
-      coachNumber: "+0123456789",
-      date: "2025-01-02",
-      slots: "20/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Zumba Dance",
-      description: "A Fun Dance Workout to Get Your Heart Pumping.",
-      time: "10:00 - 11:00",
-      coach: "Coach Aaron",
-      coachEmail: "aaron122@gmail.com",
-      coachNumber: "+0123456789",
-      date: "2025-01-02",
-      slots: "15/20",
-      image: require("./yoga.jpg"),
-    },
-  ];
-
-  const selectedClass = classData.find((cls) => cls.title === className);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
   const [failModalVisible, setFailModalVisible] = useState(false);
-  const [classFull, setClassFull] = useState(false); // Set to true to show fail modal and alse to show success modal
+  const [classFull, setClassFull] = useState(false); 
+  const [userId, setUserId] = useState("");
+  
+  if(classData.participants == classData.max_participants){
+    setClassFull(true);
+  }
+
+  useEffect(() => {
+    async function fetchUserId() {
+      const token = await getUserId();
+      setUserId(token.id);
+    }
+    fetchUserId();
+  }, []);
+
+  const addClass = async (class_id, user_id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/classes/addUserClass`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ class_id, user_id })
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        setSuccessModalVisible(true); 
+      }else{
+        Alert.alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching class data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    }
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#212020" }}>
       <HeaderVer2 title="Classes" onPress={() => navigation.goBack()} />
@@ -62,33 +70,32 @@ function SelectedClass() {
         style={{ flex: 1 }}
       >
         <FlatList
-          data={selectedClass ? [selectedClass] : []}
-          keyExtractor={(item) => item.title}
+          data={classData ? [classData] : []}
+          keyExtractor={(item) => item.class_id}
           renderItem={({ item }) => (
             <View style={styles.container}>
               <View style={styles.pageContent}>
-                <Image source={item.image} style={styles.classImage} />
-
+                <Image source={{uri: `${API_BASE_URL}/uploads/${item.class_image}`}} style={styles.classImage}/>
                 <View style={styles.classCard}>
                   <View style={styles.headerRow}>
-                    <Text style={styles.classTitle}>{item.title}</Text>
+                    <Text style={styles.classTitle}>{item.class_name}</Text>
                     <View style={styles.iconRow}>
                       <Ionicons
                         name="calendar-outline"
                         size={20}
                         color="white"
                       />
-                      <Text style={styles.classDate}>{item.date}</Text>
+                      <Text style={styles.classDate}>{new Date(item.schedule_date).toLocaleDateString("en-GB")}</Text>
                     </View>
                   </View>
+                  <Text style={styles.classDescription}>
+                    {item.description}
+                  </Text>
                   <View style={styles.classInfo}>
                     <View style={{ flex: 1, maxWidth: "65%", gap: 5 }}>
-                      <Text style={styles.classDescription}>
-                        {item.description}
-                      </Text>
                       <View style={styles.infoRow}>
                         <Ionicons name="time-outline" size={18} color="white" />
-                        <Text style={styles.classTime}>{item.time}</Text>
+                        <Text style={styles.classTime}>{item.start_time.slice(0,-3)} - {item.end_time.slice(0,-3)}</Text>
                       </View>
                       <View style={styles.infoRow}>
                         <Ionicons
@@ -96,23 +103,20 @@ function SelectedClass() {
                           size={18}
                           color="white"
                         />
-                        <Text style={styles.classSlots}>{item.slots}</Text>
+                        <Text style={classFull? styles.fullSlots: styles.nonFullSlots}>{item.participants}/{item.max_participants}</Text>
                       </View>
                     </View>
 
                     <View style={styles.coachCard}>
                       <View style={styles.coachProfile}>
-                        <Image
-                          source={require("./coach.jpg")}
-                          style={styles.coachImage}
-                        />
-                        <View>
-                          <Text style={styles.coachName}>{item.coach}</Text>
-                          <Text style={styles.coachEmail}>
-                            {item.coachEmail}
+                        <Image source={{uri: `${API_BASE_URL}/uploads/${item.class_image}`}} style={styles.coachImage}/>
+                        <View style={{width:"70%"}}>
+                          <Text style={styles.coachName} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+                          <Text style={styles.coachEmail} numberOfLines={1} ellipsizeMode="tail">
+                            {item.email}
                           </Text>
-                          <Text style={styles.coachNumber}>
-                            {item.coachNumber}
+                          <Text style={styles.coachNumber} numberOfLines={1} ellipsizeMode="tail">
+                            {item.contact_number}
                           </Text>
                         </View>
                       </View>
@@ -124,9 +128,9 @@ function SelectedClass() {
                   style={styles.signUpButton}
                   onPress={() => {
                     if (classFull) {
-                      setFailModalVisible(true); // Show fail modal if class is full
+                      setFailModalVisible(true); 
                     } else {
-                      setSuccessModalVisible(true); // Show success modal if class is not full
+                      addClass(classData.class_id, userId); 
                     }
                   }}
                 >
@@ -134,7 +138,7 @@ function SelectedClass() {
                 </TouchableOpacity>
               </View>
               <View style={{ height: "100%" }}>
-                <MemberFeedback />
+                <MemberFeedback {...item}/>
               </View>
               <Modal
                 visible={successModalVisible}
@@ -145,9 +149,9 @@ function SelectedClass() {
                   <View style={styles.modalContent}>
                     <TouchableOpacity
                       style={styles.closeButton}
-                      onPress={() => setSuccessModalVisible(false)}
+                      onPress={() => {setSuccessModalVisible(false); navigation.navigate("Classes");}}
                     >
-                      <Ionicons name="close" size={20} color="black" />
+                      <Ionicons name="close" size={26} color="black" />
                     </TouchableOpacity>
                     <Text style={styles.modalText}>
                       Successfully Signed Up For Class
@@ -176,7 +180,7 @@ function SelectedClass() {
                       style={styles.closeButton}
                       onPress={() => setFailModalVisible(false)}
                     >
-                      <Ionicons name="close" size={20} color="black" />
+                      <Ionicons name="close" size={26} color="black" />
                     </TouchableOpacity>
                     <Text style={styles.modalText}>Sorry, Class is Full.</Text>
                     <TouchableOpacity
@@ -209,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 10,
+    marginBottom:10
   },
 
   iconRow: { flexDirection: "row", gap: 5 },
@@ -239,11 +243,8 @@ const styles = StyleSheet.create({
   classInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center", // Ensures items don't stretch
-    gap: 10, // Adds spacing between description and coach card
-    paddingLeft: 15,
-    paddingRight: 10,
-    paddingBottom: 10,
+    alignItems: "center", 
+    gap: 10, 
   },
 
   classImage: {
@@ -255,30 +256,32 @@ const styles = StyleSheet.create({
   },
   classCard: {
     backgroundColor: "#232323",
-    padding: 10,
+    padding: 20,
     borderRadius: 15,
     width: "100%",
   },
-  classTitle: { fontSize: 34, color: "#E2F163", fontWeight: "bold" },
-  classDescription: { fontSize: 14, color: "white", marginTop: 10 },
+  classTitle: { fontSize: 26, color: "#E2F163", fontWeight: "bold" },
+  classDescription: { fontSize: 14, color: "white",  marginBottom:10},
   infoRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 5 },
-  classTime: { fontSize: 14, color: "white" },
-  classSlots: { fontSize: 14, color: "red", fontWeight: "bold" },
+  classTime: { fontSize: 16, color: "white" },
+  fullSlots: { fontSize: 16, color: "red", fontWeight: "bold" },
+  nonFullSlots:{fontSize: 16, color: "#E2F163", fontWeight: "bold"},
   classDate: { fontSize: 16, color: "white" },
   coachCard: {
-    backgroundColor: "#C4E538",
+    backgroundColor: "#E2F163",
     borderRadius: 10,
     padding: 10,
-    marginTop: 60,
+    marginTop: 'auto',
+    width:"60%"
   },
   coachProfile: { flexDirection: "row", alignItems: "center", gap: 10 },
   coachImage: { width: 40, height: 40, borderRadius: 20 },
-  coachName: { fontSize: 18, fontWeight: "500" },
-  coachEmail: { fontSize: 10, color: "#444" },
-  coachNumber: { fontSize: 10, color: "#444" },
+  coachName: { fontSize: 18, fontWeight: "500", maxWidth:"100%"},
+  coachEmail: { fontSize: 12, color: "#444" },
+  coachNumber: { fontSize: 12, color: "#444" },
 
   signUpButton: {
-    backgroundColor: "#212020",
+    backgroundColor: "#000",
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 40,
@@ -295,7 +298,8 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "#E2F163",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical:40,
     borderRadius: 15,
     width: "80%",
     alignItems: "center",
@@ -304,6 +308,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "black",
+    marginBottom:20
   },
   viewMoreButton: {
     backgroundColor: "#212020",
@@ -314,7 +319,7 @@ const styles = StyleSheet.create({
   },
   viewMoreText: {
     color: "white",
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
   },
   closeButton: {

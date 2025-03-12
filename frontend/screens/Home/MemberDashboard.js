@@ -36,7 +36,7 @@ const MemberDashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!userId) return; // Ensure userId exists
+    if (!userId) return; 
 
     const fetchUserData = async () => {
       try {
@@ -59,9 +59,9 @@ const MemberDashboard = () => {
           if (Array.isArray(data.classes)) {
             setUpcomingClassData(data.classes);
           } else if (data.classes) {
-            setUpcomingClassData([data.classes]); // Convert single object to array
+            setUpcomingClassData([data.classes]); 
           } else {
-            setUpcomingClassData([]); // Fallback to empty array
+            setUpcomingClassData([]); 
           }
           setClassData(data.disClass);
           setWorkoutPlans(data.workoutPlans);
@@ -82,7 +82,7 @@ const MemberDashboard = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB", { timeZone: "Asia/Kuala_Lumpur" });
   }
-  //Notification icon pop up page
+
   const toggleNotification = () => navigation.navigate("Notification");
   const handleGoToProfile = () => navigation.navigate("ProfileStack");
 
@@ -193,7 +193,7 @@ const MemberDashboard = () => {
                 // "More >" Card
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => console.log("Navigate to more classes")}
+                  onPress={() => navigation.navigate("Classes")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
@@ -236,7 +236,7 @@ const MemberDashboard = () => {
                 // "More >" Card
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => console.log("Navigate to more workout plans")}
+                  onPress={() => navigation.navigate("WorkoutPlanStack")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
@@ -267,7 +267,7 @@ const MemberDashboard = () => {
             data={[
               ...(Array.isArray(dietPlans) ? dietPlans : []),
               { isMoreCard: true },
-            ]} // Add a special item at the end
+            ]} 
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) =>
@@ -276,10 +276,9 @@ const MemberDashboard = () => {
             contentContainerStyle={styles.listContainer}
             renderItem={({ item }) =>
               item.isMoreCard ? (
-                // "More >" Card
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => console.log("Navigate to more workout plans")}
+                  onPress={() => navigation.navigate("Nutrition")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
@@ -335,7 +334,7 @@ const styles = StyleSheet.create({
   navItem: { alignItems: "center" },
   navText: { color: "#B3A0FF", marginTop: 5 },
 
-  upcomingClass: { backgroundColor: "#B3A0FF", padding: 15 },
+  upcomingClass: { backgroundColor: "#B3A0FF", padding: 20 },
   sectionTitle: {
     fontSize: 24,
     color: "black",

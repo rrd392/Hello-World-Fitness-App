@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
-  StyleSheet,
   Modal,
   ScrollView,
 } from "react-native";
@@ -14,23 +13,70 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import RatingPopup from "./RatingPopup";
+import API_BASE_URL from "../../../env";
+import { getUserId } from "../../getUserId";
+
 function YourClasses() {
   const navigation = useNavigation();
   const [showCancelClass, setShowCancelClass] = useState(false);
-  const classData = [
-    {
-      title: "Yoga Flow",
-      description:
-        "A Relaxing Yoga Session Focused on Flexibility and Mindfulness.",
-      time: "08:00 - 09:00",
-      coach: "Coach Aaron",
-      coachEmail: "aaron122@gmail.com",
-      coachNumber: "+0123456789",
-      date: "2025-01-02",
-      slots: "20/20",
-      image: require("./yoga.jpg"),
-    },
-  ];
+  const [userId, setUserId] = useState("");
+  const [upcomingClass, setUpcomingClass] = useState([]);
+
+  useEffect(() => {
+    async function fetchUserId() {
+        const token = await getUserId();
+        setUserId(token.id);
+    }
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+      if(userId){
+        fetchUpcomingClasses();
+      }
+  }, [userId]);
+
+  const fetchUpcomingClasses = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/classes/displayUpcomingClasses/${userId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        setUpcomingClass(data.results)
+      }
+    } catch (error) {
+      console.error("Error fetching upcoming class data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  };
+  
+  // const classData = [
+  //   {
+  //     title: "Yoga Flow",
+  //     description:
+  //       "A Relaxing Yoga Session Focused on Flexibility and Mindfulness.",
+  //     time: "08:00 - 09:00",
+  //     coach: "Coach Aaron",
+  //     coachEmail: "aaron122@gmail.com",
+  //     coachNumber: "+0123456789",
+  //     date: "2025-01-02",
+  //     slots: "20/20",
+  //     image: require("./yoga.jpg"),
+  //   },
+  // ];
 
   const historyData = [
     {
@@ -61,9 +107,10 @@ function YourClasses() {
       rated: true,
     },
   ];
-  const item = classData[0];
+  const item = upcomingClass[0];
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
+  console.log('Upcoming class:', upcomingClass, 'Item:', item);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
       {/* Fixed Header */}
@@ -73,7 +120,7 @@ function YourClasses() {
       />
 
       {/* Scrollable Content */}
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Text style={styles.PageTitle}>Your Classes</Text>
         <View style={styles.wrapper}>
           <Text style={styles.CardTitle}>Your Upcoming Classes</Text>
@@ -82,33 +129,32 @@ function YourClasses() {
           <View style={styles.cardContainer}>
             <View style={styles.topSection}>
               <View style={styles.infoContainer}>
-                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.title}>{item.class_name}</Text>
 
                 <View style={styles.detailRow}>
                   <MaterialIcons name="schedule" size={20} color="white" />
-                  <Text style={styles.detailText}> {item.time}</Text>
+                  <Text style={styles.detailText}> {item.start_time.slice(0,-3)} - {item.end_time.slice(0,-3)}</Text>
                 </View>
 
                 <View style={styles.detailRow}>
                   <FontAwesome name="user" size={18} color="white" />
                   <Text style={styles.slotText}>
                     {" "}
-                    <Text style={styles.redText}>{item.slots}</Text>
+                    <Text style={styles.redText}>{item.max_participants}</Text>
                   </Text>
                 </View>
 
                 <View style={styles.detailRow}>
                   <FontAwesome name="headphones" size={18} color="white" />
-                  <Text style={styles.detailText}> {item.coach}</Text>
+                  <Text style={styles.detailText}> {item.name}</Text>
                 </View>
 
                 <View style={styles.detailRow}>
                   <FontAwesome name="calendar" size={18} color="white" />
-                  <Text style={styles.detailText}> {item.date}</Text>
+                  <Text style={styles.detailText}> {new Date(item.schedule_date).toLocaleDateString('en-GB')}</Text>
                 </View>
               </View>
-
-              <Image source={item.image} style={styles.cardImage} />
+              <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}`}} style={styles.cardImage} />
             </View>
           </View>
 
@@ -165,7 +211,7 @@ function YourClasses() {
                 <RatingPopup
                   visible={modalVisible}
                   onClose={() => setModalVisible(false)}
-                  classData={selectedClass}
+                  upcomingClass={selectedClass}
                 />
               )}
             </View>
@@ -181,20 +227,30 @@ function YourClasses() {
               style={styles.closeButton}
               onPress={() => setShowCancelClass(false)}
             >
-              <Ionicons name="close" size={20} color="black" />
+              <Ionicons name="close" size={26} color="black" />
             </TouchableOpacity>
             <Text style={styles.modalText}>
               Are you sure you want to cancel this class?
             </Text>
-            <TouchableOpacity
-              style={styles.viewMoreButton}
-              onPress={() => {
-                setShowCancelClass(false);
-                navigation.navigate("MemberDashboard");
-              }}
-            >
-              <Text style={styles.viewMoreText}>Confirm</Text>
-            </TouchableOpacity>
+            <View style={{flexDirection:'row', justifyContent:'space-between', width:"90%"}}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => {
+                  setShowCancelClass(false);
+                }}
+              >
+                <Text style={styles.viewMoreText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.viewMoreButton}
+                onPress={() => {
+                  setShowCancelClass(false);
+                  navigation.navigate("MemberDashboard");
+                }}
+              >
+                <Text style={styles.viewMoreText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -210,9 +266,9 @@ const styles = {
     marginTop: 15,
     width: "95%",
     alignSelf: "center",
-    marginBottom: 30, // Space below card and buttons
+    marginBottom: 30, 
     backgroundColor: "#B3A0FF",
-    padding: 10,
+    padding: 20,
   },
   CardTitle: {
     fontSize: 25,
@@ -294,7 +350,8 @@ const styles = {
   },
   modalContent: {
     backgroundColor: "#E2F163",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical:40,
     borderRadius: 15,
     width: "80%",
     alignItems: "center",
@@ -303,11 +360,19 @@ const styles = {
     fontSize: 18,
     fontWeight: "bold",
     color: "black",
+    marginBottom:20
   },
   viewMoreButton: {
     backgroundColor: "black",
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 10,
+    width:100,
+  },
+  cancelButton:{
+    backgroundColor: "red",
+    paddingVertical: 10,
+    width:100,
     borderRadius: 10,
     marginTop: 10,
   },
@@ -315,6 +380,7 @@ const styles = {
     color: "white",
     fontSize: 14,
     fontWeight: "bold",
+    textAlign:'center'
   },
   closeButton: {
     position: "absolute",

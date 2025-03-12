@@ -165,10 +165,10 @@ const Achievement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#212020',padding: 20, },
+    container: { flex: 1, backgroundColor: '#212020',padding: 20, },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between'},
     homeButton: { flexDirection: 'row', alignItems: 'center', gap: 3, marginLeft: -10 },
-  homeText: { fontSize: 24, color: '#896CFE', fontWeight: 'bold' },
+    homeText: { fontSize: 24, color: '#896CFE', fontWeight: 'bold' },
     iconRow: { flexDirection: 'row', alignItems: 'center', },
 
     profileSection: { alignItems: "center", padding: 20 },

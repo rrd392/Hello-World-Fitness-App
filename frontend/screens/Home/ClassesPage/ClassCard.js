@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,49 +6,89 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  Alert,
 } from "react-native";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import API_BASE_URL from "../../../env";
+import { getUserId } from "../../getUserId";
 
-function ClassCard({ title, time, coach, date, slots, image }) {
+function ClassCard({ classData, refreshClasses }) {
   const navigation = useNavigation();
   const [successModalVisible, setSuccessModalVisible] = useState(false);
   const [failModalVisible, setFailModalVisible] = useState(false);
-  const [classFull, setClassFull] = useState(false); // Set to true to show fail modal and alse to show success modal
+  const [classFull, setClassFull] = useState(false); 
+  const [userId, setUserId] = useState("");
+
+  if(classData.participants == classData.max_participants){
+    setClassFull(true);
+  }
+
+  useEffect(() => {
+    async function fetchUserId() {
+      const token = await getUserId();
+      setUserId(token.id);
+    }
+    fetchUserId();
+  }, []);
+
+  const addClass = async (class_id, user_id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/classes/addUserClass`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ class_id, user_id })
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        setSuccessModalVisible(true); 
+        refreshClasses();
+      }else{
+        Alert.alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching class data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    }
+  }
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.cardContainer}>
         {/* Class Info & Image */}
         <View style={styles.topSection}>
           <View style={styles.infoContainer}>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.title}>{classData.class_name}</Text>
 
             <View style={styles.detailRow}>
-              <MaterialIcons name="schedule" size={20} color="white" />
-              <Text style={styles.detailText}> {time}</Text>
+              <Ionicons name="time" size={20} color="white" />
+              <Text style={styles.detailText}> {classData.start_time.slice(0, -3)} - {classData.end_time.slice(0, -3)}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <FontAwesome name="user" size={18} color="white" />
-              <Text style={styles.slotText}>
-                {" "}
-                <Text style={styles.redText}>{slots}</Text>
-              </Text>
+              <Ionicons name="people" size={18} color="white" />
+              <Text style={classFull? styles.redText : styles.yellowText}>  {classData.participants?? 0}/{classData.max_participants}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <FontAwesome name="headphones" size={18} color="white" />
-              <Text style={styles.detailText}> {coach}</Text>
+              <Ionicons name="person-circle-outline" size={18} color="white" />
+              <Text style={styles.detailText} numberOfLines={1} ellipsizeMode="tail"> {classData.name}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <FontAwesome name="calendar" size={18} color="white" />
-              <Text style={styles.detailText}> {date}</Text>
+              <Ionicons name="calendar" size={18} color="white" />
+              <Text style={styles.detailText}> {new Date(classData.schedule_date).toLocaleDateString("en-GB")}</Text>
             </View>
           </View>
 
-          <Image source={image} style={styles.cardImage} />
+          <Image
+            source={{
+              uri: `${API_BASE_URL}/uploads/${classData.class_image}`,
+            }}
+            style={styles.cardImage}
+          />
         </View>
       </View>
 
@@ -58,9 +98,9 @@ function ClassCard({ title, time, coach, date, slots, image }) {
           style={styles.button}
           onPress={() => {
             if (classFull) {
-              setFailModalVisible(true); // Show fail modal if class is full
+              setFailModalVisible(true);
             } else {
-              setSuccessModalVisible(true); // Show success modal if class is not full
+              addClass(classData.class_id, userId);
             }
           }}
         >
@@ -69,7 +109,7 @@ function ClassCard({ title, time, coach, date, slots, image }) {
         <TouchableOpacity
           style={styles.button}
           onPress={() =>
-            navigation.navigate("SelectedClass", { className: title })
+            navigation.navigate("SelectedClass", { classData })
           }
         >
           <Text style={styles.buttonText}>More</Text>
@@ -83,7 +123,7 @@ function ClassCard({ title, time, coach, date, slots, image }) {
               style={styles.closeButton}
               onPress={() => setSuccessModalVisible(false)}
             >
-              <Ionicons name="close" size={20} color="black" />
+              <Ionicons name="close" size={26} color="black" />
             </TouchableOpacity>
             <Text style={styles.modalText}>
               Successfully Signed Up For Class
@@ -108,7 +148,7 @@ function ClassCard({ title, time, coach, date, slots, image }) {
               style={styles.closeButton}
               onPress={() => setFailModalVisible(false)}
             >
-              <Ionicons name="close" size={20} color="black" />
+              <Ionicons name="close" size={26} color="black" />
             </TouchableOpacity>
             <Text style={styles.modalText}>Sorry, Class is Full.</Text>
             <TouchableOpacity
@@ -129,13 +169,12 @@ function ClassCard({ title, time, coach, date, slots, image }) {
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginTop: 20,
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
-    marginBottom: 40, // Space below card and buttons
+    marginBottom: 40, 
   },
   cardContainer: {
-    backgroundColor: "#212020",
+    backgroundColor: "#000",
     borderRadius: 20,
     width: "100%",
   },
@@ -147,6 +186,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     padding: 15,
     flex: 1,
+    width:"50%"
   },
   title: {
     fontSize: 22,
@@ -163,35 +203,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#FFF",
   },
-  slotText: {
-    fontSize: 16,
-    color: "#FFF",
-  },
   redText: {
     color: "red",
-    fontWeight: "bold",
+    fontSize: 16,
+  },
+  yellowText:{
+    color: "#E2F163",
+    fontSize: 16,
   },
   cardImage: {
-    width: 200,
-    height: 165,
+    width: "45%",
+    height: "100%",
     borderRadius: 15,
   },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 15, // Adds spacing between card and buttons
+    marginTop: 15, 
   },
   button: {
     backgroundColor: "#212020",
-    paddingHorizontal: 25,
     paddingVertical: 10,
+    width:150,
     borderRadius: 25,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
   buttonText: {
     color: "#E2F163",
     fontSize: 16,
     fontWeight: "bold",
+    textAlign:'center'
   },
   modalContainer: {
     flex: 1,
@@ -201,7 +242,8 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "#E2F163",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical:40,
     borderRadius: 15,
     width: "80%",
     alignItems: "center",
@@ -210,6 +252,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "black",
+    marginBottom:20,
   },
   viewMoreButton: {
     backgroundColor: "#212020",

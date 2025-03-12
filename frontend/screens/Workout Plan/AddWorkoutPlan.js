@@ -116,7 +116,7 @@ const AddWorkoutPlan = () => {
         // Request media library permission
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
-            Alert.alert("Permission Denied", "We need access to your gallery to upload images.");
+            Alert.alert("Permission Denied!", "We need access to your gallery to upload images.");
             return;
         }
 

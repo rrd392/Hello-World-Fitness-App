@@ -38,6 +38,9 @@ app.use('/api/profile', profileRoutes);
 const nutritionRoutes = require('./routes/nutrition');
 app.use('/api/nutrition', nutritionRoutes);
 
+const classesRoutes = require('./routes/classes');
+app.use('/api/classes', classesRoutes);
+
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads')));
 
 // Start the server

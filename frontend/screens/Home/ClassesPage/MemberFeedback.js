@@ -1,96 +1,106 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, Image, FlatList, StyleSheet } from "react-native";
 import { Rating } from "react-native-ratings";
 import { Ionicons } from "@expo/vector-icons";
+import API_BASE_URL from "../../../env";
 
-// Dummy data for feedback
-const feedbackData = [
-  {
-    id: "1",
-    userName: "EmilyLai",
-    email: "emily.lai@example.com",
-    userImage: require("./coach.jpg"), // Replace with actual image
-    className: "Yoga Flow",
-    classRating: 5,
-    coachName: "Coach Aaron",
-    coachRating: 3,
-    feedback:
-      "The trainer was very motivating and gave clear instructions. The class was a bit crowded, though.",
-    daysAgo: "3 days ago",
-  },
-  {
-    id: "2",
-    userName: "JohnDoe",
-    email: "john.doe@example.com",
-    userImage: require("./coach.jpg"),
-    className: "Pilates Core",
-    classRating: 4,
-    coachName: "Coach Sarah",
-    coachRating: 5,
-    feedback:
-      "The session was well-structured, and I learned a lot. Great experience overall!",
-    daysAgo: "5 days ago",
-  },
-];
+const FeedbackCard = ({ feedback, classData }) => {
 
-const FeedbackCard = ({ item }) => {
   return (
     <View style={styles.card}>
       {/* User Info & Date */}
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image source={item.userImage} style={styles.userImage} />
+          <Image source={{uri: `${API_BASE_URL}/uploads/${feedback.profile_picture}`}} style={styles.userImage}/>
           <View>
-            <Text style={styles.userName}>{item.userName}</Text>
-            <Text style={styles.email}>{item.email}</Text>
+            <Text style={styles.userName}>{feedback.username}</Text>
+            <Text style={styles.email}>{feedback.email}</Text>
           </View>
         </View>
 
-        <Text style={styles.date}>{item.daysAgo}</Text>
+        <Text style={styles.date}>{new Date(feedback.feedback_date).toLocaleDateString('en-GB')}</Text>
       </View>
 
       {/* Class & Coach Ratings */}
       <View style={styles.ratingContainer}>
         <View style={styles.ratingRow}>
           <Ionicons name="barbell-outline" size={18} color="white" />
-          <Text style={styles.className}>{item.className}</Text>
+          <Text style={styles.className}>{classData.class_name}</Text>
           <Rating
             type="star"
             imageSize={15}
             readonly
-            startingValue={item.classRating}
+            startingValue={feedback.class_rating}
             tintColor="#4A4A4A"
           />
         </View>
 
         <View style={styles.ratingRow}>
-          <Ionicons name="headset-outline" size={18} color="white" />
-          <Text style={styles.coachName}>{item.coachName}</Text>
+          <Ionicons name="person-circle-outline" size={18} color="white" />
+          <Text style={styles.coachName}>Coach {classData.name}</Text>
           <Rating
             type="star"
             imageSize={15}
             readonly
-            startingValue={item.coachRating}
+            startingValue={feedback.coach_rating}
             tintColor="#4A4A4A"
           />
         </View>
       </View>
 
       {/* Feedback Text */}
-      <Text style={styles.feedback}>{item.feedback}</Text>
+      <Text style={styles.feedback}>{feedback.comments}</Text>
     </View>
   );
 };
 
-const MemberFeedback = () => {
+function MemberFeedback(classData) {
+
+  const [feedbackData, setFeedbackData] = useState([]);
+
+  useEffect(() => {
+    if(classData.class_id){
+      fetchFeedback();
+    }
+  }, [classData.class_id]);
+  
+  const fetchFeedback = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/classes/displayFeedback/${classData.class_id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+  
+      const data = await response.json();
+  
+      if (data) {
+        setFeedbackData(data.results);
+      }
+    } catch (error) {
+      console.error("Error fetching feedback data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Member Feedback</Text>
-      <FlatList
+      {feedbackData && feedbackData.length>0 ? (
+        <FlatList
         data={feedbackData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <FeedbackCard item={item} />}
+        keyExtractor={(item) => item.feedback_id}
+        renderItem={({ item }) => <FeedbackCard feedback={item} classData = {classData}/>}
       />
+      ):(
+        <View>
+          <Text style={{color:'#fff', fontSize:16, fontWeight:500, marginTop:20, textAlign:'center'}}>No feedback yet.</Text>
+        </View>
+      )}
     </View>
   );
 };
