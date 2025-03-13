@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,21 +6,28 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  FlatList, Dimensions,
+  Alert
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import HeaderVer1 from "../../HeaderVer1";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import RatingPopup from "./RatingPopup";
 import API_BASE_URL from "../../../env";
 import { getUserId } from "../../getUserId";
+import { useFocusEffect } from "@react-navigation/native";
+const { width } = Dimensions.get("window");
+const cardWidth = width - 61; 
 
 function YourClasses() {
   const navigation = useNavigation();
   const [showCancelClass, setShowCancelClass] = useState(false);
   const [userId, setUserId] = useState("");
+  const [classId, setClassId] = useState("");
   const [upcomingClass, setUpcomingClass] = useState([]);
+  const [classHistory, setClassHistory] = useState([]);
 
   useEffect(() => {
     async function fetchUserId() {
@@ -33,8 +40,14 @@ function YourClasses() {
   useEffect(() => {
       if(userId){
         fetchUpcomingClasses();
+        fetchClassHistory();
       }
   }, [userId]);
+
+  function setClose(){
+    setModalVisible(false);
+    fetchClassHistory();
+  }
 
   const fetchUpcomingClasses = async () => {
     try {
@@ -62,55 +75,60 @@ function YourClasses() {
     } finally {
     }
   };
-  
-  // const classData = [
-  //   {
-  //     title: "Yoga Flow",
-  //     description:
-  //       "A Relaxing Yoga Session Focused on Flexibility and Mindfulness.",
-  //     time: "08:00 - 09:00",
-  //     coach: "Coach Aaron",
-  //     coachEmail: "aaron122@gmail.com",
-  //     coachNumber: "+0123456789",
-  //     date: "2025-01-02",
-  //     slots: "20/20",
-  //     image: require("./yoga.jpg"),
-  //   },
-  // ];
 
-  const historyData = [
-    {
-      title: "Cardio Blast",
-      coach: "Coach Aaron",
-      coachEmail: "Aaron122@gmail.com",
-      coachNumber: "+0123456789",
-      date: "2025-02-17",
-      image: require("./yoga.jpg"),
-      rated: false, // Change to true if already rated
-    },
-    {
-      title: "Cardio Blast",
-      coach: "Coach Aaron",
-      coachEmail: "Aaron122@gmail.com",
-      coachNumber: "+0123456789",
-      date: "2025-02-17",
-      image: require("./yoga.jpg"),
-      rated: true,
-    },
-    {
-      title: "Cardio Blast",
-      coach: "Coach Aaron",
-      coachEmail: "Aaron122@gmail.com",
-      coachNumber: "+0123456789",
-      date: "2025-02-17",
-      image: require("./yoga.jpg"),
-      rated: true,
-    },
-  ];
-  const item = upcomingClass[0];
+  const fetchClassHistory = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/classes/displayClassHistory/${userId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        setClassHistory(data.results)
+      }
+    } catch (error) {
+      console.error("Error fetching class history data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  };
+
+  const cancelClass = async (user_id, class_id) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/classes/cancelClass`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({user_id, class_id})
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        Alert.alert("Class is successfully canceled.");
+      }
+    } catch (error) {
+      console.error("Error fetching upcoming class data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  };
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
-  console.log('Upcoming class:', upcomingClass, 'Item:', item);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
       {/* Fixed Header */}
@@ -125,97 +143,107 @@ function YourClasses() {
         <View style={styles.wrapper}>
           <Text style={styles.CardTitle}>Your Upcoming Classes</Text>
 
-          {/* Class Card */}
-          <View style={styles.cardContainer}>
-            <View style={styles.topSection}>
-              <View style={styles.infoContainer}>
-                <Text style={styles.title}>{item.class_name}</Text>
+          <FlatList
+            data={[...(Array.isArray(upcomingClass) ? upcomingClass : [])]} 
+            horizontal={true}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) =>
+              item.class_id?.toString() || `more-${index}`
+            }
+            renderItem={({ item }) =>(
+              <View style={[styles.cardContainer, {width:cardWidth}]}>
+                <View style={styles.topSection}>
+                  <View style={styles.infoContainer}>
+                    <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{item.class_name}</Text>
 
-                <View style={styles.detailRow}>
-                  <MaterialIcons name="schedule" size={20} color="white" />
-                  <Text style={styles.detailText}> {item.start_time.slice(0,-3)} - {item.end_time.slice(0,-3)}</Text>
+                    <View style={styles.detailRow}>
+                      <Ionicons name="time-outline" size={20} color="white" />
+                      <Text style={styles.detailText}> {item.start_time.slice(0,-3)} - {item.end_time.slice(0,-3)}</Text>
+                    </View>
+
+                    <View style={styles.detailRow}>
+                      <Ionicons name="people" size={18} color="white" />
+                      <Text style={item.participants==item.max_participants? styles.redText: styles.yellowText}>  {item.participants}/{item.max_participants}</Text>
+                    </View>
+
+                    <View style={styles.detailRow}>
+                      <Ionicons name="person-circle-outline" size={18} color="white" />
+                      <Text style={styles.detailText}> {item.name}</Text>
+                    </View>
+
+                    <View style={styles.detailRow}>
+                      <Ionicons name="calendar-outline" size={18} color="white" />
+                      <Text style={styles.detailText}> {new Date(item.schedule_date).toLocaleDateString('en-GB')}</Text>
+                    </View>
+                  </View>
+                  <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}`}} style={styles.cardImage} />
                 </View>
-
-                <View style={styles.detailRow}>
-                  <FontAwesome name="user" size={18} color="white" />
-                  <Text style={styles.slotText}>
-                    {" "}
-                    <Text style={styles.redText}>{item.max_participants}</Text>
-                  </Text>
-                </View>
-
-                <View style={styles.detailRow}>
-                  <FontAwesome name="headphones" size={18} color="white" />
-                  <Text style={styles.detailText}> {item.name}</Text>
-                </View>
-
-                <View style={styles.detailRow}>
-                  <FontAwesome name="calendar" size={18} color="white" />
-                  <Text style={styles.detailText}> {new Date(item.schedule_date).toLocaleDateString('en-GB')}</Text>
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => {setClassId(item.class_id); setShowCancelClass(true);}}
+                  >
+                    <Text style={styles.buttonText}>Cancel Class</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-              <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}`}} style={styles.cardImage} />
-            </View>
-          </View>
-
-          {/* Cancel Class Button */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setShowCancelClass(true)}
-            >
-              <Text style={styles.buttonText}>Cancel Class</Text>
-            </TouchableOpacity>
-          </View>
+              )}
+          />
+          
         </View>
         {/* History Section */}
         <View style={styles.historyContainer}>
           <Text style={styles.historyTitle}>History</Text>
-          {historyData.map((item, index) => (
-            <View key={index} style={styles.historyCard}>
-              <Image source={item.image} style={styles.historyImage} />
-              <View style={styles.historyInfo}>
-                <Text style={styles.historyTitleText}>{item.title}</Text>
-                <View style={styles.detailRow}>
-                  <FontAwesome name="calendar" size={18} color="white" />
-                  <Text style={styles.detailText}> {item.date}</Text>
-                </View>
-                <View style={styles.coachInfo}>
-                  <Image
-                    source={require("./coach.jpg")}
-                    style={styles.coachImage}
-                  />
-                  <View>
-                    <Text style={styles.coachName}>{item.coach}</Text>
-                    <Text style={styles.coachContact}>{item.coachEmail}</Text>
-                    <Text style={styles.coachContact}>{item.coachNumber}</Text>
+          {classHistory && classHistory.length >0 ? (
+            classHistory.map((item, index) => (
+              <View key={item.class_id} style={styles.historyCard}>
+                <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}`}} style={styles.historyImage} />
+                <View style={styles.historyInfo}>
+                  <Text style={styles.historyTitleText}>{item.class_name}</Text>
+                  <View style={styles.detailRow}>
+                    <FontAwesome name="calendar" size={18} color="white" />
+                    <Text style={styles.detailText}> {new Date(item.schedule_date).toLocaleDateString('en-GB')}</Text>
+                  </View>
+                  <View style={styles.coachInfo}>
+                    <Image source={{ uri: `${API_BASE_URL}/uploads/${item.profile_picture}`}} style={styles.coachImage} />
+                    <View>
+                      <Text style={styles.coachName}>{item.name}</Text>
+                      <Text style={styles.coachContact}>{item.email}</Text>
+                      <Text style={styles.coachContact}>{item.contact_number}</Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-              <TouchableOpacity
-                style={item.rated ? styles.ratedButton : styles.rateButton}
-                onPress={() => {
-                  setSelectedClass(item);
-                  setModalVisible(true);
-                }}
-              >
-                <Text
-                  style={
-                    item.rated ? styles.ratedButtonText : styles.rateButtonText
-                  }
+                <TouchableOpacity
+                  style={item.rated == 1 ? styles.ratedButton : styles.rateButton}
+                  disabled={item.rated == 1? true: false}
+                  onPress={() => {
+                    setSelectedClass(item);
+                    setModalVisible(true);
+                  }}
                 >
-                  {item.rated ? "Rated" : "Rate"}
-                </Text>
-              </TouchableOpacity>
-              {selectedClass && (
-                <RatingPopup
-                  visible={modalVisible}
-                  onClose={() => setModalVisible(false)}
-                  upcomingClass={selectedClass}
-                />
-              )}
+                  <Text
+                    style={
+                      item.rated == 1 ? styles.ratedButtonText : styles.rateButtonText
+                    }
+                  >
+                    {item.rated == 1 ? "Rated" : "Rate"}
+                  </Text>
+                </TouchableOpacity>
+                {selectedClass && (
+                  <RatingPopup
+                    visible={modalVisible}
+                    onClose={() => setClose()}
+                    classData={selectedClass}
+                  />
+                )}
+              </View>
+            ))
+          ) : (
+            <View>
+              <Text style={styles.noneText}>No Class History</Text>
             </View>
-          ))}
+          )}
         </View>
       </ScrollView>
 
@@ -245,6 +273,7 @@ function YourClasses() {
                 style={styles.viewMoreButton}
                 onPress={() => {
                   setShowCancelClass(false);
+                  cancelClass(userId, classId);
                   navigation.navigate("MemberDashboard");
                 }}
               >
@@ -274,33 +303,28 @@ const styles = {
     fontSize: 25,
     color: "black",
     fontWeight: "400",
-    margin: 20,
+    marginBottom:20,    
     textAlign: "center",
-  },
-  cardContainer: {
-    borderRadius: 20,
-    width: "100%",
-    backgroundColor: "#B3A0FF",
   },
   topSection: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#212020",
+    backgroundColor: "#000",
     borderRadius: 20,
+    overflow:'hidden',
   },
   infoContainer: {
-    backgroundColor: "#232323",
-    borderRadius: 20,
+    backgroundColor: "#000",
     padding: 15,
     flex: 1,
-    gap: 5,
+    width:"60%"
   },
   title: {
-    fontSize: 26,
+    fontSize: 24,
     color: "#E2F163",
     fontWeight: "500",
-    marginBottom: 10,
+    marginBottom: 20,
   },
   detailRow: {
     flexDirection: "row",
@@ -308,27 +332,32 @@ const styles = {
     marginBottom: 5,
   },
   detailText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#FFF",
   },
   slotText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#FFF",
   },
   redText: {
-    fontSize: 15,
+    fontSize: 14,
     color: "red",
     fontWeight: "bold",
   },
+  yellowText:{
+    fontSize: 14,
+    color: "#E2F163",
+    fontWeight: "bold",
+  },
   cardImage: {
-    width: 200,
-    height: 195,
+    width: "40%",
+    height: "100%",
     borderRadius: 20,
   },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 15, // Adds spacing between card and buttons
+    marginTop: 15, 
   },
   button: {
     backgroundColor: "#111",
@@ -389,13 +418,13 @@ const styles = {
   },
   historyContainer: {
     backgroundColor: "#111",
-    padding: 15,
+    paddingHorizontal: 20,
   },
   historyTitle: {
     fontSize: 25,
     color: "white",
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 20,
     paddingLeft: 5,
   },
   historyCard: {
@@ -419,6 +448,7 @@ const styles = {
     fontSize: 18,
     color: "#E2F163",
     fontWeight: "bold",
+    marginBottom:10
   },
   coachInfo: {
     flexDirection: "row",
@@ -462,4 +492,8 @@ const styles = {
     color: "#CFCFCF",
     fontWeight: "bold",
   },
+  noneText:{
+    color:'white',
+    fontSize:16,
+  }
 };

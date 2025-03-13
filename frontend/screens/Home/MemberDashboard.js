@@ -129,7 +129,7 @@ const MemberDashboard = () => {
         </View>
       </SafeAreaView>
 
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* Upcoming Class Section */}
         <View style={styles.upcomingClass}>
           <Text style={styles.sectionTitle}>Your Upcoming Event</Text>

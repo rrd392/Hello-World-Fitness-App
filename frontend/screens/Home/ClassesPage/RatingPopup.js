@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,15 +7,65 @@ import {
   Image,
   TextInput,
   StyleSheet,
+  Alert
 } from "react-native";
 import { AirbnbRating } from "react-native-ratings";
+import API_BASE_URL from "../../../env";
+import { getUserId } from "../../getUserId";
+import { useNavigation } from "@react-navigation/native";
 
-const RatingPopup = ({ visible, onClose, classData, onSubmit }) => {
+const RatingPopup = ({ visible, onClose, classData }) => {
+  const navigation = useNavigation();
   const [classRating, setClassRating] = useState(0);
   const [coachRating, setCoachRating] = useState(0);
   const [review, setReview] = useState("");
-  const handleSubmit = () => {
-    onClose();
+  const [userId, setUserId] = useState("");
+  
+  useEffect(() => {
+    async function fetchUserId() {
+        const token = await getUserId();
+        setUserId(token.id);
+    }
+    fetchUserId();
+  }, []);
+
+  const handleSubmit = async (classData, userId, classRating, coachRating, review) => {
+    
+    if (!userId || !classData?.user_id || !classData?.class_id || !coachRating || !classRating || !review.trim()) {
+      Alert.alert("Error", "Please fill in all fields before submitting.");
+      return; 
+    }
+
+    const formData = {
+      user_id: userId,
+      trainer_id: classData.user_id,
+      class_id: classData.class_id,
+      coach_rating: coachRating,
+      class_rating: classRating,
+      review: review
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/classes/rateClass`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        Alert.alert("Rating submitted!");
+        onClose();
+        navigation.navigate("YourClasses");
+      }
+    } catch (error) {
+      console.error("Error fetching upcoming class data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
   };
 
   return (
@@ -29,8 +79,8 @@ const RatingPopup = ({ visible, onClose, classData, onSubmit }) => {
 
           <Text style={styles.title}>Rate The Class</Text>
           <View style={styles.card}>
-            <Image source={classData.image} style={styles.classImage} />
-            <Text style={styles.classTitle}>{classData.title}</Text>
+            <Image source={{ uri: `${API_BASE_URL}/uploads/${classData.class_image}`}} style={styles.classImage} />
+            <Text style={styles.classTitle}>{classData.class_name}</Text>
             <AirbnbRating
               count={5}
               defaultRating={classRating}
@@ -42,10 +92,10 @@ const RatingPopup = ({ visible, onClose, classData, onSubmit }) => {
 
           <Text style={styles.title}>Rate The Coach</Text>
           <View style={styles.card}>
-            <Image source={require("./coach.jpg")} style={styles.coachImage} />
-            <Text style={styles.classTitle}>{classData.coach}</Text>
-            <Text style={styles.contact}>{classData.coachEmail}</Text>
-            <Text style={styles.contact}>{classData.coachNumber}</Text>
+            <Image source={{ uri: `${API_BASE_URL}/uploads/${classData.profile_picture}`}} style={styles.coachImage} />
+            <Text style={styles.classTitle}>{classData.name}</Text>
+            <Text style={styles.contact}>{classData.email}</Text>
+            <Text style={styles.contact}>{classData.contact_number}</Text>
             <AirbnbRating
               count={5}
               defaultRating={coachRating}
@@ -63,7 +113,7 @@ const RatingPopup = ({ visible, onClose, classData, onSubmit }) => {
             onChangeText={setReview}
             multiline={true}
           />
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <TouchableOpacity style={styles.submitButton} onPress={() => handleSubmit(classData, userId, classRating, coachRating, review)}>
             <Text style={styles.submitText}>Submit</Text>
           </TouchableOpacity>
         </View>
@@ -90,7 +140,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    backgroundColor: "black",
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -98,8 +147,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeButtonText: {
-    color: "white",
-    fontSize: 18,
+    color: "black",
+    fontSize: 20,
     fontWeight: "bold",
   },
   title: {
@@ -155,6 +204,7 @@ const styles = StyleSheet.create({
   submitText: {
     color: "white",
     fontWeight: "bold",
+    fontSize:18
   },
 });
 

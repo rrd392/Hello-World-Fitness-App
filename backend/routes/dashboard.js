@@ -16,8 +16,18 @@ router.get('/display/:user_id', (req, res) => {
         FROM class_participants cp 
         INNER JOIN classes c ON cp.class_id = c.class_id
         INNER JOIN user f ON c.trainer_id = f.user_id
-        WHERE cp.user_id = ? AND c.schedule_date > NOW() ORDER BY c.schedule_date LIMIT 1
+        WHERE cp.user_id = ? AND (c.schedule_date > ? OR ( c.schedule_date = ? AND c.start_time > ?)) 
+        ORDER BY c.schedule_date LIMIT 1
     `;
+
+    const currentDate = new Date();
+    const localCurrentDate = new Date(currentDate.getTime() - currentDate.getTimezoneOffset() * 60000); 
+    const currentDateString = localCurrentDate.toISOString().split('T')[0];
+    const hours = currentDate.getHours().toString().padStart(2, '0');
+    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+
+    const currentTime = `${hours}:${minutes}:${seconds}`;
 
     const classQuery = 'SELECT * FROM classes LIMIT 5';
 
@@ -31,7 +41,7 @@ router.get('/display/:user_id', (req, res) => {
             return res.status(500).json({ success: false, message: "Internal server error" });
         }
         const userName = userResult[0].name;
-        db.query(query, [user_id], (error, results) => {
+        db.query(query, [user_id, currentDateString, currentDateString, currentTime ], (error, results) => {
             if (error) {
                 console.error("Database error:", error);
                 return res.status(500).json({ success: false, message: "Internal server error" });
