@@ -22,17 +22,13 @@ const Notification = () => {
         fetchUserId();
     }, []);
 
-    function toggleBackHome() {
-        navigation.goBack();
-    };
-
     useEffect(() => {
         if (!userId || !userRole) return;
 
         const fetchNotificationData = async () => {
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/notification/display/${userId}/${userRole}`, {
+                const response = await fetch(`${API_BASE_URL}/api/notification/displayTrainerNotification/${userId}/${userRole}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                 });
@@ -76,8 +72,8 @@ const Notification = () => {
 
                 {Array.isArray(notifications) && notifications.length > 0 ? (
                     <FlatList
-                        data={notifications}  
-                        keyExtractor={(item) => item.notification_id.toString()} 
+                        data={notifications}  // Ensure notifications is an array
+                        keyExtractor={(item) => item.notification_id.toString()} // Ensure it's a string
                         renderItem={({ item }) => (
                             <View style={styles.notificationItem}>
                                 <Text style={styles.notificationTitle}>{item.title}</Text>
@@ -88,7 +84,7 @@ const Notification = () => {
                     />
                 ) : (
                     <FlatList
-                        data={[]} 
+                        data={[]} // Required for FlatList to prevent errors
                         contentContainerStyle={styles.listSection}
                         ListEmptyComponent={
                             <View style={styles.notificationItem}>

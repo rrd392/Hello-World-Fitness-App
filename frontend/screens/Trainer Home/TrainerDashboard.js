@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   View,
@@ -24,7 +24,6 @@ const MemberDashboard = () => {
   const [classData, setClassData] = useState([]);
   const [workoutPlans, setWorkoutPlans] = useState([]);
   const [dietPlans, setDietPlans] = useState([]);
-  const [membership, setMembership] = useState("");
 
   useEffect(() => {
     async function fetchUserId() {
@@ -41,7 +40,7 @@ const MemberDashboard = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/dashboard/display/${userId}`,
+          `${API_BASE_URL}/api/dashboard/displayTrainer/${userId}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -66,7 +65,6 @@ const MemberDashboard = () => {
           setClassData(data.disClass);
           setWorkoutPlans(data.workoutPlans);
           setDietPlans(data.diet);
-          setMembership(data.membership);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -84,7 +82,7 @@ const MemberDashboard = () => {
   }
 
   const toggleNotification = () => navigation.navigate("Notification");
-  const handleGoToProfile = () => navigation.navigate("ProfileStack");
+  const handleGoToProfile = () => navigation.navigate("TrainerProfileStack");
 
   return (
     <View style={styles.container}>
@@ -102,7 +100,7 @@ const MemberDashboard = () => {
           </View>
         </View>
         <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
-        <Text style={styles.membership}>{membership}</Text>
+        <Text style={styles.membership}>Fitness Trainer</Text>
         {/* Navigation Icons */}
         <View style={styles.navButtons}>
           <TouchableOpacity
@@ -110,7 +108,7 @@ const MemberDashboard = () => {
             onPress={() => navigation.navigate("CheckIn")}
           >
             <Ionicons name="checkbox" size={30} color="#B3A0FF" />
-            <Text style={styles.navText}>Check In</Text>
+            <Text style={styles.navText}>Attendance</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.navItem}
@@ -146,7 +144,7 @@ const MemberDashboard = () => {
                 </Text>
                 <Text style={styles.classDetails}>
                   <Ionicons name="person-outline" size={15} color="white" />{" "}
-                  {upcomingClassData[0].trainerName}
+                  {upcomingClassData[0].name}
                 </Text>
                 <Text style={styles.lastClassDetails} marginBottom="40">
                   <Ionicons name="calendar-outline" size={15} color="white" />{" "}
@@ -199,8 +197,7 @@ const MemberDashboard = () => {
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card}
-                onPress={() => navigation.navigate("SelectedClass", { classData: item})}>
+                <TouchableOpacity style={styles.card}>
                   <Image
                     source={{
                       uri: `${API_BASE_URL}/uploads/${item.class_image}`,
@@ -243,8 +240,7 @@ const MemberDashboard = () => {
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card}     
-                onPress={() => navigation.navigate("WorkoutPlanStack", { screen: "DetailWorkoutPlan", params: { workout_plan: item, category: "General" } })}>
+                <TouchableOpacity style={styles.card}>
                   <Image
                     source={{
                       uri: `${API_BASE_URL}/uploads/${item.workout_image}`,
@@ -286,7 +282,7 @@ const MemberDashboard = () => {
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Nutrition")}>
+                <TouchableOpacity style={styles.card}>
                   <Image
                     source={{
                       uri: `${API_BASE_URL}/uploads/${item.meal_pictures}`,
@@ -324,7 +320,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     fontWeight: "bold",
     color: "#896CFE",
-    marginBottom: 20,
+    marginBottom: 30,
   },
   headerRow: { flexDirection: "row", justifyContent: "space-between" },
   iconRow: { flexDirection: "row", justifyContent: "space-between", gap: 20 },
@@ -422,13 +418,12 @@ const styles = StyleSheet.create({
     height: 120,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.1)", // Light grey background
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderRadius: 10,
     marginHorizontal: 5,
   },
   moreText: {
     fontSize: 16,
-    // fontWeight: 'bold',
     color: "#fff",
     fontStyle: "italic",
   },

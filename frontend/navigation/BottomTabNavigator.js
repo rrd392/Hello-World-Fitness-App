@@ -7,6 +7,7 @@ import HomeStack from "./HomeStack";
 import TrainerHomeStack from "./TrainerHomeStack";
 import WorkoutPlanStack from "./WorkoutPlanStack";
 import ProfileStack from "./ProfileStack";
+import TrainerProfileStack from "./TrainerProfileStack";
 
 // Member Screens
 import MemberClassesScreen from "../screens/AdminPage";
@@ -15,7 +16,6 @@ import MemberClassesScreen from "../screens/AdminPage";
 // Dummy Trainer Screens
 const TrainerClassesScreen = () => <View><Text>Trainer Classes</Text></View>;
 const TrainerScheduleScreen = () => <View><Text>Trainer Schedule</Text></View>;
-const TrainerProfileScreen = () => <View><Text>Trainer Profile</Text></View>;
 
 // Create Bottom Tab Navigator
 const Tab = createBottomTabNavigator();
@@ -75,7 +75,7 @@ const BottomTabNavigator = () => {
           <Tab.Screen name="Home" component={TrainerHomeStack} />
           <Tab.Screen name="Classes" component={TrainerClassesScreen} />
           <Tab.Screen name="Schedule" component={TrainerScheduleScreen} />
-          <Tab.Screen name="More" component={TrainerProfileScreen} />
+          <Tab.Screen name="More" component={TrainerProfileStack} />
         </>
       ) : (
         <Tab.Screen name="Error" component={() => <Text>Invalid Role</Text>} />
