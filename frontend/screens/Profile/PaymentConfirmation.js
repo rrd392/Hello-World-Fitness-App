@@ -83,9 +83,9 @@ const PaymentConfirmation = ({ route }) => {
 
           <TouchableOpacity 
             style={styles.homeButton}
-            onPress={() => navigation.navigate('MemberDashboard')}
+            onPress={() => navigation.navigate('ProfileDashboard')}
           >
-            <Text style={styles.homeButtonText}>Back to Home</Text>
+            <Text style={styles.homeButtonText}>Back to Profile</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>

@@ -151,20 +151,9 @@ const MembershipStatus = () => {
               </LinearGradient>
             </TouchableOpacity>
 
-                 
-
-
           ))}
 
-
-
-
-
-
-
         </ScrollView>
-
-
 
         <View style={styles.buttonContainer}>
                 <TouchableOpacity 
@@ -178,9 +167,9 @@ const MembershipStatus = () => {
                         }
                         }}
 >
-  <Text style={styles.buttonText}>{isExpired ? "Renew" : "Upgrade"}</Text>
-  <Ionicons name="arrow-forward" size={18} color="#000" style={styles.buttonIcon} />
-</TouchableOpacity>
+                <Text style={styles.buttonText}>{isExpired ? "Renew" : "Upgrade"}</Text>
+                <Ionicons name="arrow-forward" size={18} color="#000" style={styles.buttonIcon} />
+              </TouchableOpacity>
             </View>
 
       </SafeAreaView>
