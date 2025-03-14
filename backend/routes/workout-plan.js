@@ -371,4 +371,31 @@ router.get('/displayUserPlan/:user_id', (req, res) => {
     });
 });
 
+
+router.post('/updateDuration', (req, res) => {
+    const { user_id, workout_plan_id, duration } = req.body;
+
+    if (!user_id || !workout_plan_id || !duration) {
+        return res.status(400).json({ error: 'Missing required fields: user_id, workout_plan_id, or duration' });
+    }
+
+    const updateDurationQuery = `
+        UPDATE user_workout_plans 
+        SET duration_taken = ?, updated_at = NOW() 
+        WHERE user_id = ? AND workout_plan_id = ?
+    `;
+
+    db.query(updateDurationQuery, [duration, user_id, workout_plan_id], (error, result) => {
+        if (error) {
+            console.error('Error updating workout duration:', error);
+            return res.status(500).json({ error: 'Database query failed' });
+        }
+        res.json({ success: true, message: 'Workout duration updated successfully' });
+    });
+});
+
+
+
+
+
 module.exports = router;
