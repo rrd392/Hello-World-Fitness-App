@@ -1,25 +1,31 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { ScrollView, View, Image, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import { ScrollView, View, Image, Text, StyleSheet, TouchableOpacity, Animated, Easing, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
-import * as SecureStore from 'expo-secure-store';
 import { getUserId } from '../getUserId';
-import { AuthContext } from "../../context/AuthContext";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const RunWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
     const { workout_plan, planDetails } = route.params;
 
-    //Profile icon dropdown button
     const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
-
-    //Notification icon pop up page
     const toggleNotification = () => navigation.navigate('Notification');
 
     const [userName, setUserName] = useState("");
     const [userId, setUserId] = useState("");
+    const [clickCounts, setClickCounts] = useState({});
+    const [isResting, setIsResting] = useState({});
+    const [isAnyResting, setIsAnyResting] = useState(false);
+    const rotateValues = useRef({});
+    const [completedExercise, setCompleteExercise] = useState([]);
+
+    const [startTime, setStartTime] = useState(null);
+    const [elapsedTime, setElapsedTime] = useState(0);
+
 
     useEffect(() => {
         async function fetchUserId() {
@@ -29,11 +35,6 @@ const RunWorkoutPlan = ({ route }) => {
         }
         fetchUserId();
     }, []);
-
-    const [clickCounts, setClickCounts] = useState({});
-    const [isResting, setIsResting] = useState({});
-    const [isAnyResting, setIsAnyResting] = useState(false);
-    const rotateValues = useRef({});
 
     useEffect(() => {
         // Ensure each workout has an animated value
@@ -69,7 +70,6 @@ const RunWorkoutPlan = ({ route }) => {
         }
     };
 
-    const [completedExercise, setCompleteExercise] = useState([]);
 
     const addPoints = async (user_id, difficulty, completedExercise, planDetails) => {
         let workout_plan_id = workout_plan.workout_plan_id;
@@ -96,6 +96,51 @@ const RunWorkoutPlan = ({ route }) => {
             Alert.alert("Error", error.message || "Network request failed");
         }
     }
+
+    // Retrieve the start time when the component mounts
+    useEffect(() => {
+        const fetchStartTime = async () => {
+            const storedStartTime = await AsyncStorage.getItem('workout_start_time');
+            if (storedStartTime) {
+                setStartTime(Number(storedStartTime));
+            }
+        };
+        fetchStartTime();
+    }, []);
+
+    //update elapsed time every second to show a running timer
+    useEffect(() => {
+        let interval;
+        if (startTime) {
+            interval = setInterval(() => {
+                setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [startTime]);
+
+    const completeWorkout = async () => {
+        if (!startTime) return; // Ensure start time is available
+        const totalDuration = Math.floor((Date.now() - startTime) / 1000);
+        try {
+            await axios.post(`${API_BASE_URL}/api/workout-plan/updateDuration`, {
+                user_id: userId,
+                workout_plan_id: workout_plan.workout_plan_id,
+                duration: totalDuration
+
+            });
+        } catch (error) {
+            console.error('Error saving workout duration:', error);
+        }
+    };
+
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${minutes}:${secs < 10 ? `0${secs}` : secs}`;
+    };
+
+
 
     return (
         <View style={styles.container}>
@@ -129,6 +174,7 @@ const RunWorkoutPlan = ({ route }) => {
                 <View style={styles.header3}>
                     {/* Workout Details Section */}
                     <Text style={styles.sectionTitle}>Workout Progress</Text>
+                    <Text style={styles.timer}>{formatTime(elapsedTime)}</Text>
 
                     {planDetails.map(workout => {
                         const workoutId = workout.workout_detail_id;
@@ -206,7 +252,10 @@ const RunWorkoutPlan = ({ route }) => {
 
                     {/* Complete Button */}
                     <TouchableOpacity
-                        onPress={() => addPoints(userId, workout_plan.difficulty, completedExercise, planDetails)}
+                        onPress={() => {
+                            addPoints(userId, workout_plan.difficulty, completedExercise, planDetails),
+                                completeWorkout();
+                        }}
                         disabled={completedExercise.length == 0}
                         style={[styles.startButton, { backgroundColor: completedExercise.length > 0 ? "rgba(226, 241, 99, 1)" : "rgba(226, 241, 99, 0.5)" }]}
                     >
@@ -215,6 +264,7 @@ const RunWorkoutPlan = ({ route }) => {
 
                 </View>
             </ScrollView>
+            
         </View>
     );
 };
@@ -271,8 +321,14 @@ const styles = StyleSheet.create({
     sectionTitle: {
         color: "#E2F163",
         fontSize: 24,
-        marginTop: 10,
+        marginVertical: 10,
         textAlign: 'center'
+    },
+    timer: {
+        color: "#E2F163",
+        textAlign: "center",
+        fontSize: 16,
+        fontWeight: "bold",
     },
     workoutItem: {
         flexDirection: "row",
@@ -290,7 +346,6 @@ const styles = StyleSheet.create({
         left: 0,
         bottom: 0,
         right: 0,
-        // This background color can be adjusted to your desired progress fill color and opacity.
         backgroundColor: 'rgba(137, 108, 254, 0.3)',
         zIndex: 0,
     },
@@ -335,7 +390,9 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     restButtonDisabled: { backgroundColor: "#ccc" },
-    disabledButton: { backgroundColor: "#ccc", }
+    disabledButton: { backgroundColor: "#ccc", },
+
+    
 });
 
 

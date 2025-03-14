@@ -5,7 +5,6 @@ import {
     Image,
     StyleSheet,
     TouchableOpacity,
-    Dimensions,
     ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -49,7 +48,7 @@ const ProfileDashboard = () => {
 
     const fetchUserData = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/profile/displayUserData/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/profile/displayTrainerData/${userId}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             });
@@ -71,21 +70,6 @@ const ProfileDashboard = () => {
 
     const menuItems = [
         { title: "Profile", icon: "person", onPress: () => navigation.navigate("UpdateProfile") },
-        {
-            title: "Membership",
-            icon: "star",
-            onPress: () => navigation.navigate("MembershipStatus"),
-        },
-        {
-            title: "Transaction History",
-            icon: "receipt",
-            onPress: () => navigation.navigate("TransactionHistory"),
-        },
-        {
-            title: "Achievement",
-            icon: "trophy",
-            onPress: () => navigation.navigate("Achievement"),
-        },
         { title: "Logout", icon: "exit", onPress: () => setShowLogoutModal(true) },
     ];
 
@@ -97,7 +81,7 @@ const ProfileDashboard = () => {
     function calculateAge(dobString) {
         const dob = new Date(dobString);
         const diffMs = Date.now() - dob.getTime();
-        const ageDate = new Date(diffMs); // miliseconds from epoch
+        const ageDate = new Date(diffMs); 
         return Math.abs(ageDate.getUTCFullYear() - 1970);
     }
 
@@ -112,7 +96,7 @@ const ProfileDashboard = () => {
 
                 <HeaderVer1
                     title="Home"
-                    onPress={() => navigation.navigate("Home", { screen: "MemberDashboard" })}
+                    onPress={() => navigation.navigate("Home", { screen: "TrainerDashboard" })}
                 />
 
                 {/* Header Section */}
@@ -126,7 +110,7 @@ const ProfileDashboard = () => {
                     <Text style={styles.userName}>{userData.name}</Text>
                     <Text style={styles.userEmail}>{userData.email}</Text>
                     <Text style={styles.userBirthday}>Birthday: {formatDate(userData.date_of_birth)} </Text>
-                    <Text style={styles.membershipBadge}>{userData.plan_name}</Text>
+                    <Text style={styles.membershipBadge}>Fitness Trainer</Text>
 
                     <View style={styles.statsContainer}>
                         <View style={styles.statBox}>

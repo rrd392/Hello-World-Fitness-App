@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
-import HeaderVer2 from '../HeaderVer2'
+import HeaderVer2 from '../HeaderVer2';
 
 const DetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
@@ -14,6 +14,7 @@ const DetailWorkoutPlan = ({ route }) => {
 
     const [userId, setUserId] = useState("");
     const [planDetails, setPlanDetails] = useState([]);
+    
 
     useEffect(() => {
         async function fetchUserId() {
@@ -51,9 +52,6 @@ const DetailWorkoutPlan = ({ route }) => {
         fetchPlanDetail();
     }, [workout_plan.workout_plan_id]); 
 
-    function toggleRunWorkout(workout_plan, planDetails){
-        navigation.navigate('RunWorkoutPlan', { workout_plan, planDetails})
-    }
 
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDay, setSelectedDay] = useState("Monday");
@@ -86,6 +84,10 @@ const DetailWorkoutPlan = ({ route }) => {
         Alert.alert("Error", error.message || "Network request failed");
         }
     };
+
+    function toggleRunWorkout(workout_plan, planDetails) {
+        navigation.navigate('RunWorkoutPlan', { workout_plan, planDetails })
+    }
 
     return (
         <View style={styles.container}>

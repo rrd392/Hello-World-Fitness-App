@@ -21,6 +21,21 @@ router.get('/displayUserData/:user_id', (req, res) => {
     });
 });
 
+router.get('/displayTrainerData/:user_id', (req, res) => {
+    const {user_id} = req.params;
+
+    const displayQuery = `SELECT * FROM user 
+                        WHERE user_id = ?`;
+
+
+    db.query(displayQuery, [user_id], (error, results)=>{
+        if (error) {
+            return res.status(500).json({ error: "Database query failed" });
+        }
+        res.json(results[0]);
+    });
+});
+
 const storage = multer.diskStorage({
     destination: path.resolve(__dirname, '../../../uploads/profile_pictures'), 
     filename: (req, file, cb) => {

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView,View, Image, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { ScrollView, View, Image, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const CustomDetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
     const { workout_plan, selectedDay } = route.params;
 
     //Profile icon dropdown button
-    const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
+    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
 
     //Notification icon pop up page
     const toggleNotification = () => navigation.navigate('Notification');
@@ -19,6 +21,7 @@ const CustomDetailWorkoutPlan = ({ route }) => {
     const [userId, setUserId] = useState("");
     const [userName, setUserName] = useState("");
     const [planDetails, setPlanDetails] = useState([]);
+
 
     useEffect(() => {
         async function fetchUserId() {
@@ -32,58 +35,66 @@ const CustomDetailWorkoutPlan = ({ route }) => {
     useEffect(() => {
         const fetchPlanDetail = async () => {
             try {
-            const response = await fetch(`${API_BASE_URL}/api/workout-plan/displayDetailPlan/${workout_plan.workout_plan_id}`, {
-                method: "GET",
+                const response = await fetch(`${API_BASE_URL}/api/workout-plan/displayDetailPlan/${workout_plan.workout_plan_id}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+                }
+
+                const data = await response.json();
+
+                if (data) {
+                    setPlanDetails(data.results);
+                }
+            } catch (error) {
+                console.error("Error fetching workout plan data:", error);
+                Alert.alert("Error", error.message || "Network request failed");
+            }
+        };
+
+        fetchPlanDetail();
+    }, [workout_plan.workout_plan_id]);
+
+
+
+    const deleteWorkoutPlan = async (user_id, workout_plan_id, selectedDay) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/workout-plan/deleteUserWorkoutPlan`, {
+                method: "DELETE",
                 headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id, workout_plan_id, selectedDay })
             });
-        
+
             if (!response.ok) {
                 const text = await response.text();
                 throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
             }
-        
+
             const data = await response.json();
-        
-            if (data) {
-                setPlanDetails(data.results);
-            }
-            } catch (error) {
-            console.error("Error fetching workout plan data:", error);
-            Alert.alert("Error", error.message || "Network request failed");
-            }
-        };
-        
-        fetchPlanDetail();
-    }, [workout_plan.workout_plan_id]); 
 
-    function toggleRunWorkout(workout_plan, planDetails){
-        navigation.navigate('RunWorkoutPlan', { workout_plan, planDetails})
-    }
-
-    const deleteWorkoutPlan = async (user_id, workout_plan_id, selectedDay) => {
-        try {
-        const response = await fetch(`${API_BASE_URL}/api/workout-plan/deleteUserWorkoutPlan`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({user_id, workout_plan_id, selectedDay})
-        });
-    
-        if (!response.ok) {
-            const text = await response.text();
-            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-        }
-    
-        const data = await response.json();
-    
-        if (data.success) {
-            alert("Workout Plan successfully deleted.");
-            navigation.navigate('MemberWorkoutPlan');
-        }
+            if (data.success) {
+                alert("Workout Plan successfully deleted.");
+                navigation.navigate('MemberWorkoutPlan');
+            }
         } catch (error) {
-        console.error("Error deleting workout plan:", error);
-        Alert.alert("Error", error.message || "Network request failed");
+            console.error("Error deleting workout plan:", error);
+            Alert.alert("Error", error.message || "Network request failed");
         }
     };
+
+    const startWorkout = async (workout_plan, planDetails) => {
+        const startTime = Date.now();
+        // Save the start time as a string
+        await AsyncStorage.setItem('workout_start_time', startTime.toString());
+        // Navigate to Page 2 (WorkoutDetailScreen)
+        navigation.navigate('RunWorkoutPlan', { workout_plan, planDetails })
+
+    };
+
 
     return (
         <View style={styles.container}>
@@ -123,7 +134,7 @@ const CustomDetailWorkoutPlan = ({ route }) => {
                         <View key={workout.workout_detail_id} style={styles.workoutItem}>
                             <View>
                                 <Text style={styles.workoutItemText}>
-                                {workout.exercise_name} {workout.reps ? `${workout.reps} Reps` : `${workout.duration_minutes} Minutes`}
+                                    {workout.exercise_name} {workout.reps ? `${workout.reps} Reps` : `${workout.duration_minutes} Minutes`}
                                 </Text>
                                 <Text style={styles.restTime}><Ionicons name="time" size={13}></Ionicons> {workout.rest_time_seconds}s Rest Time</Text>
                             </View>
@@ -132,12 +143,12 @@ const CustomDetailWorkoutPlan = ({ route }) => {
                     ))}
 
                     {/* Start Button */}
-                    <TouchableOpacity style={styles.startButton} onPress={() => toggleRunWorkout(workout_plan, planDetails)}>
+                    <TouchableOpacity style={styles.startButton} onPress={() => startWorkout(workout_plan, planDetails)}>
                         <Text style={styles.startButtonText}>Let's Start</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => deleteWorkoutPlan(userId, workout_plan.workout_plan_id, selectedDay)} style={styles.addButton}>
                         <Text style={styles.startButtonText}>Delete Workout Plan</Text>
-                    </TouchableOpacity> 
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </View>
@@ -145,19 +156,19 @@ const CustomDetailWorkoutPlan = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020'},
-    header: { padding: 20, marginBottom:-30 },
-    header3:{padding:20},
+    container: { flex: 1, backgroundColor: '#212020' },
+    header: { padding: 20, marginBottom: -30 },
+    header3: { padding: 20 },
     greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
     subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
     iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
-    header2:{padding:20, backgroundColor:'#B3A0FF'},
+    header2: { padding: 20, backgroundColor: '#B3A0FF' },
     workoutCard: {
         backgroundColor: "#8D5CF6",
         borderRadius: 15,
-        overflow:'hidden',
-        height:230
+        overflow: 'hidden',
+        height: 230
     },
     workoutImage: {
         width: "100%",
@@ -173,16 +184,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
         paddingVertical: 4,
     },
-    levelText:{
-        fontSize:16,
-        fontWeight:500
+    levelText: {
+        fontSize: 16,
+        fontWeight: 500
     },
-    planTag:{
-        padding:15,
-        position:'absolute',
-        bottom:0,
-        backgroundColor:'rgba(33, 32, 32, 0.9)',
-        width:'100%',
+    planTag: {
+        padding: 15,
+        position: 'absolute',
+        bottom: 0,
+        backgroundColor: 'rgba(33, 32, 32, 0.9)',
+        width: '100%',
     },
     workoutTitle: {
         color: "#E2F163",
@@ -197,23 +208,23 @@ const styles = StyleSheet.create({
         color: "#E2F163",
         fontSize: 24,
         marginTop: 10,
-        textAlign:'center'
+        textAlign: 'center'
     },
     workoutItem: {
         flexDirection: "row",
         justifyContent: "space-between",
         backgroundColor: "#fff",
         padding: 15,
-        paddingHorizontal:30,
+        paddingHorizontal: 30,
         borderRadius: 40,
         marginTop: 20,
-        alignItems:'center'
+        alignItems: 'center'
     },
     workoutItemText: {
         color: "black",
         fontSize: 16,
         fontWeight: "bold",
-        marginBottom:5
+        marginBottom: 5
     },
     restTime: {
         color: "#896CFE",
@@ -239,7 +250,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 20,
         marginTop: 20,
-        marginBottom:30,
+        marginBottom: 30,
         alignItems: "center",
     },
 });
