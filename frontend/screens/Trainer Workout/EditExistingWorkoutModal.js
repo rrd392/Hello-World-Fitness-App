@@ -2,10 +2,18 @@ import React, { useState } from "react";
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 
-const EditModal = ({ visible, onCancel, workout }) => {
+const EditExistingWorkoutModal = ({ visible, onCancel, workout }) => {
     const [workoutName, setWorkoutName] = useState(workout?.name || "");
     const [description, setDescription] = useState("");
-    const [selectedWorkouts, setSelectedWorkouts] = useState(workout ? [workout] : []);
+    const [selectedLevels, setSelectedLevels] = useState([]);
+
+    const toggleLevelSelection = (level) => {
+        setSelectedLevels((prevLevels) => 
+            prevLevels.includes(level) 
+                ? prevLevels.filter((item) => item !== level) // Remove if already selected
+                : [...prevLevels, level] // Add if not selected
+        );
+    };
 
     const [showAddButton, setShowAddButton] = useState(true);
 
@@ -60,13 +68,34 @@ const EditModal = ({ visible, onCancel, workout }) => {
                     <TouchableOpacity style={styles.closeButton} onPress={onCancel}>
                         <Ionicons name="close" size={30} color="#000" />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Edit Workout</Text>
+                    <Text style={styles.title}>Custom Workout</Text>
                     <ScrollView contentContainerStyle={styles.scrollViewContent}>
                         <Text style={styles.label}>Name</Text>
                         <TextInput style={styles.input} value={workoutName} onChangeText={setWorkoutName} />
 
                         <Text style={styles.label}>Description</Text>
                         <TextInput style={styles.input} value={description} onChangeText={setDescription} />
+
+                        <Text style={styles.selectLevelText}>Select Level</Text>
+                        <View style={styles.selectLevelContainer}>
+                            {["Beginner", "Intermediate", "Advanced"].map((level) => (
+                                <TouchableOpacity 
+                                    key={level}
+                                    style={[
+                                        styles.levelButton, 
+                                        selectedLevels.includes(level) ? styles.selectedBtn : styles.unselectedBtn
+                                    ]}
+                                    onPress={() => toggleLevelSelection(level)}
+                                >
+                                    <Text style={[
+                                        styles.levelText, 
+                                        selectedLevels.includes(level) ? styles.selectedText : styles.unselectedText
+                                    ]}>
+                                        {level}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
 
                         <View style={styles.workoutDetailsContainer}>
                         <Text style={styles.workoutDetailsText}>Workout Details</Text>
@@ -89,46 +118,10 @@ const EditModal = ({ visible, onCancel, workout }) => {
                                 
                             </View>
                         ))}
-                        {showAddButton ? (
-                            <TouchableOpacity style={styles.addButton} onPress={handleToggleButton}>
-                                <Ionicons name="add" size={30} color="white" />
-                            </TouchableOpacity>
-                        ) : (
-                            <>
-                            <TouchableOpacity style={styles.addButton} onPress={handleToggleButton}>
-                                <Ionicons name="arrow-up" size={30} color="white" />
-                            </TouchableOpacity>
-
-                            {/* Loop through each category and then map the exercises */}
-                            {Object.keys(exerciseData).map((category) => (
-                                <View key={category}>
-                                    <Text style={styles.categoryTitle}>{category}</Text>
-                                    {exerciseData[category].map((workout, index) => (
-                                        <View key={index} style={styles.workoutItem}>
-                                            <View style={styles.nameNtime}>
-                                                <Text style={styles.workoutName}>{workout.exercise_name} {workout.reps ? `${workout.reps} Reps` : ''}</Text>
-                                                <View style={styles.iconNtime}>
-                                                    <Ionicons name="time-outline" size={16} color="#B3A0FF" />
-                                                    <Text style={styles.restTime}>{workout.time_taken}</Text>
-                                                </View>
-                                            </View>
-                                            <View style={styles.setNicon}>
-                                                <Text style={styles.setsText}>Sets {workout.sets}x</Text>
-                                                <TouchableOpacity style={styles.iconaddButton}>
-                                                    <Ionicons name="add" size={22} color="#000" />
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    ))}
-                                </View>
-                            ))}
-                        </>
-                    )}
                     </View>
                     </ScrollView>
-                    
-                    <TouchableOpacity style={styles.updateButton}>
-                        <Text style={styles.updateButtonText}>Update</Text>
+                    <TouchableOpacity style={styles.uploadButton}>
+                        <Text style={styles.uploadButtonText}>Upload</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -148,8 +141,8 @@ const styles = StyleSheet.create({
     workoutSubText: { fontSize: 12, color: '#B3A0FF' },
     setsText: { fontSize: 14, fontWeight: 'bold', color: '#A586FF' },
     addButton: { backgroundColor: '#A586FF', padding: 10, borderRadius: 50, alignSelf: 'center', marginVertical: 10 },
-    updateButton: { backgroundColor: 'black', padding: 10, borderRadius: 5, alignItems: 'center', marginTop: 5 },
-    updateButtonText: { color: '#E2F163', fontSize: 16, fontWeight: 'bold' },
+    uploadButton: { backgroundColor: 'black', padding: 10, borderRadius: 5, alignSelf: 'center', marginTop: 5, width: 150, alignItems: 'center' },
+    uploadButtonText: { color: '#E2F163', fontSize: 16, fontWeight: 'bold' },
 
     workoutDetailsContainer: { padding: 5},
     workoutDetailsText: { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 10, marginTop: 5},
@@ -166,6 +159,15 @@ const styles = StyleSheet.create({
     closeButtonText: { fontSize: 15, fontWeight: 'bold'},
     categoryTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 2 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
+
+    selectLevelText: { alignSelf: 'center', marginTop: 20, fontSize: 20, fontWeight: 'bold', marginBottom: 10},
+    selectLevelContainer: { flexDirection: 'row', justifyContent: 'space-between', width: 330, alignSelf: 'center', gap: 8 },
+    levelButton: { borderRadius: 20, paddingHorizontal: 18, paddingVertical: 8},
+    selectedBtn: { backgroundColor: 'black'},
+    unselectedBtn: { backgroundColor: 'white'},
+    levelText: { fontWeight: 'bold'},
+    selectedText: { color: '#E2F163'},
+    unselectedText: { color: 'gray'},
 });
 
-export default EditModal;
+export default EditExistingWorkoutModal;

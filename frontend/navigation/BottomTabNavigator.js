@@ -12,11 +12,6 @@ import MemberProgressStack from "./MemberProgressStack";
 import TrainerMemberStack from "./TrainerMemberStack";
 import TrainerWorkoutStack from "./TrainerWorkoutStack";
 
-// Member Screens
-import MemberClassesScreen from "../screens/AdminPage";
-import Workout from "../screens/Trainer Workout/Workout";
-
-
 // Dummy Trainer Screens
 const TrainerScheduleScreen = () => <View><Text>Trainer Schedule</Text></View>;
 
