@@ -9,9 +9,11 @@ import WorkoutPlanStack from "./WorkoutPlanStack";
 import ProfileStack from "./ProfileStack";
 import TrainerProfileStack from "./TrainerProfileStack";
 import TrainerMemberStack from "./TrainerMemberStack";
+import TrainerWorkoutStack from "./TrainerWorkoutStack";
 
 // Member Screens
 import MemberClassesScreen from "../screens/AdminPage";
+import Workout from "../screens/Trainer Workout/Workout";
 
 
 // Dummy Trainer Screens
@@ -76,7 +78,7 @@ const BottomTabNavigator = () => {
         <>
           <Tab.Screen name="Home" component={TrainerHomeStack} />
           <Tab.Screen name="Member" component={TrainerMemberStack} />
-          <Tab.Screen name="Workout" component={TrainerScheduleScreen} />
+          <Tab.Screen name="Workout" component={TrainerWorkoutStack} />
           <Tab.Screen name="More" component={TrainerProfileStack} />
         </>
       ) : (
