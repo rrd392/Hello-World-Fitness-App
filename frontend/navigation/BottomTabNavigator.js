@@ -8,13 +8,13 @@ import TrainerHomeStack from "./TrainerHomeStack";
 import WorkoutPlanStack from "./WorkoutPlanStack";
 import ProfileStack from "./ProfileStack";
 import TrainerProfileStack from "./TrainerProfileStack";
+import TrainerMemberStack from "./TrainerMemberStack";
 
 // Member Screens
 import MemberClassesScreen from "../screens/AdminPage";
 
 
 // Dummy Trainer Screens
-const TrainerClassesScreen = () => <View><Text>Trainer Classes</Text></View>;
 const TrainerScheduleScreen = () => <View><Text>Trainer Schedule</Text></View>;
 
 // Create Bottom Tab Navigator
@@ -54,7 +54,9 @@ const BottomTabNavigator = () => {
           let iconName;
           if (route.name === "Home") iconName = "home";
           else if (route.name === "Classes") iconName = "calendar";
+          else if (route.name === "Member") iconName = "calendar";
           else if (route.name === "Workout Plan" || route.name === "Schedule") iconName = "barbell";
+          else if (route.name === "Workout" || route.name === "Schedule") iconName = "barbell";
           else if (route.name === "More") iconName = "ellipsis-vertical-outline";
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -73,8 +75,8 @@ const BottomTabNavigator = () => {
       ) : userRole === "trainer" ? (
         <>
           <Tab.Screen name="Home" component={TrainerHomeStack} />
-          <Tab.Screen name="Classes" component={TrainerClassesScreen} />
-          <Tab.Screen name="Schedule" component={TrainerScheduleScreen} />
+          <Tab.Screen name="Member" component={TrainerMemberStack} />
+          <Tab.Screen name="Workout" component={TrainerScheduleScreen} />
           <Tab.Screen name="More" component={TrainerProfileStack} />
         </>
       ) : (
