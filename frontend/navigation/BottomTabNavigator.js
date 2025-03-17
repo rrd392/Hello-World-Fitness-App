@@ -8,6 +8,7 @@ import TrainerHomeStack from "./TrainerHomeStack";
 import WorkoutPlanStack from "./WorkoutPlanStack";
 import ProfileStack from "./ProfileStack";
 import TrainerProfileStack from "./TrainerProfileStack";
+import MemberProgressStack from "./MemberProgressStack";
 import TrainerMemberStack from "./TrainerMemberStack";
 import TrainerWorkoutStack from "./TrainerWorkoutStack";
 
@@ -55,7 +56,7 @@ const BottomTabNavigator = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName;
           if (route.name === "Home") iconName = "home";
-          else if (route.name === "Classes") iconName = "calendar";
+          else if (route.name === "View Progress") iconName = "document-text";
           else if (route.name === "Member") iconName = "calendar";
           else if (route.name === "Workout Plan" || route.name === "Schedule") iconName = "barbell";
           else if (route.name === "Workout" || route.name === "Schedule") iconName = "barbell";
@@ -70,7 +71,7 @@ const BottomTabNavigator = () => {
       {userRole === "member" ? (
         <>
           <Tab.Screen name="Home" component={HomeStack} />
-          <Tab.Screen name="Classes" component={MemberClassesScreen} />
+          <Tab.Screen name="View Progress" component={MemberProgressStack} />
           <Tab.Screen name="Workout Plan" component={WorkoutPlanStack} />
           <Tab.Screen name="More" component={ProfileStack} />
         </>
