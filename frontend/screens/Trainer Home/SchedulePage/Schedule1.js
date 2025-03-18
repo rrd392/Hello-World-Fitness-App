@@ -1,0 +1,266 @@
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import HeaderVer2 from "../../HeaderVer2";
+
+function Schedule1() {
+  const navigation = useNavigation();
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const getMondayDates = () => {
+    const currentDate = new Date();
+    const dayOfWeek = currentDate.getDay();
+    const monday = new Date(currentDate);
+    monday.setDate(
+      currentDate.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)
+    );
+
+    return Array.from({ length: 3 }, (_, i) => {
+      const newMonday = new Date(monday);
+      newMonday.setDate(monday.getDate() + i * 7);
+      return newMonday.toLocaleDateString("en-GB");
+    });
+  };
+  const [dateDropdownVisible, setDateDropdownVisible] = useState(false);
+  const [classStatusDropdown, setClassStatusDropdown] = useState(false);
+  const [selectedClassStatus, setSelectedClassStatus] = useState("Upcoming");
+  const mondayDates = getMondayDates();
+  const [selectedDate, setSelectedDate] = useState(mondayDates[0]);
+  const daysOfWeek = ["MON", "TUE", "WED", "THU", "FRI"];
+  const [selectedDay, setSelectedDay] = useState(0);
+
+  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setDateDropdownVisible(false);
+  };
+
+  const handleClassStatusSelect = (status) => {
+    setSelectedClassStatus(status);
+    setClassStatusDropdown(false);
+  };
+  const classData = [
+    {
+      title: "Yoga Flow",
+      time: "08:00 - 09:00",
+      coach: "Coach Aaron",
+      date: "2025-01-02",
+      slots: "20/20",
+      image: require("./yoga.jpg"),
+    },
+    {
+      title: "Zumba Dance",
+      time: "10:00 - 11:00",
+      coach: "Coach Aaron",
+      date: "2025-01-02",
+      slots: "15/20",
+      image: require("./yoga.jpg"),
+    },
+  ];
+
+  return (
+    <View style={styles.container}>
+      {/* Header Section */}
+      <SafeAreaView>
+        <HeaderVer2 title="Home" onPress={() => navigation.goBack()} />
+      </SafeAreaView>
+
+      {/* Classes Section */}
+
+      <View style={styles.classesSection}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.sectionTitle}>Classes</Text>
+          <TouchableOpacity
+            style={styles.dropdownButton}
+            onPress={() => setDateDropdownVisible(!dateDropdownVisible)}
+          >
+            <Text style={styles.buttonText}>{selectedDate}</Text>
+            <Ionicons name="chevron-down" size={20} color="#E2F163" />
+          </TouchableOpacity>
+        </View>
+        {dateDropdownVisible && (
+          <View style={styles.dropdown}>
+            {mondayDates.map((date) => (
+              <TouchableOpacity
+                key={date}
+                style={styles.dropdownItem}
+                onPress={() => handleDateSelect(date)}
+              >
+                <Text style={styles.dropdownText}>{date}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        <View style={styles.daySelectionSection}>
+          {daysOfWeek.map((day, index) => (
+            <TouchableOpacity key={index} onPress={() => setSelectedDay(index)}>
+              <Text
+                style={
+                  selectedDay === index
+                    ? styles.selectedDate
+                    : styles.daySelection
+                }
+              >
+                {day}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <TouchableOpacity
+          style={styles.dropdownButton2}
+          onPress={() => setClassStatusDropdown(!classStatusDropdown)}
+        >
+          <Text style={styles.buttonText}>{selectedClassStatus}</Text>
+          <Ionicons name="chevron-down" size={20} color="#E2F163" />
+        </TouchableOpacity>
+        {classStatusDropdown && (
+          <View style={styles.dropdown2}>
+            {["Upcoming", "Past"].map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={styles.dropdownItem}
+                onPress={() => handleClassStatusSelect(option)}
+              >
+                <Text style={styles.dropdownText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </View>
+      {/* Class Cards 
+        <View style={styles.classCards}>
+          {classData.map((classItem, index) => (
+            <ClassCard key={index} {...classItem} />
+          ))}
+        </View>*/}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#000" },
+  titleContainer: {
+    paddingHorizontal: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  sectionTitle: { fontSize: 24, color: "white", fontWeight: "bold" },
+
+  dropdownButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderColor: "#E2F163",
+    borderWidth: 2,
+    padding: 10,
+    borderRadius: 5,
+    width: 150,
+    backgroundColor: "black",
+    marginTop: 10,
+    marginRight: 20,
+  },
+  dropdownButton2: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderColor: "#E2F163",
+    borderWidth: 2,
+    padding: 10,
+    borderRadius: 5,
+    width: 150,
+    backgroundColor: "black",
+    marginTop: 10,
+    alignSelf: "flex-end", // Moves button to the right
+    marginRight: 20,
+  },
+
+  buttonText: { fontSize: 16, color: "#E2F163", fontWeight: "bold" },
+  dropdown: {
+    position: "absolute",
+    backgroundColor: "white",
+    borderRadius: 5,
+    width: 150,
+    padding: 5,
+    top: 50,
+    right: 20,
+    zIndex: 10,
+    marginLeft: "auto",
+    borderWidth: 1,
+    borderColor: "#E2F163",
+  },
+  dropdown2: {
+    position: "absolute",
+    backgroundColor: "white",
+    borderRadius: 5,
+    width: 150,
+    padding: 5,
+    top: 180,
+    right: 20,
+    zIndex: 10,
+    marginLeft: "auto",
+    borderWidth: 1,
+    borderColor: "#E2F163",
+  },
+  dropdownItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: "black",
+  },
+
+  daySelectionSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: "#B3A0FF",
+    marginBottom: 10,
+  },
+  daySelection: {
+    color: "#E2F163",
+    fontSize: 14,
+    backgroundColor: "black",
+    paddingVertical: 5,
+    borderRadius: 5,
+    width: 70,
+    textAlign: "center",
+  },
+  selectedDate: {
+    color: "black",
+    fontSize: 14,
+    backgroundColor: "#E2F163",
+    paddingVertical: 5,
+    borderRadius: 5,
+    width: 70,
+    textAlign: "center",
+  },
+
+  classesSection: {
+    marginBottom: 270,
+  },
+  titleContainer: {
+    marginLeft: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  sectionTitle: { fontSize: 24, color: "white", fontWeight: "bold" },
+
+  selectedText: { marginTop: 10, fontSize: 16, color: "#E2F163" },
+  classCards: { marginBottom: 20, backgroundColor: "#B3A0FF", width: "100%" },
+});
+
+export default Schedule1;

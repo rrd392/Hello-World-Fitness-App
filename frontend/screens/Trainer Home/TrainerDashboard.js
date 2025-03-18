@@ -35,7 +35,7 @@ const TrainerDashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!userId) return; 
+    if (!userId) return;
 
     const fetchUserData = async () => {
       try {
@@ -58,9 +58,9 @@ const TrainerDashboard = () => {
           if (Array.isArray(data.classes)) {
             setUpcomingClassData(data.classes);
           } else if (data.classes) {
-            setUpcomingClassData([data.classes]); 
+            setUpcomingClassData([data.classes]);
           } else {
-            setUpcomingClassData([]); 
+            setUpcomingClassData([]);
           }
           setClassData(data.disClass);
           setWorkoutPlans(data.workoutPlans);
@@ -166,9 +166,9 @@ const TrainerDashboard = () => {
 
           <TouchableOpacity
             style={styles.moreButton}
-            onPress={() => navigation.navigate("YourClasses")}
+            onPress={() => navigation.navigate("Schedule1")}
           >
-            <Text style={styles.moreButtonText}>Your Classes</Text>
+            <Text style={styles.moreButtonText}>Your Schedule</Text>
           </TouchableOpacity>
         </View>
 
@@ -265,7 +265,7 @@ const TrainerDashboard = () => {
             data={[
               ...(Array.isArray(dietPlans) ? dietPlans : []),
               { isMoreCard: true },
-            ]} 
+            ]}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) =>
@@ -379,7 +379,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontWeight: "bold",
   },
-  announcementSection: { backgroundColor: "#252525", padding: 15, marginTop: 20 },
+  announcementSection: {
+    backgroundColor: "#252525",
+    padding: 15,
+    marginTop: 20,
+  },
   announcementImage: {
     width: "100%",
     height: "100%",
@@ -408,7 +412,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     borderRadius: 10,
   },
-
 
   menuItem: {
     padding: 10,
