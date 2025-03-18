@@ -38,110 +38,33 @@ const MemberProgress = () => {
   }, []);
 
   useEffect(() => {
-    const fetchProgressDetails = async () => {
-        try {
-        const response = await fetch(`${API_BASE_URL}/api/progress/display/${userId}/${selectedFilter}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        });
-    
-        if (!response.ok) {
-            const text = await response.text();
-            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-        }
-    
-        const data = await response.json();
-    
-        if (data.success) {
-            setProgressDetails(data.progress);
-        }
-        } catch (error) {
-        console.error("Error fetching user progress data:", error);
-        Alert.alert("Error", error.message || "Network request failed");
-        }
-    };
-    fetchProgressDetails();
+    if(userId && selectedFilter){
+      fetchProgressDetails();
+    }
   }, [userId, selectedFilter]);
 
-  const workoutData = [
-    {
-      title: "Intermediate Fat Burn",
-      type: "Custom",
-      sessions: [
-        {
-          id: 1,
-          time: "1:00",
-          date: "23/1/2025",
-          exercises: [
-            { name: "Bench Press 8 Reps", completed: true },
-            { name: "Jump Rope", completed: false },
-            { name: "Bench Press 8 Reps", completed: false },
-          ],
-        },
-        {
-          id: 2,
-          time: "1:35",
-          date: "21/1/2025",
-          exercises: [],
-        },
-        {
-          id: 3,
-          time: "1:35",
-          date: "21/1/2025",
-          exercises: [],
-        },
-      ],
-    },
-    {
-      title: "Advanced Muscle Building",
-      type: "Custom",
-      sessions: [
-        {
-          id: 1,
-          time: "1:00",
-          date: "23/1/2025",
-          exercises: [],
-        },
-        {
-          id: 2,
-          time: "1:35",
-          date: "21/1/2025",
-          exercises: [],
-        },
-      ],
-    },
-    {
-      title: "Beginner Run",
-      type: "Coach",
-      sessions: [
-        {
-          id: 1,
-          time: "1:00",
-          date: "23/1/2025",
-          exercises: [
-            { name: "Bench Press 8 Reps", completed: true },
-            { name: "Jump Rope", completed: false },
-            { name: "Bench Press 8 Reps", completed: false },
-          ],
-        },
-        {
-          id: 2,
-          time: "1:35",
-          date: "21/1/2025",
-          exercises: [],
-        },
-        {
-          id: 3,
-          time: "1:35",
-          date: "21/1/2025",
-          exercises: [],
-        },
-      ],
-    },
-  ];
+  const fetchProgressDetails = async () => {
+    try {
+    const response = await fetch(`${API_BASE_URL}/api/progress/display/${userId}/${selectedFilter}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    });
 
-  const filteredData =
-    selectedFilter === "All" ? workoutData : workoutData.filter((w) => w.type === selectedFilter);
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success) {
+        setProgressDetails(data.progress);
+    }
+    } catch (error) {
+    console.error("Error fetching user progress data:", error);
+    Alert.alert("Error", error.message || "Network request failed");
+    }
+  };
 
   return (
     <View style={styles.container}>
