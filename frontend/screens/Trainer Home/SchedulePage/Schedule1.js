@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import HeaderVer2 from "../../HeaderVer2";
+import UpcomingClassCards from "./UpcomingClassCards";
 
 function Schedule1() {
   const navigation = useNavigation();
@@ -64,6 +65,22 @@ function Schedule1() {
       slots: "15/20",
       image: require("./yoga.jpg"),
     },
+    {
+      title: "Yoga Flow",
+      time: "08:00 - 09:00",
+      coach: "Coach Aaron",
+      date: "2025-01-02",
+      slots: "20/20",
+      image: require("./yoga.jpg"),
+    },
+    {
+      title: "Zumba Dance",
+      time: "10:00 - 11:00",
+      coach: "Coach Aaron",
+      date: "2025-01-02",
+      slots: "15/20",
+      image: require("./yoga.jpg"),
+    },
   ];
 
   return (
@@ -76,8 +93,16 @@ function Schedule1() {
       {/* Classes Section */}
 
       <View style={styles.classesSection}>
+        <Text style={styles.sectionTitle}>Classes</Text>
         <View style={styles.titleContainer}>
-          <Text style={styles.sectionTitle}>Classes</Text>
+          <TouchableOpacity
+            style={styles.dropdownButton2}
+            onPress={() => setClassStatusDropdown(!classStatusDropdown)}
+          >
+            <Text style={styles.buttonText}>{selectedClassStatus}</Text>
+            <Ionicons name="chevron-down" size={20} color="#E2F163" />
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.dropdownButton}
             onPress={() => setDateDropdownVisible(!dateDropdownVisible)}
@@ -86,6 +111,19 @@ function Schedule1() {
             <Ionicons name="chevron-down" size={20} color="#E2F163" />
           </TouchableOpacity>
         </View>
+        {classStatusDropdown && (
+          <View style={styles.dropdown2}>
+            {["Upcoming", "Past"].map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={styles.dropdownItem}
+                onPress={() => handleClassStatusSelect(option)}
+              >
+                <Text style={styles.dropdownText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
         {dateDropdownVisible && (
           <View style={styles.dropdown}>
             {mondayDates.map((date) => (
@@ -114,33 +152,13 @@ function Schedule1() {
             </TouchableOpacity>
           ))}
         </View>
-        <TouchableOpacity
-          style={styles.dropdownButton2}
-          onPress={() => setClassStatusDropdown(!classStatusDropdown)}
-        >
-          <Text style={styles.buttonText}>{selectedClassStatus}</Text>
-          <Ionicons name="chevron-down" size={20} color="#E2F163" />
-        </TouchableOpacity>
-        {classStatusDropdown && (
-          <View style={styles.dropdown2}>
-            {["Upcoming", "Past"].map((option) => (
-              <TouchableOpacity
-                key={option}
-                style={styles.dropdownItem}
-                onPress={() => handleClassStatusSelect(option)}
-              >
-                <Text style={styles.dropdownText}>{option}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
       </View>
-      {/* Class Cards 
-        <View style={styles.classCards}>
-          {classData.map((classItem, index) => (
-            <ClassCard key={index} {...classItem} />
-          ))}
-        </View>*/}
+      {/* Class Cards*/}
+      <ScrollView style={styles.classCards}>
+        {classData.map((classItem, index) => (
+          <UpcomingClassCards key={index} {...classItem} />
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -154,7 +172,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  sectionTitle: { fontSize: 24, color: "white", fontWeight: "bold" },
+  sectionTitle: {
+    paddingLeft: 20,
+    fontSize: 24,
+    color: "white",
+    fontWeight: "bold",
+  },
 
   dropdownButton: {
     flexDirection: "row",
@@ -167,7 +190,7 @@ const styles = StyleSheet.create({
     width: 150,
     backgroundColor: "black",
     marginTop: 10,
-    marginRight: 20,
+    marginRight: 10,
   },
   dropdownButton2: {
     flexDirection: "row",
@@ -181,7 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     marginTop: 10,
     alignSelf: "flex-end", // Moves button to the right
-    marginRight: 20,
+    marginLeft: -10,
   },
 
   buttonText: { fontSize: 16, color: "#E2F163", fontWeight: "bold" },
@@ -191,7 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 150,
     padding: 5,
-    top: 50,
+    top: 80,
     right: 20,
     zIndex: 10,
     marginLeft: "auto",
@@ -204,8 +227,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 150,
     padding: 5,
-    top: 180,
-    right: 20,
+    top: 80,
+    left: 20,
     zIndex: 10,
     marginLeft: "auto",
     borderWidth: 1,
@@ -226,7 +249,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: "#B3A0FF",
-    marginBottom: 10,
   },
   daySelection: {
     color: "#E2F163",
@@ -247,9 +269,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  classesSection: {
-    marginBottom: 270,
-  },
+  classesSection: { marginBottom: 20 },
   titleContainer: {
     marginLeft: 20,
     flexDirection: "row",
@@ -257,10 +277,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  sectionTitle: { fontSize: 24, color: "white", fontWeight: "bold" },
 
   selectedText: { marginTop: 10, fontSize: 16, color: "#E2F163" },
-  classCards: { marginBottom: 20, backgroundColor: "#B3A0FF", width: "100%" },
+  classCards: { marginBottom: 10, backgroundColor: "#B3A0FF", width: "100%" },
 });
 
 export default Schedule1;

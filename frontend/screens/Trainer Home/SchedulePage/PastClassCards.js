@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-function UpcomingClassCard({ title, time, coach, date, slots, image }) {
+function PastClassCard({ title, time, coach, date, slots, image }) {
   const navigation = useNavigation();
 
   return (
@@ -123,4 +123,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UpcomingClassCard;
+export default PastClassCard;
