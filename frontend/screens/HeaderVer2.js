@@ -42,7 +42,7 @@ const HeaderVer2 = ({
 };
 
 const styles = StyleSheet.create({
-    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 13, backgroundColor: "#212020", gap: 20, marginTop: 50 },
+    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 13, backgroundColor: "#212020", gap: 20 },
     headerBack: {
         flexDirection: 'row',
         alignItems: 'center',

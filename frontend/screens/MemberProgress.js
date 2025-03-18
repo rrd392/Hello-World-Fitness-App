@@ -3,7 +3,8 @@ import { FlatList, View, Text, StyleSheet, TouchableOpacity, Animated, Easing, M
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import API_BASE_URL from "../env";
+import { getUserId } from './getUserId';
 
 const MemberProgress = () => {
 
@@ -23,8 +24,44 @@ const MemberProgress = () => {
   };
 
   const [selectedFilter, setSelectedFilter] = useState("All");
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
+  const [progressDetails, setProgressDetails] = useState([]);
 
+  useEffect(() => {
+    async function fetchUserId() {
+      const token = await getUserId();
+      setUserId(token.id);
+      setUserName(token.name);
+    }
+    fetchUserId();
+  }, []);
 
+  useEffect(() => {
+    const fetchProgressDetails = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/progress/display/${userId}/${selectedFilter}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+        }
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setProgressDetails(data.progress);
+        }
+        } catch (error) {
+        console.error("Error fetching user progress data:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+    fetchProgressDetails();
+  }, [userId, selectedFilter]);
 
   const workoutData = [
     {
@@ -110,11 +147,13 @@ const MemberProgress = () => {
     <View style={styles.container}>
       <SafeAreaView style={styles.header}>
         <View style={styles.headerRow}>
+          <Text style={styles.greeting}>Hi, {userName}</Text>
           <View style={styles.iconRow}>
             <TouchableOpacity onPress={toggleNotification}><Ionicons name="notifications" size={24} color="#896CFE" /></TouchableOpacity>
             <TouchableOpacity onPress={handleGoToProfile}><Ionicons name="person" size={24} color="#896CFE" /></TouchableOpacity>
           </View>
         </View>
+        <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
       </SafeAreaView>
       <Text style={styles.headerText}>Your Workout Progress</Text>
 
@@ -132,9 +171,8 @@ const MemberProgress = () => {
         ))}
       </View>
 
-
       <FlatList
-        data={filteredData}
+        data={progressDetails}
         keyExtractor={(item) => item.title}
         renderItem={({ item }) => (
           <View style={styles.category}>
@@ -204,15 +242,13 @@ const MemberProgress = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#212020'
-  },
-  header: { padding: 20, marginBottom: -30 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignSelf: "flex-end" },
+  container: {flex: 1, backgroundColor: '#212020'},
+  greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
+  subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
+  header: { padding: 20, paddingBottom:0},
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
   iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20, },
-  headerText: { color: "#E2F163", textAlign: 'center', fontSize: 24, marginTop: 20, fontWeight: 600 },
-
+  headerText: { color: "#E2F163", textAlign: 'center', fontSize: 24, fontWeight: 600 },
   filterContainer: {
     flexDirection: "row",
     justifyContent: "center",
