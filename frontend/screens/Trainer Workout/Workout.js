@@ -1,10 +1,12 @@
 import { View, SafeAreaView, Text, TouchableOpacity, FlatList, Image, Animated } from "react-native";
 import { StyleSheet } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import DeleteModal from "../Trainer Members/DeleteModal";
 import EditExistingWorkoutModal from "./EditExistingWorkoutModal";
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
 
 const existingPlans = [
     {
@@ -62,62 +64,82 @@ const createdPlans = [
     },
 ];
     
-    const Workout = () => {
+const Workout = () => {
 
-        const [showDeleteModel, setShowDeleteModal] = useState(false);
-        const [showEditExistingWorkoutModal, setShowEditExistingWorkoutModal] = useState(false);
-        
-        const slideAnim = useRef(new Animated.Value(30)).current;
-        const opacityAnim = useRef(new Animated.Value(0)).current; 
-        const [isVisible, setIsVisible] = useState(false);
+    const [showDeleteModel, setShowDeleteModal] = useState(false);
+    const [showEditExistingWorkoutModal, setShowEditExistingWorkoutModal] = useState(false);
+    const [userId, setUserId] = useState("");
+    const [userName, setUserName] = useState("");
+    const [memberDetails, setMemberDetails] = useState([]);
 
-        const navigation = useNavigation();
-
-        const [selectedTab, setSelectedTab] = useState("existing");
-        const [selectedWorkout, setSelectedWorkout] = useState(null);
-
-        const workoutPlans = selectedTab === "existing" ? existingPlans : createdPlans;
+    useEffect(() => {
+    async function fetchUserId() {
+        const token = await getUserId();
+        setUserId(token.id);
+        setUserName(token.name);
+    }
+    fetchUserId();
+    }, []);
     
-        const toggleWorkOutDetails = (item) => {
-            setSelectedWorkout(selectedWorkout === item.workout_plan_id ? null : item.workout_plan_id);
-        };
+    const slideAnim = useRef(new Animated.Value(30)).current;
+    const opacityAnim = useRef(new Animated.Value(0)).current; 
+    const [isVisible, setIsVisible] = useState(false);
+
+    const navigation = useNavigation();
+    const toggleNotification = () => navigation.navigate('Notification');
+    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
+
+    const [selectedTab, setSelectedTab] = useState("general");
+    const [selectedWorkout, setSelectedWorkout] = useState(null);
+
+    const workoutPlans = selectedTab === "general" ? existingPlans : createdPlans;
+
+    const toggleWorkOutDetails = (item) => {
+        setSelectedWorkout(selectedWorkout === item.workout_plan_id ? null : item.workout_plan_id);
+    };
 
     return (
         <View style={styles.container}>
             <SafeAreaView>
-                <Text style={styles.titleStyle}>Existing Workout Plan</Text>
+                <View style={styles.headerRow}>
+                    <Text style={styles.greeting}>Hi, {userName}</Text>
+                    <View style={styles.iconRow}>
+                        <TouchableOpacity onPress={toggleNotification}>
+                            <Ionicons name="notifications" size={24} color="#896CFE" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleGoToProfile}>
+                            <Ionicons name="person" size={24} color="#896CFE" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
+                <Text style={styles.titleStyle}>Workout Plan</Text>
                 <View style={styles.workoutplanSelection}>
                     <TouchableOpacity
                         style={[
                             styles.selectionBg,
-                            selectedTab === "existing" ? styles.selectedBg : styles.defaultBg
+                            selectedTab === "general" ? styles.selectedBg : styles.defaultBg
                         ]}
-                        onPress={() => setSelectedTab("existing")}
+                        onPress={() => setSelectedTab("general")}
                     >
                         <Text
-                            style={[
-                                styles.text,
-                                selectedTab === "existing" ? styles.selectedText : styles.defaultText
-                            ]}
+                            style={styles.selectedText}
                         >
-                            Existing
+                            General
                         </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={[
                             styles.selectionBg,
-                            selectedTab === "created" ? styles.selectedBg : styles.defaultBg
+                            selectedTab === "member" ? styles.selectedBg : styles.defaultBg
                         ]}
-                        onPress={() => setSelectedTab("created")}
+                        onPress={() => setSelectedTab("member")}
                     >
                         <Text
-                            style={[
-                                styles.text,
-                                selectedTab === "created" ? styles.selectedText : styles.defaultText
-                            ]}
+                            style={styles.selectedText }
                         >
-                            Created
+                            Member
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -137,7 +159,7 @@ const createdPlans = [
                                     <Text style={styles.badgeText}>{item.difficulty}</Text>
                                 </View>
                             </View>
-                            {selectedTab === "existing" && (
+                            {selectedTab === "general" && (
                                 <View style={styles.iconContainer}>
                                     <TouchableOpacity style={styles.iconButton} onPress={() => setShowEditExistingWorkoutModal(true)}>
                                         <Feather name="edit" size={22} color="black" />
@@ -173,16 +195,19 @@ const createdPlans = [
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020' },
-    titleStyle: { fontSize: 24, color: '#E2F163', fontWeight: 'bold', alignSelf: 'center', marginTop: 60},
-    workoutplanSelection: { flexDirection: 'row', gap: 10, alignSelf: 'center'},
-    selectionBg: { borderRadius: 20, paddingHorizontal: 30, paddingVertical: 10, marginTop: 20, marginBottom: 15},
+    container: { flex: 1, backgroundColor: '#212020', padding:20 },
+    greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
+    subtitle: { fontSize: 14, color: '#fff', marginBottom: 30 },
+    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 13, backgroundColor: "#212020", gap: 20 },
+    iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20, },
+    titleStyle: { fontSize: 24, color: '#E2F163', fontWeight: 'bold',},
+    workoutplanSelection: { flexDirection: 'row', justifyContent:'space-between'},
+    selectionBg: { borderRadius: 20, width:"48%", paddingVertical: 10, marginTop: 20, marginBottom: 15},
     selectedBg: { backgroundColor: "#E2F163"},
     defaultBg: { backgroundColor: "white" },
-    selectedText: { fontWeight: 'bold'},
-    defaultText: { color: '#896CFE', fontWeight: 'bold'},
+    selectedText: { fontWeight: 'bold', textAlign:'center'},
 
-    addPadding: { padding: 15},
+    addPadding: { paddingVertical: 15},
     generalCard:{flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', marginBottom: 30, alignItems:'center', borderRadius: 20, overflow: "hidden", height:150, gap:'5%'},
     generalItem: { width:'50%', marginLeft:15 },
     generalTitle: { fontWeight: 'bold', color: 'black', fontSize:18, marginBottom:10 },
