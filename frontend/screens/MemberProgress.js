@@ -134,7 +134,7 @@ const MemberProgress = () => {
                           <View style={{ position: 'relative', width: 26, height: 26 }}>
                             {exercise.completed ? (
                               <>
-                                <Ionicons name="checkmark-circle" size={26} color="#E2F163" />
+                                <Ionicons name="checkmark-circle" size={26} color="#B7CD00" />
                                 <Ionicons
                                   name="checkmark"
                                   size={16}
@@ -165,7 +165,7 @@ const MemberProgress = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#212020'},
+  container: {flex: 1, backgroundColor: 'black'},
   greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
   header: { padding: 20, paddingBottom:0},
@@ -251,8 +251,7 @@ const styles = StyleSheet.create({
   },
   exerciseList: {
     padding: 10,
-    backgroundColor: "white",
-    opacity:0.7,
+    backgroundColor: "#E9E9E9",
     marginTop:-5,
     zIndex:-1,
     marginHorizontal:2,

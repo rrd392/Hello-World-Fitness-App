@@ -5,10 +5,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
 
 const ViewProgress = () => {
 
+    const route = useRoute();
+    const { member } = route.params || {};
     const [feedbackVisible, setFeedbackVisible] = useState(false);
     const [step, setStep] = useState(1);
     const [expandDetails, setExpandDetails] = useState(false);
@@ -19,12 +23,12 @@ const ViewProgress = () => {
     });
 
     const feedbackTabs = ["Overall Performance", "Weak Areas", "Final Feedback"];
-    const workoutDetails = [
-        { exercise: "Push-ups 8x3", type: "Bodyweight", time: "1:30" },
-        { exercise: "Squats 10x4", type: "Strength", time: "2:45" },
-        { exercise: "Jump Rope 3x2", type: "Cardio", time: "3:20" },
-        { exercise: "Lunges 10x3", type: "Strength", time: "2:20"},
-    ];
+    // const workoutDetails = [
+    //     { exercise: "Push-ups 8x3", type: "Bodyweight", time: "1:30" },
+    //     { exercise: "Squats 10x4", type: "Strength", time: "2:45" },
+    //     { exercise: "Jump Rope 3x2", type: "Cardio", time: "3:20" },
+    //     { exercise: "Lunges 10x3", type: "Strength", time: "2:20"},
+    // ];
 
     const navigation = useNavigation();
 
@@ -35,12 +39,6 @@ const ViewProgress = () => {
         const subscription = Dimensions.addEventListener('change', handleResize);
         return () => subscription?.remove();
     }, []);
-
-    const member = {
-        name: "Emily Lai",
-        gender: "female",
-        email: "emily.lai@example.com",
-    };
 
     const getTabColor = (tabIndex) => {
         if (step >= 3) {
@@ -60,25 +58,54 @@ const ViewProgress = () => {
         return tabIndex === step ? { backgroundColor: "#B3A0FF" } : { backgroundColor: "transparent" };
     };
 
-    const workout_plan_details = [
-        { id: '1', exercise_name: 'Push-ups 8x3', exercise_type: 'Bodyweight', time_taken: '1:30 Time Taken' },
-        { id: '2', exercise_name: 'Squats 10x4', exercise_type: 'Strength', time_taken: '2:45 Time Taken' },
-        { id: '3', exercise_name: 'Jump Rope 3x2', exercise_type: 'Cardio', time_taken: '3:20 Time Taken' },
-        { id: '4', exercise_name: 'Box Jumps 5x3', exercise_type: 'Plyometric', time_taken: '1:50 Time Taken' },
-        { id: '5', exercise_name: 'Plank 1x1', exercise_type: 'Core', time_taken: '5:00 Time Taken' },
-        { id: '6', exercise_name: 'Deadlifts 5x3', exercise_type: 'Strength', time_taken: '4:15 Time Taken' },
-        { id: '7', exercise_name: 'Pull-ups 6x4', exercise_type: 'Bodyweight', time_taken: '3:30 Time Taken' },
-        { id: '8', exercise_name: 'Lunges 10x3', exercise_type: 'Strength', time_taken: '2:20 Time Taken' },
-        { id: '9', exercise_name: 'Burpees 8x2', exercise_type: 'HIIT', time_taken: '2:00 Time Taken' },
-        { id: '10', exercise_name: 'Mountain Climbers 4x30s', exercise_type: 'Cardio', time_taken: '2:45 Time Taken' },
-        { id: '11', exercise_name: 'Russian Twists 15x3', exercise_type: 'Core', time_taken: '2:30 Time Taken' },
-        { id: '12', exercise_name: 'Kettlebell Swings 12x3', exercise_type: 'Strength', time_taken: '3:10 Time Taken' },
-        { id: '13', exercise_name: 'Bicycle Crunches 20x2', exercise_type: 'Core', time_taken: '2:00 Time Taken' },
-        { id: '14', exercise_name: 'Jump Squats 6x4', exercise_type: 'Plyometric', time_taken: '2:15 Time Taken' },
-        { id: '15', exercise_name: 'Dumbbell Shoulder Press 8x3', exercise_type: 'Strength', time_taken: '3:00 Time Taken' },
-        { id: '16', exercise_name: 'Deadlifts 5x3', exercise_type: 'Strength', time_taken: '4:15 Time Taken' },
-    ];
+    const [userId, setUserId] = useState("");
+    const [progressDetails, setProgressDetails] = useState([]);
+    const memberId = member.user_id;
     
+    useEffect(() => {
+    async function fetchUserId() {
+        const token = await getUserId();
+        setUserId(token.id);
+    }
+    fetchUserId();
+    }, []);
+
+    useEffect(() => {
+        if(userId){
+            fetchProgressDetails();
+        }
+    }, [userId]);
+
+    const fetchProgressDetails = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/trainer-member/displayProgress/${memberId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+        }
+    
+            const data = await response.json();
+    
+        if (data.success) {
+            setProgressDetails(data.progress);
+        }
+        } catch (error) {
+            console.error("Error fetching user progress data:", error);
+            Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+
+    const [expandedSessions, setExpandedSessions] = useState({});
+    const toggleSession = (title, sessionId) => {
+        setExpandedSessions(prev => ({
+            ...prev,
+            [`${title}-${sessionId}`]: !prev[`${title}-${sessionId}`]
+        }));
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -92,15 +119,12 @@ const ViewProgress = () => {
                 <View style={styles.progressCard}>
                     {/* Member Profile */}
                     <View style={styles.memberProfile}>
-                        <Image
-                            source={require("../../assets/icon.png")}
-                            style={styles.profileImage}
-                        />
+                        <Image source={{ uri: `${API_BASE_URL}/uploads/${member.profile_picture}` }} style={styles.profileImage} />
                         <View style={styles.nameNemailContainer}>
                             <View style={styles.nameNgender}>
                                 <Text style={styles.nameText}>{member.name}</Text>
-                                <Text style={styles.genderText}>
-                                    {member.gender === "male" ? "♂️" : "♀️"}
+                                <Text style={member.gender === "Male" ? styles.maleGenderText:styles.femaleGenderText}>
+                                    {member.gender === "Male" ? "♂️" : "♀️"}
                                 </Text>
                             </View>
                             <Text>{member.email}</Text>
@@ -108,7 +132,72 @@ const ViewProgress = () => {
                     </View>
 
                     {/* Workout Section */}
-                    {workout_plan_details.reduce((acc, exercise, index) => {
+                    {progressDetails.map((item) => (
+                        <View key={item.title} style={styles.category}>
+                            {/* Static Category Title */}
+                            <View style={styles.categoryHeader}>
+                            <Ionicons name="play" size={18} color="#E2F163" />
+                            <Text style={styles.categoryTitle}>{item.title}</Text>
+                            </View>
+
+                            {/* Expandable Workout Sessions */}
+                            {item.sessions.map((session) => (
+                            <View key={session.id} style={styles.session}>
+                                {/* Session Header (Expandable) */}
+                                <TouchableOpacity onPress={() => toggleSession(item.title, session.id)} style={styles.sessionHeader}>
+                                <Text style={styles.sessionNumber}>{session.id}</Text>
+
+                                <Ionicons name="stopwatch-outline" size={16} color="#896CFE" />
+                                <Text style={styles.sessionInfo}> {session.time} Time Taken </Text>
+                                <Text style={styles.sessionDate}>{session.date}</Text>
+
+                                <Ionicons
+                                    name={expandedSessions[`${item.title}-${session.id}`] ? "chevron-up-outline" : "chevron-down-outline"}
+                                    size={18}
+                                    color="#896CFE"
+                                />
+                                </TouchableOpacity>
+
+                                {/* Expandable Exercise List */}
+                                {expandedSessions[`${item.title}-${session.id}`] && (
+                                <View style={styles.exerciseList}>
+                                    {session.exercises.length > 0 ? (
+                                    session.exercises.map((exercise, index) => (
+                                        <View key={index} style={styles.exerciseBox}>
+                                            <Text style={styles.exercise}>{exercise.name}</Text>
+                                            <View style={{ position: 'relative', width: 26, height: 26 }}>
+                                                {exercise.completed ? (
+                                                <>
+                                                    <Ionicons name="checkmark-circle" size={26} color="#B7CD00" />
+                                                    <Ionicons
+                                                    name="checkmark"
+                                                    size={16}
+                                                    color="white"
+                                                    style={{ position: 'absolute', top: 5, left: 5 }}
+                                                    />
+                                                </>
+                                                ) : (
+                                                <Ionicons name="ellipse" size={26} color="#BCBCBC" />
+                                                )}
+                                            </View>
+                                        </View>
+                                    ))
+                                    ) : (
+                                        <Text style={styles.noExercise}>No Exercises</Text>
+                                    )}
+                                    <TouchableOpacity style={styles.feedbackBtn} onPress={() => setFeedbackVisible(true)}>
+                                        <Text style={styles.feedbackBtnText}>Feedback</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                )}
+                                <TouchableOpacity style={styles.feedbackBtn} onPress={() => setFeedbackVisible(true)}>
+                                    <Text style={styles.feedbackBtnText}>Feedback</Text>
+                                </TouchableOpacity>
+                            </View>
+                            ))}
+                        </View>
+                    ))}
+                    {/* {workout_plan_details.reduce((acc, exercise, index) => {
                         if (index % 4 === 0) {
                             acc.push([]);
                         }
@@ -140,7 +229,7 @@ const ViewProgress = () => {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    ))}
+                    ))} */}
                 </View>
             </ScrollView>
             {/* Feedback Modal */}
@@ -254,7 +343,7 @@ const ViewProgress = () => {
 
 const styles = StyleSheet.create({
     container: {flex: 1, backgroundColor: '#212020'},
-    bgStyle: { padding: 15, marginTop: -10},
+    bgStyle: { padding: 20},
     progressCard: { backgroundColor: 'white', padding: 15, borderRadius: 15, marginBottom: 30 },
 
     memberProfile: { flexDirection: 'row', gap: 10},
@@ -262,6 +351,79 @@ const styles = StyleSheet.create({
     nameNemailContainer: { flexDirection: 'column', justifyContent: 'center'},
     nameText: { fontSize: 16, fontWeight: 'bold'},
     nameNgender: { flexDirection: 'row', gap: 5},
+    femaleGenderText:{color:"#E370AC", fontSize:16},
+    maleGenderText:{color:"#0066FF", fontSize:16},
+
+    category: {
+        borderRadius: 10,
+        overflow: "hidden",
+        backgroundColor: "#A5A5A5",
+        marginTop: 20,
+        marginBottom:20,
+        paddingVertical:10,
+    },
+    categoryHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 10,
+    },
+    categoryTitle: {
+        marginLeft: 10,
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#E2F163",
+    },
+    session: {
+        paddingBottom: 10,
+        marginHorizontal: 10,
+    
+    },
+    sessionHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: 10,
+        backgroundColor: "white",
+        borderRadius:10,
+    },
+    sessionNumber: {
+        fontWeight: "bold",
+        color: "#232323",
+        marginLeft:10,
+        marginRight:30,
+    },
+    sessionInfo: {
+        flex: 1,
+        color: "#896CFE",
+        fontWeight:600,
+    },
+    sessionDate: {
+        color: "#896CFE",
+        marginRight:10,
+        fontWeight: 600,
+    
+    },
+    exerciseList: {
+        padding: 10,
+        backgroundColor: "#E9E9E9",
+        marginTop:-5,
+        zIndex:-1,
+        marginHorizontal:2,
+    },
+    exerciseBox: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingVertical: 5,
+        marginHorizontal:10,
+    },
+    exercise: {
+        color: "#4D4D4D",
+        fontWeight: 600,
+    },
+    noExercise: {
+        textAlign: "center",
+        color: "#aaa",
+    },
     
     workoutContainer: { backgroundColor: '#A5A5A5', padding: 10, borderRadius: 10, marginTop: 15 },
     titleNdate: { flexDirection: 'row',  justifyContent: 'space-between', marginBottom: 10},
@@ -276,7 +438,7 @@ const styles = StyleSheet.create({
     timeTakenIconNText: { flexDirection: 'row', alignSelf: 'center'},
     exerciseTimeText: { fontSize: 13, width: 105},
 
-    feedbackBtn: { backgroundColor: '#000', alignSelf: 'center', marginTop: 8, padding: 10, borderRadius: 15, width: 125 },
+    feedbackBtn: { backgroundColor: '#000', alignSelf: 'center', marginTop: 20, padding: 10, borderRadius: 15, width: 125 },
     feedbackBtnText: { textAlign: 'center', color: '#E2F163', fontSize: 16, fontWeight: 'bold'},
 
     modalBackground: {flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: 'center', alignItems: 'center'},

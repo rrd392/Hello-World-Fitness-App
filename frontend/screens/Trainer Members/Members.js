@@ -24,44 +24,28 @@ const Members = () => {
     }, []);
 
     useEffect(() => {
-        const fetchMemberDetails = async () => {
-            try {
-            const response = await fetch(`${API_BASE_URL}/api/trainer-member/display/${userId}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
-        
-            const data = await response.json();
-            console.log(data);
-        
-            if (data.success) {
-                setMemberDetails(data.progress);
-            }
-            } catch (error) {
-            console.error("Error fetching member data:", error);
-            Alert.alert("Error", error.message || "Network request failed");
-            }
-        };
-        fetchMemberDetails();
+        if(userId){
+            fetchMemberDetails();
+        }
     }, [userId]);
 
-    const membersList = [
-        { id: '1', name: 'Emily Lai', gender: 'female', email: 'emily.lai@example.com',
-            age: '20', height: '165 cm', weight: '40 kg', fitnessGoals: 'Lose Weight',
-        },
-        { id: '2', name: 'John Tan', gender: 'male', email: 'john.tan@example.com',
-            age: '25', height: '175 cm', weight: '68 kg', fitnessGoals: 'Muscle Mass Gain'
-        },
-        { id: '3', name: 'Samantha Lee', gender: 'female', email: 'samantha.lee@example.com',
-            age: '23', height: '160 cm', weight: '50 kg', fitnessGoals: 'Shape Body'
-        },
-        { id: '4', name: 'Michael Ong', gender: 'male', email: 'michael.ong@example.com',
-            age: '30', height: '180 cm', weight: '75 kg', fitnessGoals: 'Gain Weight'
-        },
-        { id: '5', name: 'Jessica Lim', gender: 'female', email: 'jessica.lim@example.com',
-            age: '28', height: '170 cm', weight: '55 kg', fitnessGoals: 'Shape Body'
-        },
-    ];
+    const fetchMemberDetails = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-member/display/${userId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setMemberDetails(data.progress);
+        }
+        } catch (error) {
+        console.error("Error fetching member data:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -93,7 +77,7 @@ const Members = () => {
                             <View style={styles.nameNemailContainer}>
                                 <View style={styles.nameNgender}>
                                     <Text style={styles.nameText}>{member.name}</Text>
-                                    <Text style={styles.genderText}>
+                                    <Text style={member.gender === "Male" ? styles.maleGenderText:styles.femaleGenderText}>
                                         {member.gender === "Male" ? "♂️" : "♀️"}
                                     </Text>
                                 </View>
@@ -126,7 +110,7 @@ const Members = () => {
 
                         {/* Buttons Section */}
                         <View style={styles.btnSelection}>
-                            <TouchableOpacity style={styles.viewBtn} onPress={() => navigation.navigate("ViewProgress")}>
+                            <TouchableOpacity style={styles.viewBtn} onPress={() => navigation.navigate("ViewProgress", {member})}>
                                 <Text style={styles.buttonText}>View Progress</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.viewBtn} onPress={() => navigation.navigate("MemberWorkoutPlan")}>
@@ -149,12 +133,14 @@ const styles = StyleSheet.create({
     iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20, },
     titleText: {color: 'white', fontWeight: 'bold', fontSize: 24, alignSelf: 'center'},
     membersSection: { paddingVertical: 15},
-    memberCardSection: { backgroundColor: 'white', padding: 15, borderRadius: 15, marginBottom: 20},
+    memberCardSection: { backgroundColor: '#E9E9E9', padding: 15, borderRadius: 15, marginBottom: 20},
     memberProfile: { flexDirection: 'row', gap: 10},
     profileImage: { width: 80, height: 80, borderRadius: 50 },
     nameNemailContainer: { flexDirection: 'column', justifyContent: 'center'},
     nameText: { fontSize: 16, fontWeight: 'bold'},
     nameNgender: { flexDirection: 'row', gap: 5},
+    femaleGenderText:{color:"#E370AC", fontSize:16},
+    maleGenderText:{color:"#0066FF", fontSize:16},
 
     divider: { height: 1, backgroundColor: "#666", marginBottom: 10, marginTop: 10},
     memberInfoRow1: { flexDirection: 'row', justifyContent: 'space-between'},
