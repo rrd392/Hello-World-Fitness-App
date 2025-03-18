@@ -2,11 +2,48 @@ import { SafeAreaView, View, TouchableOpacity, ScrollView, Text , Image} from 'r
 import { StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect} from 'react';
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
 
 const Members = () => {
     const navigation=useNavigation();
     const toggleNotification = () => navigation.navigate('Notification');
     const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
+    const [userId, setUserId] = useState("");
+    const [userName, setUserName] = useState("");
+    const [memberDetails, setMemberDetails] = useState([]);
+
+    useEffect(() => {
+    async function fetchUserId() {
+        const token = await getUserId();
+        setUserId(token.id);
+        setUserName(token.name);
+    }
+    fetchUserId();
+    }, []);
+
+    useEffect(() => {
+        const fetchMemberDetails = async () => {
+            try {
+            const response = await fetch(`${API_BASE_URL}/api/trainer-member/display/${userId}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+        
+            const data = await response.json();
+            console.log(data);
+        
+            if (data.success) {
+                setMemberDetails(data.progress);
+            }
+            } catch (error) {
+            console.error("Error fetching member data:", error);
+            Alert.alert("Error", error.message || "Network request failed");
+            }
+        };
+        fetchMemberDetails();
+    }, [userId]);
 
     const membersList = [
         { id: '1', name: 'Emily Lai', gender: 'female', email: 'emily.lai@example.com',
@@ -27,34 +64,37 @@ const Members = () => {
     ];
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             {/* Header */}
-            <View style={styles.headerRow}>
-                <TouchableOpacity onPress={toggleNotification}>
-                    <Ionicons name="notifications" size={24} color="#896CFE" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleGoToProfile}>
-                    <Ionicons name="person" size={24} color="#896CFE" />
-                </TouchableOpacity>
-            </View>
+            <SafeAreaView style={styles.header}>
+                <View style={styles.headerRow}>
+                    <Text style={styles.greeting}>Hi, {userName}</Text>
+                    <View style={styles.iconRow}>
+                        <TouchableOpacity onPress={toggleNotification}>
+                            <Ionicons name="notifications" size={24} color="#896CFE" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleGoToProfile}>
+                            <Ionicons name="person" size={24} color="#896CFE" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
+            </SafeAreaView>
 
             {/* Content */}
             <ScrollView>
                 <Text style={styles.titleText}>Member Under You</Text>
                 <View style={styles.membersSection}>
-                    {membersList.map((member) => (
-                        <View key={member.id} style={styles.memberCardSection}>
+                    {memberDetails.map((member) => (
+                        <View key={member.member_id} style={styles.memberCardSection}>
                         {/* Member Profile */}
                         <View style={styles.memberProfile}>
-                            <Image
-                                source={require("../../assets/icon.png")}
-                                style={styles.profileImage}
-                            />
+                            <Image source={{ uri: `${API_BASE_URL}/uploads/${member.profile_picture}` }} style={styles.profileImage} />
                             <View style={styles.nameNemailContainer}>
                                 <View style={styles.nameNgender}>
                                     <Text style={styles.nameText}>{member.name}</Text>
                                     <Text style={styles.genderText}>
-                                        {member.gender === "male" ? "♂️" : "♀️"}
+                                        {member.gender === "Male" ? "♂️" : "♀️"}
                                     </Text>
                                 </View>
                                 <Text>{member.email}</Text>
@@ -66,7 +106,7 @@ const Members = () => {
                         <View style={styles.memberInfoRow1}>
                             <View style={styles.infoStyle}>
                                 <Text style={styles.infoTitle}>Age:</Text>
-                                <Text style={styles.infoData}>{member.age}</Text>
+                                <Text style={styles.infoData}>{new Date().getFullYear() - new Date(member.date_of_birth).getFullYear()}</Text>
                             </View>
                             <View style={styles.infoStyle}>
                                 <Text style={styles.infoTitle}>Height:</Text>
@@ -80,7 +120,7 @@ const Members = () => {
                         <View style={styles.memberInfoRow2}>
                             <View style={styles.infoStyle}>
                                 <Text style={styles.infoTitle}>Fitness Goal:</Text>
-                                <Text style={styles.infoData}>{member.fitnessGoals}</Text>
+                                <Text style={styles.infoData}>{member.fitness_goals}</Text>
                             </View>
                         </View>
 
@@ -97,15 +137,18 @@ const Members = () => {
                     ))}
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {flex: 1, backgroundColor: '#212020'},
-    headerRow: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", paddingHorizontal: 20, paddingVertical: 13, backgroundColor: "#212020", gap: 20, marginTop: 50 },
+    container: {flex: 1, backgroundColor: '#212020', padding:20},
+    greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
+    subtitle: { fontSize: 14, color: '#fff', marginBottom: 30 },
+    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 13, backgroundColor: "#212020", gap: 20 },
+    iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20, },
     titleText: {color: 'white', fontWeight: 'bold', fontSize: 24, alignSelf: 'center'},
-    membersSection: { padding: 15},
+    membersSection: { paddingVertical: 15},
     memberCardSection: { backgroundColor: 'white', padding: 15, borderRadius: 15, marginBottom: 20},
     memberProfile: { flexDirection: 'row', gap: 10},
     profileImage: { width: 80, height: 80, borderRadius: 50 },
