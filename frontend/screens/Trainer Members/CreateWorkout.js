@@ -47,7 +47,7 @@ const CreateWorkout = () => {
         <SafeAreaView style={styles.container}>
             <HeaderVer2
                 title="Back" style={styles.headerRow}
-                onPress={() => navigation.navigate("MemberWorkoutPlan")}
+                onPress={() => navigation.goBack()}
             />
 
             <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 80 }}>

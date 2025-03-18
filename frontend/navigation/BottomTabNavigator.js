@@ -10,7 +10,7 @@ import ProfileStack from "./ProfileStack";
 import TrainerProfileStack from "./TrainerProfileStack";
 import MemberProgressStack from "./MemberProgressStack";
 import TrainerMemberStack from "./TrainerMemberStack";
-
+import TrainerWorkoutStack from "./TrainerWorkoutStack";
 
 // Dummy Trainer Screens
 const TrainerScheduleScreen = () => <View><Text>Trainer Schedule</Text></View>;
@@ -74,7 +74,7 @@ const BottomTabNavigator = () => {
         <>
           <Tab.Screen name="Home" component={TrainerHomeStack} />
           <Tab.Screen name="Member" component={TrainerMemberStack} />
-          <Tab.Screen name="Workout" component={TrainerScheduleScreen} />
+          <Tab.Screen name="Workout" component={TrainerWorkoutStack} />
           <Tab.Screen name="More" component={TrainerProfileStack} />
         </>
       ) : (
