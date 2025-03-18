@@ -140,8 +140,6 @@ const RunWorkoutPlan = ({ route }) => {
         return `${minutes}:${secs < 10 ? `0${secs}` : secs}`;
     };
 
-
-
     return (
         <View style={styles.container}>
             {/* Header Section */}

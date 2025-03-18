@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 
-const HeaderVer2 = ({
+const HeaderVer4 = ({
     title,
     onPress,
     showBackButton = true,
@@ -13,7 +13,7 @@ const HeaderVer2 = ({
 
     const navigation=useNavigation();
     const toggleNotification = () => navigation.navigate('Notification');
-    const handleGoToProfile = () => navigation.navigate('ProfileStack');
+    const handleGoToProfile = () => navigation.navigate('TrainerProfileStack');
 
     return (
         <View style={[styles.headerRow, containerStyle]}>
@@ -42,7 +42,7 @@ const HeaderVer2 = ({
 };
 
 const styles = StyleSheet.create({
-    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 13, backgroundColor: "#212020", gap: 20 },
+    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 13, backgroundColor: "#212020", gap: 20, marginTop: 50 },
     headerBack: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -63,4 +63,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HeaderVer2;
+export default HeaderVer4;
