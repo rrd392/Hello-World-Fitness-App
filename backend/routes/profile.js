@@ -3,14 +3,15 @@ const db = require('../db');
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const moment = require('moment');
 
 router.get('/displayUserData/:user_id', (req, res) => {
     const {user_id} = req.params;
 
-    const displayQuery = `SELECT * FROM user u
-                        INNER JOIN user_membership um ON u.user_id = um.user_id
-                        INNER JOIN membership m ON um.membership_id = m.membership_id
-                        WHERE u.user_id = ?`;
+    const displayQuery = `SELECT * FROM user_membership um
+                            INNER JOIN user u ON um.user_id = u.user_id
+                            INNER JOIN membership m ON um.membership_id = m.membership_id
+                            WHERE um.user_id = ?`;
 
 
     db.query(displayQuery, [user_id], (error, results)=>{
@@ -254,5 +255,96 @@ function fetchAndReturnUserBadges(user_id, nonEligibleBadges, res) {
         res.json({ badges: results, other:nonEligibleBadges });
     });
 }
+
+
+
+router.post("/update-membership", (req, res) => {
+    
+    const { user_id, membership_id, description, amount, payment_date } = req.body;
+
+    // Log the received request body
+    console.log("Received request body:", req.body);
+
+    // Determine membership plan duration
+    let membership_plan;
+    if (membership_id === 1 || membership_id === 3) {
+        membership_plan = '1 month';
+    } else if (membership_id === 2 || membership_id === 4) {
+        membership_plan = '1 year';
+    } else {
+        return res.status(400).json({ error: "Invalid membership_id." });
+    }
+
+   
+    const start_date = moment().format('YYYY-MM-DD');
+    const end_date = membership_plan === '1 month'
+        ? moment().add(1, 'month').format('YYYY-MM-DD')
+        : moment().add(1, 'year').format('YYYY-MM-DD');
+
+    
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error("Error starting transaction:", err);
+            return res.status(500).json({ error: "Failed to start transaction", success: false });
+        }
+
+        // Update user_membership table
+        const updateMembershipQuery = `
+            UPDATE user_membership 
+            SET membership_id = ?, start_date = ?, end_date = ?, status = 'Active'
+            WHERE user_id = ?
+        `;
+        const updateMembershipValues = [membership_id, start_date, end_date, user_id];
+
+        db.query(updateMembershipQuery, updateMembershipValues, (err, result) => {
+            if (err) {
+                return db.rollback(() => {
+                    console.error("Error updating membership:", err);
+                    return res.status(500).json({ error: "Failed to update membership", success: false });
+                });
+            }
+
+            // Insert into transactions table
+            const insertTransactionQuery = `
+                INSERT INTO transactions (user_id, description, amount, payment_status, payment_date)
+                VALUES (?, ?, ?, 'Paid', ?)
+            `;
+            const insertTransactionValues = [user_id, description || 'Membership Payment', amount, payment_date];
+
+            db.query(insertTransactionQuery, insertTransactionValues, (err, result) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error("Error inserting transaction:", err);
+                        return res.status(500).json({ error: "Failed to insert transaction", success: false });
+                    });
+                }
+
+                // Commit transaction
+                db.commit((err) => {
+                    if (err) {
+                        return db.rollback(() => {
+                            console.error("Error committing transaction:", err);
+                            return res.status(500).json({ error: "Failed to commit transaction", success: false });
+                        });
+                    }
+
+                    res.status(200).json({
+                        message: "Membership updated and transaction inserted successfully",
+                        success: true,
+                        endDate: end_date
+                    });
+                });
+            });
+        });
+    });
+});
+
+  
+
+  
+
+
+  
+
 
 module.exports = router;

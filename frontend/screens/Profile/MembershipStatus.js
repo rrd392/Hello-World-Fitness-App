@@ -37,7 +37,7 @@ const MembershipStatus = () => {
 
         if (data?.membership_id) {
           setSelectedPlan(data.membership_id);
-          setExpiryDate(data.expiry_date);
+          setExpiryDate(data.end_date);
         } else {
           setIsExpired(true);
           setExpiryDate('');
@@ -75,6 +75,8 @@ const MembershipStatus = () => {
 
   const getCurrentPlanDetails = () => {
     if (!selectedPlan) return { name: 'No Active Plan', expiry: '' };
+
+    
     
     const plan = membershipPlans.find(p => p.membership_id === selectedPlan);
     return {
@@ -161,7 +163,12 @@ const MembershipStatus = () => {
                     onPress={() => {
                         const selectedPlanDetails = membershipPlans.find(p => p.membership_id === selectedPlan);
                         if (selectedPlanDetails) {
-                            navigation.navigate("MembershipRenew", { plan: selectedPlanDetails, userId });
+                          navigation.navigate("MembershipRenew", { 
+                            plan: selectedPlanDetails, 
+                            userId, 
+                            planName: selectedPlanDetails.plan_name,
+                            planID: selectedPlanDetails.membership_id // This should be the selected plan's ID
+                        });
                         } else {
                             Alert.alert("Error", "Please select a membership plan.");
                         }

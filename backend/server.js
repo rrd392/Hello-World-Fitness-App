@@ -41,6 +41,12 @@ app.use('/api/nutrition', nutritionRoutes);
 const classesRoutes = require('./routes/classes');
 app.use('/api/classes', classesRoutes);
 
+const progressRoutes = require('./routes/progress');
+app.use('/api/progress', progressRoutes);
+
+const trainerMemberRoutes = require('./routes/trainer-member');
+app.use('/api/trainer-member', trainerMemberRoutes);
+
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads')));
 
 // Start the server

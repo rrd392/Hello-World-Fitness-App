@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import { getUserId } from "../getUserId";
 
-const MemberDashboard = () => {
+const TrainerDashboard = () => {
   const navigation = useNavigation();
 
   const [userId, setUserId] = useState("");
@@ -432,4 +432,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MemberDashboard;
+export default TrainerDashboard;

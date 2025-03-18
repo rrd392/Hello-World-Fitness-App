@@ -69,15 +69,16 @@ const RunWorkoutPlan = ({ route }) => {
             });
         }
     };
-
-
+    
     const addPoints = async (user_id, difficulty, completedExercise, planDetails) => {
         let workout_plan_id = workout_plan.workout_plan_id;
+        if (!startTime) return; // Ensure start time is available
+        const totalDuration = Math.floor((Date.now() - startTime) / 1000);
         try {
             const response = await fetch(`${API_BASE_URL}/api/workout-plan/addPoints`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id, difficulty, completedExercise, planDetails, workout_plan_id })
+                body: JSON.stringify({ user_id, difficulty, completedExercise, planDetails, workout_plan_id, totalDuration })
             });
 
             if (!response.ok) {
@@ -119,28 +120,11 @@ const RunWorkoutPlan = ({ route }) => {
         return () => clearInterval(interval);
     }, [startTime]);
 
-    const completeWorkout = async () => {
-        if (!startTime) return; // Ensure start time is available
-        const totalDuration = Math.floor((Date.now() - startTime) / 1000);
-        try {
-            await axios.post(`${API_BASE_URL}/api/workout-plan/updateDuration`, {
-                user_id: userId,
-                workout_plan_id: workout_plan.workout_plan_id,
-                duration: totalDuration
-
-            });
-        } catch (error) {
-            console.error('Error saving workout duration:', error);
-        }
-    };
-
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${minutes}:${secs < 10 ? `0${secs}` : secs}`;
     };
-
-
 
     return (
         <View style={styles.container}>
@@ -253,8 +237,7 @@ const RunWorkoutPlan = ({ route }) => {
                     {/* Complete Button */}
                     <TouchableOpacity
                         onPress={() => {
-                            addPoints(userId, workout_plan.difficulty, completedExercise, planDetails),
-                                completeWorkout();
+                            addPoints(userId, workout_plan.difficulty, completedExercise, planDetails)
                         }}
                         disabled={completedExercise.length == 0}
                         style={[styles.startButton, { backgroundColor: completedExercise.length > 0 ? "rgba(226, 241, 99, 1)" : "rgba(226, 241, 99, 0.5)" }]}

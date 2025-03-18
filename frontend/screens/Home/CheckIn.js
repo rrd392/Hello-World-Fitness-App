@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, TextInput, ScrollView} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import HeaderVer2 from '../HeaderVer2';
