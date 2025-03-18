@@ -44,10 +44,18 @@ function UpcomingClassCard({ title, time, coach, date, slots, image }) {
 
       {/* Button Section*/}
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("MarkAttendance")}
+        >
           <Text style={styles.buttonText}>Mark Attendance</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            navigation.navigate("ClassAttendance", { className: title })
+          }
+        >
           <Text style={styles.buttonText}>More</Text>
         </TouchableOpacity>
       </View>

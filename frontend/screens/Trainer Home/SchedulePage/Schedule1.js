@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import HeaderVer2 from "../../HeaderVer2";
 import UpcomingClassCards from "./UpcomingClassCards";
+import PastClassCards from "./PastClassCards";
 
 function Schedule1() {
   const navigation = useNavigation();
@@ -48,7 +49,7 @@ function Schedule1() {
     setSelectedClassStatus(status);
     setClassStatusDropdown(false);
   };
-  const classData = [
+  const upcomingClassData = [
     {
       title: "Yoga Flow",
       time: "08:00 - 09:00",
@@ -57,6 +58,24 @@ function Schedule1() {
       slots: "20/20",
       image: require("./yoga.jpg"),
     },
+    {
+      title: "Yoga Flow",
+      time: "08:00 - 09:00",
+      coach: "Coach Aaron",
+      date: "2025-01-02",
+      slots: "20/20",
+      image: require("./yoga.jpg"),
+    },
+    {
+      title: "Yoga Flow",
+      time: "08:00 - 09:00",
+      coach: "Coach Aaron",
+      date: "2025-01-02",
+      slots: "20/20",
+      image: require("./yoga.jpg"),
+    },
+  ];
+  const pastClassData = [
     {
       title: "Zumba Dance",
       time: "10:00 - 11:00",
@@ -66,11 +85,11 @@ function Schedule1() {
       image: require("./yoga.jpg"),
     },
     {
-      title: "Yoga Flow",
-      time: "08:00 - 09:00",
+      title: "Zumba Dance",
+      time: "10:00 - 11:00",
       coach: "Coach Aaron",
       date: "2025-01-02",
-      slots: "20/20",
+      slots: "15/20",
       image: require("./yoga.jpg"),
     },
     {
@@ -155,16 +174,20 @@ function Schedule1() {
       </View>
       {/* Class Cards*/}
       <ScrollView style={styles.classCards}>
-        {classData.map((classItem, index) => (
-          <UpcomingClassCards key={index} {...classItem} />
-        ))}
+        {selectedClassStatus === "Upcoming"
+          ? upcomingClassData.map((classItem, index) => (
+              <UpcomingClassCards key={index} {...classItem} />
+            ))
+          : pastClassData.map((classItem, index) => (
+              <PastClassCards key={index} {...classItem} />
+            ))}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#212020" },
   titleContainer: {
     paddingHorizontal: 20,
     flexDirection: "row",
