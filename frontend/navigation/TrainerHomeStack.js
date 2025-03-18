@@ -12,6 +12,7 @@ import Notification from "../screens/Trainer Home/Notification";
 // import CalculateMeal from "../screens/Home/Nutrition/CalculateMeal";
 // import SelectedMeal from "../screens/Home/Nutrition/SelectedMeal";
 // import YourClasses from "../screens/Home/ClassesPage/YourClasses";
+import Schedule1 from "../screens/Trainer Home/SchedulePage/Schedule1";
 
 const TrainerHomeStackNavigator = createStackNavigator();
 
@@ -25,8 +26,18 @@ const TrainerHomeStack = () => {
         name="TrainerDashboard"
         component={TrainerDashboard}
       />
-      <TrainerHomeStackNavigator.Screen name="Notification" component={Notification} />
-      <TrainerHomeStackNavigator.Screen name="TrainerProfileStack" component={TrainerProfileStack} />
+      <TrainerHomeStackNavigator.Screen
+        name="Notification"
+        component={Notification}
+      />
+      <TrainerHomeStackNavigator.Screen
+        name="TrainerProfileStack"
+        component={TrainerProfileStack}
+      />
+      <TrainerHomeStackNavigator.Screen
+        name="Schedule1"
+        component={Schedule1}
+      />
       {/* <TrainerHomeStackNavigator.Screen name="WorkoutPlanStack" component={WorkoutPlanStack} />
       <TrainerHomeStackNavigator.Screen name="CheckIn" component={CheckIn} />
       <TrainerHomeStackNavigator.Screen name="Classes" component={Classes} />
