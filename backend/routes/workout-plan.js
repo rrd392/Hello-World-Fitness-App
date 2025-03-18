@@ -119,6 +119,7 @@ router.post('/addPoints', (req, res) => {
     const user_id = req.body.user_id;
     const difficulty = req.body.difficulty;
     const workout_plan_id = req.body.workout_plan_id;
+    const totalDuration = req.body.totalDuration;
 
     let completedExercise = [];
     try {
@@ -151,25 +152,28 @@ router.post('/addPoints', (req, res) => {
     const addPointsQuery = `INSERT INTO points (user_id, activity_type, points, date_received)
                             VALUES (?, ?, ?, NOW())`;
 
-    const userWorkoutIdQuery =  `SELECT user_workout_id FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ?`;
-    
-    db.query(addPointsQuery, [user_id, 'workout', points], (error, results)=>{
+    const updateDurationQuery = `INSERT INTO user_workout_progress (user_workout_id, duration_taken, updated_at) 
+        VALUES ((SELECT user_workout_id FROM user_workout_plans WHERE workout_plan_id = ? AND user_id = ?), ?, NOW())`;
+
+    db.query(updateDurationQuery, [workout_plan_id, user_id, totalDuration], (error, result) => {
         if (error) {
-            return res.status(500).json({ error: "Database add points query failed" });
+            console.error('Error updating workout duration:', error);
+            return res.status(500).json({ error: 'Database query failed' });
         }
-        db.query(userWorkoutIdQuery, [user_id, workout_plan_id], (error, idResult)=>{
+        const userWorkoutProgressId = result.insertId;
+    
+        db.query(addPointsQuery, [user_id, 'workout', points], (error, results)=>{
             if (error) {
-                return res.status(500).json({ error: "Database fetch user_workout_id query failed" });
+                return res.status(500).json({ error: "Database add points query failed" });
             }
-            const user_workout_id = idResult[0].user_workout_id;
             const queryValues = workoutDetails.map(workout => [
-                user_workout_id, 
+                userWorkoutProgressId, 
                 workout.workout_detail_id, 
                 completedExercise.includes(workout.workout_detail_id) ? 1 : 0
             ]);
             const flattenedValues = queryValues.flat(); 
 
-            const addProgressQuery = `INSERT INTO user_workout_progress (user_workout_id, workout_detail_id, is_completed)
+            const addProgressQuery = `INSERT INTO user_workout_progress_detail (user_workout_progress_id, workout_detail_id, is_completed)
                                     VALUES ${queryValues.map(() => "(?, ?, ?)").join(", ")}`;
 
             db.query(addProgressQuery, flattenedValues, (error, progressResult)=>{
@@ -370,32 +374,5 @@ router.get('/displayUserPlan/:user_id', (req, res) => {
         res.json({plan_name : results[0].plan_name});
     });
 });
-
-
-router.post('/updateDuration', (req, res) => {
-    const { user_id, workout_plan_id, duration } = req.body;
-
-    if (!user_id || !workout_plan_id || !duration) {
-        return res.status(400).json({ error: 'Missing required fields: user_id, workout_plan_id, or duration' });
-    }
-
-    const updateDurationQuery = `
-        UPDATE user_workout_plans 
-        SET duration_taken = ?, updated_at = NOW() 
-        WHERE user_id = ? AND workout_plan_id = ?
-    `;
-
-    db.query(updateDurationQuery, [duration, user_id, workout_plan_id], (error, result) => {
-        if (error) {
-            console.error('Error updating workout duration:', error);
-            return res.status(500).json({ error: 'Database query failed' });
-        }
-        res.json({ success: true, message: 'Workout duration updated successfully' });
-    });
-});
-
-
-
-
 
 module.exports = router;
