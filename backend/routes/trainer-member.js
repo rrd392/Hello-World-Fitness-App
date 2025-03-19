@@ -52,6 +52,7 @@ router.get('/displayProgress/:user_id', (req, res) => {
             if (!session) {
                 session = {
                     id: row.user_workout_progress_id,
+                    user_workout_id: row.user_workout_id,
                     time: `${Math.floor(row.duration_taken / 60)}:${String(row.duration_taken % 60).padStart(2, '0')}`,
                     date: new Date(row.updated_at).toLocaleDateString('en-GB'),
                     exercises: []
@@ -67,6 +68,24 @@ router.get('/displayProgress/:user_id', (req, res) => {
             }
         });    
         res.json({ success: true, progress: formattedData});
+                        
+    });
+});
+
+router.post('/addProgressFeedback', (req, res) => {
+    const { feedback, userId, userWorkoutId} = req.body; 
+    const { overall, weakAreas, finalFeedback } = feedback;
+    
+    const addFeedbackQuery = `INSERT INTO member_performance_feedback (trainer_id, progress_date, fitness_performance, weak_areas, trainer_feedback, user_workout_id)
+                                VALUES (?, NOW(), ?, ?, ?, ?)`;
+    
+    db.query(addFeedbackQuery, [userId, overall, weakAreas, finalFeedback, userWorkoutId], (error, addResult) => {
+        if (error) {
+            console.error("Database error:", error);
+            return res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    
+        res.json({ success: true});
                         
     });
 });

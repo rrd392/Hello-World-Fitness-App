@@ -13,7 +13,7 @@ const HeaderVer4 = ({
 
     const navigation=useNavigation();
     const toggleNotification = () => navigation.navigate('Notification');
-    const handleGoToProfile = () => navigation.navigate('TrainerProfileStack');
+    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
 
     return (
         <View style={[styles.headerRow, containerStyle]}>
@@ -42,7 +42,7 @@ const HeaderVer4 = ({
 };
 
 const styles = StyleSheet.create({
-    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 13, backgroundColor: "#212020", gap: 20, marginTop: 50 },
+    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 13, backgroundColor: "#212020", gap: 20,},
     headerBack: {
         flexDirection: 'row',
         alignItems: 'center',

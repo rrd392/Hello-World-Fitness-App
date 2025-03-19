@@ -1,5 +1,5 @@
-import { SafeAreaView, View, TouchableOpacity, ScrollView, Text , Image, Modal, TextInput, Animated} from 'react-native';
-import HeaderVer2 from '../HeaderVer2';
+import { SafeAreaView, View, TouchableOpacity, ScrollView, Text , Image, Modal, TextInput, Animated, Alert, FlatList} from 'react-native';
+import HeaderVer4 from '../HeaderVer4';
 import { StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -14,8 +14,11 @@ const ViewProgress = () => {
     const route = useRoute();
     const { member } = route.params || {};
     const [feedbackVisible, setFeedbackVisible] = useState(false);
+    const [viewFeedbackVisible, setViewFeedbackVisible] = useState(false);
+    const [feedbackDetails, setFeedbackDetails] = useState([]);
     const [step, setStep] = useState(1);
     const [expandDetails, setExpandDetails] = useState(false);
+    const [userWorkoutId ,setUserWorkoutId] = useState("");
     const [feedback, setFeedback] = useState({
         overall: "",
         weakAreas: "",
@@ -23,12 +26,6 @@ const ViewProgress = () => {
     });
 
     const feedbackTabs = ["Overall Performance", "Weak Areas", "Final Feedback"];
-    // const workoutDetails = [
-    //     { exercise: "Push-ups 8x3", type: "Bodyweight", time: "1:30" },
-    //     { exercise: "Squats 10x4", type: "Strength", time: "2:45" },
-    //     { exercise: "Jump Rope 3x2", type: "Cardio", time: "3:20" },
-    //     { exercise: "Lunges 10x3", type: "Strength", time: "2:20"},
-    // ];
 
     const navigation = useNavigation();
 
@@ -107,9 +104,70 @@ const ViewProgress = () => {
         }));
     };
 
+    function viewFeedback(user_workout_id){
+        fetchFeedback(user_workout_id);
+        setViewFeedbackVisible(true);
+    }
+
+    const fetchFeedback = async (user_workout_id) => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/progress/displayFeedback/${user_workout_id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+        }
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setFeedbackDetails(data.progress);
+        }
+        } catch (error) {
+        console.error("Error fetching feedback data:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+      };
+
+    function submitFeedback(){
+        if (!feedback.overall || !feedback.weakAreas || !feedback.finalFeedback){
+            Alert.alert("Please fill in all the fields before submitting.");
+            return
+        }
+        addFeedback();
+        setFeedbackVisible(false);
+    }
+
+    const addFeedback = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/trainer-member/addProgressFeedback`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ feedback, userId, userWorkoutId }),
+        });
+    
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+        }
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            Alert.alert("Feedback added successfully!");
+        }
+        } catch (error) {
+            console.error("Error adding member feedback:", error);
+            Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
-            <HeaderVer2
+            <HeaderVer4
                 title="Back" style={styles.headerRow}
                 onPress={() => navigation.navigate("Members")}
             />
@@ -185,51 +243,25 @@ const ViewProgress = () => {
                                     ) : (
                                         <Text style={styles.noExercise}>No Exercises</Text>
                                     )}
-                                    <TouchableOpacity style={styles.feedbackBtn} onPress={() => setFeedbackVisible(true)}>
-                                        <Text style={styles.feedbackBtnText}>Feedback</Text>
-                                    </TouchableOpacity>
                                 </View>
                                 )}
-                                <TouchableOpacity style={styles.feedbackBtn} onPress={() => setFeedbackVisible(true)}>
-                                    <Text style={styles.feedbackBtnText}>Feedback</Text>
-                                </TouchableOpacity>
+                                <View style={styles.viewFeedback}>
+                                    <TouchableOpacity style={styles.feedbackBtn} onPress={() => {
+                                        setFeedbackVisible(true);
+                                        setUserWorkoutId(session.user_workout_id);
+                                    }}>
+                                        <Text style={styles.feedbackBtnText}>Feedback</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.feedbackBtn} onPress={() => {
+                                        viewFeedback(session.user_workout_id);
+                                    }}>
+                                        <Text style={styles.feedbackBtnText}>View Feedback</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                             ))}
                         </View>
                     ))}
-                    {/* {workout_plan_details.reduce((acc, exercise, index) => {
-                        if (index % 4 === 0) {
-                            acc.push([]);
-                        }
-                            acc[acc.length - 1].push(exercise);
-                            return acc;
-                    }, []).map((workoutGroup, idx) => (
-                        <View key={idx} style={styles.workoutContainer}>
-                        
-                                <View style={styles.titleNdate}>
-                                    <View style={styles.iconNtitle}>
-                                        <Ionicons name="play" style={styles.playIcon} size={18}/>
-                                        <Text style={styles.titleName}>Workout 1</Text>
-                                    </View>
-                                    <Text style={styles.dateStyle}>21 Jan 2025</Text>
-                                </View>
-                                <View style={styles.workoutList}>
-                                {workoutGroup.map((exercise) => ( 
-                                    <View key={exercise.id} style={styles.workoutDetails}>
-                                    <Text style={styles.exerciseNameText} numberOfLines={3}>{exercise.exercise_name}</Text>
-                                    <Text style={styles.exerciseTypeText}>{exercise.exercise_type}</Text>
-                                    <View style={styles.timeTakenIconNText}>
-                                        <Ionicons name="stopwatch-outline" size={18} color={"#896CFE"} />
-                                        <Text style={styles.exerciseTimeText}>{exercise.time_taken}</Text>
-                                    </View>                                    
-                                </View>
-                                ))}
-                                <TouchableOpacity style={styles.feedbackBtn} onPress={() => setFeedbackVisible(true)}>
-                                    <Text style={styles.feedbackBtnText}>Feedback</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    ))} */}
                 </View>
             </ScrollView>
             {/* Feedback Modal */}
@@ -329,11 +361,54 @@ const ViewProgress = () => {
                         <Text style={styles.buttonText}>Next</Text>
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity style={styles.submitButton} onPress={() => setFeedbackVisible(false)}>
+                        <TouchableOpacity style={styles.submitButton} onPress={() => submitFeedback(feedback)}>
                         <Text style={styles.buttonText}>Submit Feedback</Text>
                         </TouchableOpacity>
                     )}
                     </View>
+                </View>
+                </View>
+            </Modal>
+
+            {/* View Feedback Modal */}
+            <Modal visible={viewFeedbackVisible} animationType="slide" transparent>
+                <View style={styles.feedbackModalBackground}>
+                <View style={styles.feedbackModalContainer}>
+                    <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setViewFeedbackVisible(false)}
+                    >
+                    <Ionicons name="close" size={26} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.feedbackModalTitle}>Feedback History</Text>
+                    <FlatList
+                    data={feedbackDetails}
+                    keyExtractor={(feedback) => feedback.progress_id}
+                    renderItem={({ item }) => (
+                    <View style={styles.feedbackCategory}>
+                        <View style={styles.feedbackCategoryHeader}>
+                        <Image source={{ uri: `${API_BASE_URL}/uploads/${item.profile_picture}` }} style={styles.feedbackProfileImage} />
+                        <View>
+                            <Text style={styles.feedbackCategoryTitle}>{item.name}</Text>
+                            <Text style={styles.feedbackCategoryEmail}>{item.email}</Text>
+                        </View>
+                        </View>
+                    
+                        <Text style={styles.feedbackDate}>{new Date(item.progress_date).toLocaleDateString("en-GB")}</Text>
+                    
+                        <View style={styles.feedbackCard}>
+                        <Text style={styles.feedbackTitle}>Performance Feedback</Text>
+                        <Text style={styles.feedbackText}>{item.fitness_performance}</Text>
+                    
+                        <Text style={styles.feedbackTitle}>Weakness Area</Text>
+                        <Text style={styles.feedbackText}>{item.weak_areas}</Text>
+                    
+                        <Text style={styles.feedbackTitle}>Overall Feedback</Text>
+                        <Text style={styles.feedbackText}>{item.trainer_feedback}</Text>
+                        </View>
+                    </View>
+                    )}            
+                    />
                 </View>
                 </View>
             </Modal>
@@ -344,7 +419,7 @@ const ViewProgress = () => {
 const styles = StyleSheet.create({
     container: {flex: 1, backgroundColor: '#212020'},
     bgStyle: { padding: 20},
-    progressCard: { backgroundColor: 'white', padding: 15, borderRadius: 15, marginBottom: 30 },
+    progressCard: { backgroundColor: '#E9E9E9', padding: 15, borderRadius: 15, marginBottom: 30 },
 
     memberProfile: { flexDirection: 'row', gap: 10},
     profileImage: { width: 80, height: 80, borderRadius: 50 },
@@ -438,8 +513,9 @@ const styles = StyleSheet.create({
     timeTakenIconNText: { flexDirection: 'row', alignSelf: 'center'},
     exerciseTimeText: { fontSize: 13, width: 105},
 
-    feedbackBtn: { backgroundColor: '#000', alignSelf: 'center', marginTop: 20, padding: 10, borderRadius: 15, width: 125 },
+    feedbackBtn: { backgroundColor: '#000', alignSelf: 'center', marginTop: 20, padding: 10, borderRadius: 15, width:"45%" },
     feedbackBtnText: { textAlign: 'center', color: '#E2F163', fontSize: 16, fontWeight: 'bold'},
+    viewFeedback:{flexDirection:'row', justifyContent:'space-evenly', alignItems:'center'},
 
     modalBackground: {flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: 'center', alignItems: 'center'},
     modalContainer: { backgroundColor: '#E2F163', width: '90%', padding: 20, borderRadius: 10},
@@ -466,6 +542,67 @@ const styles = StyleSheet.create({
     nextButton: { backgroundColor: "#896CFE", padding: 10, borderRadius: 5, flex: 1, alignItems: "center", marginLeft: 5 },
     submitButton: { backgroundColor: "#896CFE", padding: 10, borderRadius: 5, flex: 1, alignItems: "center" },
     buttonText: { color: "white", fontWeight: "bold" },
+
+    feedbackModalBackground: {flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: 'center', alignItems: 'center', padding: 20,},
+    feedbackModalContainer: { backgroundColor: '#E2F163', width: '100%',  borderRadius: 10, maxHeight:"90%", padding:20},
+    feedbackModalTitle: { fontSize: 20, fontWeight: 'bold', textAlign:'center', marginBottom:20},
+
+    closeButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
+    },
+    feedbackCategory: {
+        borderRadius: 10,
+        backgroundColor: "#A5A5A5",
+        marginBottom:20,
+        paddingVertical:10,
+        paddingHorizontal:20,
+        flex:1,
+    },
+    feedbackCategoryHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 10,
+    },
+    feedbackCategoryTitle: {
+        marginLeft: 10,
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#000",
+    },
+    feedbackCategoryEmail: {
+        marginLeft: 10,
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#000",
+    },
+    feedbackProfileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: "50%",
+    },
+    feedbackDate:{
+        marginLeft:'auto',
+        fontSize:17,
+        color:"#4D4D4D",
+        marginBottom:10
+    },
+    feedbackCard:{
+        backgroundColor:"#E9E9E9",
+        borderRadius:10,
+        padding:10,
+        marginBottom:10
+    },
+    feedbackTitle:{
+        fontWeight:'bold',
+        fontSize:16,
+        marginBottom:10
+    },
+    feedbackText:{
+        fontSize:16,
+        marginBottom:10
+    },
 });
 
 export default ViewProgress;

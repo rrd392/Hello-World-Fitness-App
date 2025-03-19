@@ -10,7 +10,8 @@ import HeaderVer2 from '../HeaderVer2';
 
 const DetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
-    const { workout_plan, category } = route.params;
+    const { workout_plan, selected } = route.params;
+    const category = selected;
 
     const [userId, setUserId] = useState("");
     const [planDetails, setPlanDetails] = useState([]);

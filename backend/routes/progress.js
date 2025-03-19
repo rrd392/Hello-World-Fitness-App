@@ -8,7 +8,7 @@ router.get('/display/:user_id/:type', (req, res) => {
 
     if(type == 'All'){
 
-        progressQuery = `SELECT uwp.*, w.plan_name, wd.exercise_name, pd.* FROM user_workout_progress uwp
+        progressQuery = `SELECT uwp.*, w.plan_name, w.type, wd.exercise_name, pd.* FROM user_workout_progress uwp
                     LEFT JOIN user_workout_progress_detail pd ON uwp.user_workout_progress_id = pd.user_workout_progress_id
                     INNER JOIN user_workout_plans u ON uwp.user_workout_id = u.user_workout_id
                     INNER JOIN workout_plans w ON u.workout_plan_id = w.workout_plan_id
@@ -17,7 +17,7 @@ router.get('/display/:user_id/:type', (req, res) => {
 
     }else if(type == 'Coach'){
 
-        progressQuery = `SELECT uwp.*, w.plan_name, wd.exercise_name, pd.* FROM user_workout_progress uwp
+        progressQuery = `SELECT uwp.*, w.plan_name, w.type, wd.exercise_name, pd.* FROM user_workout_progress uwp
                     LEFT JOIN user_workout_progress_detail pd ON uwp.user_workout_progress_id = pd.user_workout_progress_id
                     INNER JOIN user_workout_plans u ON uwp.user_workout_id = u.user_workout_id
                     INNER JOIN workout_plans w ON u.workout_plan_id = w.workout_plan_id
@@ -27,7 +27,7 @@ router.get('/display/:user_id/:type', (req, res) => {
 
     }else if(type == 'Custom'){
 
-        progressQuery = `SELECT uwp.*, w.plan_name, wd.exercise_name, pd.* FROM user_workout_progress uwp
+        progressQuery = `SELECT uwp.*, w.plan_name, w.type, wd.exercise_name, pd.* FROM user_workout_progress uwp
                     LEFT JOIN user_workout_progress_detail pd ON uwp.user_workout_progress_id = pd.user_workout_progress_id
                     INNER JOIN user_workout_plans u ON uwp.user_workout_id = u.user_workout_id
                     INNER JOIN workout_plans w ON u.workout_plan_id = w.workout_plan_id
@@ -49,6 +49,7 @@ router.get('/display/:user_id/:type', (req, res) => {
             if (!plan) {
                 plan = {
                     title: row.plan_name,
+                    type: row.type,
                     sessions: []
                 };
                 formattedData.push(plan);
@@ -58,6 +59,7 @@ router.get('/display/:user_id/:type', (req, res) => {
             if (!session) {
                 session = {
                     id: row.user_workout_progress_id,
+                    user_workout_id: row.user_workout_id,
                     time: `${Math.floor(row.duration_taken / 60)}:${String(row.duration_taken % 60).padStart(2, '0')}`,
                     date: new Date(row.updated_at).toLocaleDateString('en-GB'),
                     exercises: []
@@ -74,6 +76,22 @@ router.get('/display/:user_id/:type', (req, res) => {
         });    
         res.json({ success: true, progress: formattedData});
                         
+    });
+});
+
+router.get('/displayFeedback/:user_workout_id', (req, res) => {
+    const { user_workout_id } = req.params; 
+
+    const displayQuery = `SELECT * FROM member_performance_feedback mpf
+                        INNER JOIN user u ON mpf.trainer_id = u.user_id
+                        WHERE mpf.user_workout_id = ?`;
+
+    db.query(displayQuery, [user_workout_id], (error, feedbackResult) => {
+        if (error) {
+            console.error("Database error:", error);
+            return res.status(500).json({ success: false, message: "Internal server error" });
+        }
+        res.json({ success: true, progress: feedbackResult});       
     });
 });
 
