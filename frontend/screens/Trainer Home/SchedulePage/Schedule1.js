@@ -9,7 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import HeaderVer2 from "../../HeaderVer2";
+import HeaderVer4 from "../../HeaderVer4";
 import UpcomingClassCards from "./UpcomingClassCards";
 import PastClassCards from "./PastClassCards";
 
@@ -106,7 +106,7 @@ function Schedule1() {
     <View style={styles.container}>
       {/* Header Section */}
       <SafeAreaView>
-        <HeaderVer2 title="Home" onPress={() => navigation.goBack()} />
+        <HeaderVer4 title="Home" onPress={() => navigation.goBack()} />
       </SafeAreaView>
 
       {/* Classes Section */}

@@ -15,6 +15,7 @@ import TrainerMemberStack from "./TrainerMemberStack";
 import Schedule1 from "../screens/Trainer Home/SchedulePage/Schedule1";
 import MarkAttendance from "../screens/Trainer Home/SchedulePage/MarkAttendance";
 import ClassAttendance from "../screens/Trainer Home/SchedulePage/ClassAttendance";
+import ClassReport from "../screens/Trainer Home/SchedulePage/ClassReport";
 
 const TrainerHomeStackNavigator = createStackNavigator();
 
@@ -52,6 +53,10 @@ const TrainerHomeStack = () => {
       <TrainerHomeStackNavigator.Screen
         name="ClassAttendance"
         component={ClassAttendance}
+      />
+      <TrainerHomeStackNavigator.Screen
+        name="ClassReport"
+        component={ClassReport}
       />
       {/* <TrainerHomeStackNavigator.Screen name="WorkoutPlanStack" component={WorkoutPlanStack} />
       <TrainerHomeStackNavigator.Screen name="CheckIn" component={CheckIn} />

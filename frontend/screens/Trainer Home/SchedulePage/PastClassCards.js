@@ -44,7 +44,12 @@ function PastClassCard({ title, time, coach, date, slots, image }) {
 
       {/* Button Section*/}
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            navigation.navigate("ClassReport", { className: title })
+          }
+        >
           <Text style={styles.buttonText}>View Report</Text>
         </TouchableOpacity>
         <TouchableOpacity
