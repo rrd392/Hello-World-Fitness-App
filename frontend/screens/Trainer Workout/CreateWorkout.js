@@ -1,5 +1,5 @@
 import { SafeAreaView, ScrollView, View, Text, TouchableOpacity, ScrollViewComponent} from "react-native";
-import HeaderVer2 from "../HeaderVer2";
+import HeaderVer4 from "../HeaderVer4";
 import { useNavigation } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -45,7 +45,7 @@ const CreateWorkout = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <HeaderVer2
+            <HeaderVer4
                 title="Back" style={styles.headerRow}
                 onPress={() => navigation.goBack()}
             />

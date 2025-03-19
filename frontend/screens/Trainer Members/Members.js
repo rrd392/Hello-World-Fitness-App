@@ -113,9 +113,6 @@ const Members = () => {
                             <TouchableOpacity style={styles.viewBtn} onPress={() => navigation.navigate("ViewProgress", {member})}>
                                 <Text style={styles.buttonText}>View Progress</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.viewBtn} onPress={() => navigation.navigate("MemberWorkoutPlan")}>
-                                <Text style={styles.buttonText}>View Workout</Text>
-                            </TouchableOpacity>
                         </View>
                     </View>
                     ))}
@@ -126,7 +123,7 @@ const Members = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {flex: 1, backgroundColor: '#212020', padding:20},
+    container: {flex: 1, backgroundColor: '#212020', padding:20, paddingBottom:0},
     greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold'},
     subtitle: { fontSize: 14, color: '#fff', marginBottom: 30 },
     headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 13, backgroundColor: "#212020", gap: 20 },
@@ -149,7 +146,7 @@ const styles = StyleSheet.create({
     infoData: { fontSize: 16, fontWeight: 'bold'},
     memberInfoRow2: { marginTop: 10},
 
-    btnSelection: { flexDirection: 'row', alignSelf: 'center', gap: 40, marginTop: 10},
+    btnSelection: { marginLeft:'auto', marginTop: 10},
     viewBtn: { backgroundColor: 'black', width: 140, borderRadius: 20 },
     buttonText: { color: '#E2F163', fontWeight: 'bold', alignSelf: 'center', fontSize: 16, padding: 8},
 });

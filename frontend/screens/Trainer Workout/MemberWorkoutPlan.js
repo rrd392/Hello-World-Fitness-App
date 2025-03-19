@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import HeaderVer2 from "../HeaderVer2";
+import HeaderVer4 from "../HeaderVer4";
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, View, TouchableOpacity, ScrollView, Text , Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -18,9 +18,9 @@ const MemberWorkoutPlan = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <HeaderVer2
-                title="Member" style={styles.headerRow}
-                onPress={() => navigation.navigate("Members")}
+            <HeaderVer4
+                title="Back" style={styles.headerRow}
+                onPress={() => navigation.goBack()}
             />
 
             <ScrollView style={styles.content}>
