@@ -11,9 +11,10 @@ const CreateWorkout = () => {
 
     const [showViewSelectedWorkoutModal, setShowViewSelectedWorkoutModal] = useState(false);
     const route = useRoute();
-    const { refreshPage } = route.params || {};
+    const { memberId, member } = route.params || {};
     const [fullWorkoutDetails, setFullWorkoutDetails] = useState([]);
     const [exerciseType, setExerciseType] = useState([]);
+    const [selectedExercise, setSelectedExercise] = useState([]);
 
     useEffect(() => {
         fetchWorkoutDetails();
@@ -39,7 +40,6 @@ const CreateWorkout = () => {
     };
 
     const navigation = useNavigation();
-    console.log(fullWorkoutDetails);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -54,18 +54,18 @@ const CreateWorkout = () => {
                     <View key={category.exercise_type}>
                         <Text style={[styles.categoryTitle, index !==0 && {marginTop: 15}]}>{category.exercise_type}</Text>
                         {fullWorkoutDetails.map((workout) => (
-                            fullWorkoutDetails.exercise_type == category.exercise_type? (
+                            workout.exercise_type == category.exercise_type? (
                             <View key={workout.workout_detail_id} style={styles.workoutItem}>
                                 <View style={styles.nameNtime}>
                                     <Text style={styles.workoutName}>{workout.exercise_name} {workout.reps ? `${workout.reps} Reps` : ''}</Text>
                                     <View style={styles.iconNtime}>
                                         <Ionicons name="time-outline" size={16} color="#B3A0FF" />
-                                        <Text style={styles.restTime}>{workout.rest_time_seconds}</Text>
+                                        <Text style={styles.restTime}>{workout.rest_time_seconds}s rest time</Text>
                                     </View>
                                 </View>
                                 <View style={styles.setNicon}>
                                     <Text style={styles.setsText}>Sets {workout.sets}x</Text>
-                                    <TouchableOpacity style={styles.iconaddButton}>
+                                    <TouchableOpacity style={styles.iconaddButton} onPress={() => setSelectedExercise((prevDetails) => [...prevDetails, workout.workout_detail_id])}>
                                         <Ionicons name="add" size={22} color="#000" />
                                     </TouchableOpacity>
                                 </View>
@@ -77,13 +77,18 @@ const CreateWorkout = () => {
             </ScrollView>
             <TouchableOpacity style={styles.viewButton} onPress={() => setShowViewSelectedWorkoutModal(true)}>
                 <View style={styles.countingColumn}>
-                    <Text>0</Text>
+                    <Text>{selectedExercise.length}</Text>
                 </View>
                 <Text style={styles.viewText}>View Your Selected Workout</Text>
             </TouchableOpacity>
             <ViewSelectedWorkoutModal
                 visible={showViewSelectedWorkoutModal}
                 onCancel={() => setShowViewSelectedWorkoutModal(false)}
+                fullWorkoutDetails = {fullWorkoutDetails}
+                selectedExercise = {selectedExercise}
+                refreshSelectedExercise = {setSelectedExercise}
+                memberId = {memberId}
+                member = {member}
             />
         </SafeAreaView>
     );

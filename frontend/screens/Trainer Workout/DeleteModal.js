@@ -1,7 +1,33 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
+import API_BASE_URL from "../../env";
 
-const DeleteModal = ({ visible, onCancel, onConfirm }) => {
+const DeleteModal = ({ visible, onCancel, workoutId, member }) => {
+
+    const navigation = useNavigation();
+
+    const deleteWorkoutPlan = async(workout_plan_id) => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/deleteWorkoutPlan`, {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({workout_plan_id}),
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            Alert.alert('Workout plan deleted successfully!');
+            onCancel();
+            navigation.navigate('MemberWorkoutPlan', {member});
+        }
+        } catch (error) {
+        console.error("Error updating workout plan:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    }
+
     return (
         <Modal
             animationType="slide"
@@ -23,7 +49,7 @@ const DeleteModal = ({ visible, onCancel, onConfirm }) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.confirmButton}
-                            onPress={onConfirm}
+                            onPress={() => deleteWorkoutPlan(workoutId)}
                         >
                             <Text style={styles.confirmButtonText}>Yes, delete</Text>
                         </TouchableOpacity>

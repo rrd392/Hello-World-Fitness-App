@@ -26,43 +26,6 @@ const existingPlans = [
         workout_image: require("../../assets/bck1.png"),
     },
 ];
-
-// Created Workout Plans
-const createdPlans = [
-    ...existingPlans,
-    {
-        workout_plan_id: 3,
-        plan_name: "Full Body Blast",
-        description: "A high-intensity workout focusing on all muscle groups.",
-        count: 10,
-        difficulty: "Intermediate",
-        workout_image: require("../../assets/bck1.png"),
-    },
-    {
-        workout_plan_id: 4,
-        plan_name: "Cardio Burn",
-        description: "A cardio-focused workout to get your heart pumping.",
-        count: 8,
-        difficulty: "Beginner",
-        workout_image: require("../../assets/bck1.png"),
-    },
-    {
-        workout_plan_id: 5,
-        plan_name: "Full Body Blast",
-        description: "A high-intensity workout focusing on all muscle groups.",
-        count: 10,
-        difficulty: "Intermediate",
-        workout_image: require("../../assets/bck1.png"),
-    },
-    {
-        workout_plan_id: 6,
-        plan_name: "Cardio Burn",
-        description: "A cardio-focused workout to get your heart pumping.",
-        count: 8,
-        difficulty: "Beginner",
-        workout_image: require("../../assets/bck1.png"),
-    },
-];
     
 const Workout = () => {
 
@@ -71,6 +34,7 @@ const Workout = () => {
     const [userId, setUserId] = useState("");
     const [userName, setUserName] = useState("");
     const [memberDetails, setMemberDetails] = useState([]);
+    const [generalWorkout, setGeneralWorkout] = useState([]);
 
     useEffect(() => {
     async function fetchUserId() {
@@ -86,6 +50,10 @@ const Workout = () => {
             fetchMemberDetails();
         }
     }, [userId]);
+
+    useEffect(() => {
+        fetchGeneralWorkout();
+    }, []);
 
     const fetchMemberDetails = async () => {
         try {
@@ -104,6 +72,24 @@ const Workout = () => {
         Alert.alert("Error", error.message || "Network request failed");
         }
     };
+
+    const fetchGeneralWorkout = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/displayGeneralWorkout`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setGeneralWorkout(data.progress);
+        }
+        } catch (error) {
+        console.error("Error fetching general workout:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
     
     const slideAnim = useRef(new Animated.Value(30)).current;
     const opacityAnim = useRef(new Animated.Value(0)).current; 
@@ -116,7 +102,7 @@ const Workout = () => {
     const [selectedTab, setSelectedTab] = useState("general");
     const [selectedWorkout, setSelectedWorkout] = useState(null);
 
-    const workoutPlans = selectedTab === "general" ? existingPlans : createdPlans;
+    const workoutPlans = selectedTab === "general" ? existingPlans : null;
 
     const toggleWorkOutDetails = (item) => {
         setSelectedWorkout(selectedWorkout === item.workout_plan_id ? null : item.workout_plan_id);
@@ -169,7 +155,7 @@ const Workout = () => {
                 </View>
                 {selectedTab === "general"? (
                     <FlatList style={styles.addPadding}
-                    data={workoutPlans}  
+                    data={generalWorkout}  
                     keyExtractor={(item) => item.workout_plan_id.toString()} 
                     renderItem={({ item }) => (
                         <TouchableOpacity style={styles.generalCard}>
@@ -179,7 +165,7 @@ const Workout = () => {
                                 <Text><Ionicons name="accessibility" size={13}></Ionicons>{item.count} Exercises</Text>
                             </View>
                             <View style={styles.imageContainer}>
-                                <Image source={item.workout_image} style={styles.workoutImage} />
+                                <Image source={{ uri: `${API_BASE_URL}/uploads/${item.workout_image}` }} style={styles.workoutImage} />
                                 <View style={styles.badge}>
                                     <Text style={styles.badgeText}>{item.difficulty}</Text>
                                 </View>

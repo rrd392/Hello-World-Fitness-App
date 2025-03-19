@@ -3,7 +3,7 @@ import HeaderVer4 from "../HeaderVer4";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView, View, TouchableOpacity, ScrollView, Text , Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
 
@@ -29,7 +29,7 @@ const MemberWorkoutPlan = () => {
         }
     }, [userId]);
 
-    const fetchMemberWorkout = async () => {
+    const fetchMemberWorkout = useCallback(async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/trainer-workout/displayMemberWorkout/${userId}/${member.user_id}`, {
             method: "GET",
@@ -48,7 +48,7 @@ const MemberWorkoutPlan = () => {
             console.error("Error fetching workout data:", error);
             Alert.alert("Error", error.message || "Network request failed");
         }
-    };
+    });
 
     return (
         <SafeAreaView style={styles.container}>
@@ -64,8 +64,8 @@ const MemberWorkoutPlan = () => {
                     <View key={row.user_workout_id || row.id || index} style={styles.workoutRow}>
                         <TouchableOpacity 
                             style={[styles.workoutBox, row.id === "add" && styles.addWorkoutBox]}
-                            onPress={row.id === "add" ? () => navigation.navigate("CreateWorkout", {refreshPage:fetchMemberWorkout}) : 
-                                () => navigation.navigate("ViewWorkout", { workoutId: row.workout_plan_id, memberName: member.name, refreshPage: fetchMemberWorkout})}
+                            onPress={row.id === "add" ? () => navigation.navigate("CreateWorkout", { memberId: member.user_id, member}) : 
+                                () => navigation.navigate("ViewWorkout", { workoutId: row.workout_plan_id, memberName: member.name, refreshPage:fetchMemberWorkout, member})}
                         >
                             {row.id === "add" ? (
                                 <Feather name="plus" size={40} color="#B3A0FF" />

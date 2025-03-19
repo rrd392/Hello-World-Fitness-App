@@ -131,6 +131,8 @@ const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetail
             refreshWorkoutDetails();
             refreshWorkoutName();
             onCancel();
+        }else{
+            Alert.alert(data.message);
         }
         } catch (error) {
         console.error("Error updating workout plan:", error);
@@ -147,10 +149,10 @@ const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetail
                     </TouchableOpacity>
                     <Text style={styles.title}>Edit Workout</Text>
                     <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                        <Text style={styles.label}>Name</Text>
+                        <Text style={styles.label}>Name <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
                         <TextInput style={styles.input} value={workoutPlan.plan_name} onChangeText={(text) =>setWorkoutPlan((prevData) => ({...prevData,plan_name: text.replace(/[^a-zA-Z0-9_/ '-]/g, ''),}))} />
 
-                        <Text style={styles.label}>Description</Text>
+                        <Text style={styles.label}>Description <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
                         <TextInput style={styles.input} value={workoutPlan.description} onChangeText={(text) =>setWorkoutPlan((prevData) => ({...prevData,description: text.replace(/[^a-zA-Z0-9_/ '-.!?:]/g, ''),}))} />
 
                         <View style={styles.workoutDetailsContainer}>

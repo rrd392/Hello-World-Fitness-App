@@ -1,88 +1,214 @@
-import React, { useState } from "react";
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
+import DropDownPicker from 'react-native-dropdown-picker';
+import * as ImagePicker from "expo-image-picker";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import API_BASE_URL from "../../env";
+import { getUserId } from '../getUserId';
+import { useNavigation } from "@react-navigation/native";
 
-const ViewSelectedWorkoutModal = ({ visible, onCancel, workout }) => {
-    const [workoutName, setWorkoutName] = useState(workout?.name || "");
-    const [description, setDescription] = useState("");
-    const [selectedWorkouts, setSelectedWorkouts] = useState(workout ? [workout] : []);
+const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selectedExercise, refreshSelectedExercise, memberId, member }) => {
 
+    const navigation = useNavigation();
+    
+    const [workoutPlan, setWorkoutPlan] = useState({
+        plan_name : "",
+        description : "",
+        difficulty : "",
+        day:"",
+        workoutImage : "",
+    });
     const [showAddButton, setShowAddButton] = useState(true);
+    const [workoutDetails, setWorkoutDetails] = useState([]);
+    const [userId, setUserId] = useState("");
+
+    useEffect(() => {
+        async function fetchUserId() {
+            const token = await getUserId();
+            setUserId(token.id);
+        }
+        fetchUserId();
+    }, []);
+
+    const [showDifficultyDropdown, setShowDifficultyDropdown] = useState(false);
+    const difficulty = [
+        { label: 'Select level', value: '', disabled: true },
+        { label: 'Beginner', value: 'Beginner' },
+        { label: 'Intermediate', value: 'Intermediate' },
+        { label: 'Advanced', value: 'Advanced' },
+    ];
+
+    const [showDayDropdown, setShowDayDropdown] = useState(false);
+    const day = [
+        { label: 'Select level', value: '', disabled: true },
+        { label: 'Monday', value: 'Monday' },
+        { label: 'Tuesday', value: 'Tuesday' },
+        { label: 'Wednesday', value: 'Wednesday' },
+        { label: 'Thursday', value: 'Thursday' },
+        { label: 'Friday', value: 'Friday' },
+        { label: 'Saturday', value: 'Saturday' },
+        { label: 'Sunday', value: 'Sunday' },
+    ];
+
+    useEffect(() => {
+        setWorkoutDetails(fullWorkoutDetails.filter((workout) => 
+            selectedExercise.some((selected) => workout.workout_detail_id === selected)
+        ));
+    }, [fullWorkoutDetails, selectedExercise]);    
 
     const handleToggleButton = () => {
         setShowAddButton(!showAddButton);
     };
 
-    const workouts = [
-        { id: 1, name: "Bench Press", reps: "8 Reps", restTime: "01:20 Rest Time", sets: "4x" },
-        { id: 2, name: "Dead Lifts", reps: "8 Reps", restTime: "01:50 Rest Time", sets: "4x" },
-        { id: 3, name: "Russian Twist", reps: "15 Reps", restTime: "01:30 Rest Time", sets: "4x" },
-        { id: 4, name: "Overhead Press", reps: "10 Reps", restTime: "01:00 Rest Time", sets: "4x" },
-    ];
+    const deleteWorkoutDetail = (workout_detail_id) => {
+        setWorkoutDetails(prevDetails =>
+            prevDetails.filter(workout => workout.workout_detail_id !== workout_detail_id)
+        );
+        selectedExercise.pop(workout_detail_id);
+    }
 
-    const exerciseData = {
-        Strength: [
-            { exercise_name: "Squats", sets: 4, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Bench Press", sets: 4, reps: 8, time_taken: "2:00 Rest Time" },
-            { exercise_name: "Deadlifts", sets: 4, reps: 6, time_taken: "2:30 Rest Time" },
-            { exercise_name: "Lunges", sets: 3, reps: 12, time_taken: "1:00 Rest Time" },
-            { exercise_name: "Overhead Press", sets: 3, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Dumbbell Rows", sets: 3, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Kettlebell Swings", sets: 4, reps: 15, time_taken: "1:00 Rest Time" }
-        ],
-        Cardio: [
-            { exercise_name: "Jump Rope", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Burpees", sets: 3, reps: 12, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Cycling", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Mountain Climbers", sets: 3, reps: 20, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Running", sets: 1, reps: null, time_taken: "0:30 Rest Time" }
-        ],
-        Bodyweight: [
-            { exercise_name: "Push-Ups", sets: 3, reps: 15, time_taken: "1:00 Rest Time" },
-            { exercise_name: "Pull-Ups", sets: 3, reps: 8, time_taken: "1:30 Rest Time" }
-        ],
-        Core: [
-            { exercise_name: "Plank", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Russian Twists", sets: 3, reps: 15, time_taken: "0:45 Rest Time" },
-            { exercise_name: "Side Plank", sets: 2, reps: null, time_taken: "0:30 Rest Time" }
-        ],
-        Plyometric: [
-            { exercise_name: "Box Jumps", sets: 3, reps: 15, time_taken: "0:45 Rest Time" }
-        ]
+    const pickImage = async () => {
+        // Request media library permission
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+            Alert.alert("Permission Denied!", "We need access to your gallery to upload images.");
+            return;
+        }
+
+        // Launch Image Picker
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            setWorkoutPlan((prevData) => ({ ...prevData, workoutImage: result.assets[0].uri }))
+        }
     };
-    
-    console.log(exerciseData);
+
+    const createWorkoutPlan = async () => {
+        // Ensure addData exists before validating properties
+        if (!workoutPlan ||
+            workoutPlan.plan_name.trim() === "" ||
+            workoutPlan.description.trim() === "" ||
+            workoutPlan.difficulty.trim() === "" ||
+            workoutPlan.day.trim() === "" ||
+            workoutPlan.workoutImage.trim() === ""
+        ) {
+            Alert.alert("Missing Information", "Please fill in all required fields.");
+            return;
+        }
+
+        // Initialize FormData properly
+        const formData = new FormData();
+
+        // Append the image file
+        formData.append("image", {
+            uri: workoutPlan.workoutImage,
+            type: "image/jpeg",
+            name: `${workoutPlan.plan_name}.jpg`,
+        });
+
+        // Append JSON data as a string
+        formData.append("workoutPlan", JSON.stringify(workoutPlan));
+        formData.append("workout_details", JSON.stringify(selectedExercise));
+        formData.append("trainerId", userId);
+        formData.append("memberId", memberId);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/trainer-workout/createWorkoutPlan`, {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                Alert.alert("Success", "Workout Plan successfully created.");
+                onCancel();
+                navigation.navigate('MemberWorkoutPlan', {member});
+            } else {
+                Alert.alert(data.message);
+            }
+        } catch (error) {
+            console.error("Error creating workout plan:", error);
+            Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
 
     return (
-        <Modal visible={visible} animationType="slide" transparent onRequestClose={onCancel}>
+        <Modal visible={visible} animationType="slide" transparent onRequestClose={() => {refreshSelectedExercise(selectedExercise); onCancel();}}>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <TouchableOpacity style={styles.closeButton} onPress={onCancel}>
+                    <TouchableOpacity style={styles.closeButton} onPress={() => {refreshSelectedExercise(selectedExercise); onCancel();}}>
                         <Ionicons name="close" size={24} color="#000" />
                     </TouchableOpacity>
                     <Text style={styles.title}>Custom Workout</Text>
                     <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                        <Text style={styles.label}>Name</Text>
-                        <TextInput style={styles.input} value={workoutName} onChangeText={setWorkoutName} />
+                        <Text style={styles.label}>Name <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                        <TextInput style={styles.input} value={workoutPlan.plan_name} onChangeText={(text) =>setWorkoutPlan((prevData) => ({...prevData,plan_name: text.replace(/[^a-zA-Z0-9_/ '-]/g, ''),}))} />
 
-                        <Text style={styles.label}>Description</Text>
-                        <TextInput style={styles.input} value={description} onChangeText={setDescription} />
+                        <Text style={styles.label}>Description <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                        <TextInput style={styles.input} value={workoutPlan.description} onChangeText={(text) =>setWorkoutPlan((prevData) => ({...prevData,description: text.replace(/[^a-zA-Z0-9_/ '-.!?]/g, ''),}))} />
+                        
+                        <Text style={styles.label}>Difficulty <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                        <DropDownPicker
+                            open={showDifficultyDropdown}
+                            value={workoutPlan.difficulty}
+                            items={difficulty}
+                            setOpen={setShowDifficultyDropdown}
+                            setValue={(callback) =>
+                                setWorkoutPlan(prevData => ({
+                                    ...prevData,
+                                    difficulty: callback(prevData.difficulty)
+                                }))
+                            }
+                            placeholder="Select level"
+                            nestedScrollEnabled={true}
+                            listMode="SCROLLVIEW"
+                            style={styles.dropdown}
+                            textStyle={styles.dropdownText}
+                            containerStyle={{ marginBottom: 16, zIndex: 100 }}
+                        />
+                        <Text style={styles.label}>Select day <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                        <DropDownPicker
+                            open={showDayDropdown}
+                            value={workoutPlan.day}
+                            items={day}
+                            setOpen={setShowDayDropdown}
+                            setValue={(callback) =>
+                                setWorkoutPlan(prevData => ({
+                                    ...prevData,
+                                    day: callback(prevData.day)
+                                }))
+                            }
+                            placeholder="Select level"
+                            nestedScrollEnabled={true}
+                            listMode="SCROLLVIEW"
+                            style={styles.dropdown}
+                            textStyle={styles.dropdownText}
+                            containerStyle={{ marginBottom: 16, zIndex: 90 }}
+                        />
+                        <Text style={styles.label}>Upload Image <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                        <TouchableOpacity style={styles.input} onPress={pickImage}><Ionicons name="image" size={20}>  <Text style={{ fontSize: 16 }}>{workoutPlan.workoutImage ? `Image uploaded` : `Upload Image`}</Text></Ionicons></TouchableOpacity>
 
                         <View style={styles.workoutDetailsContainer}>
                         <Text style={styles.workoutDetailsText}>Your Selected Workout</Text>
-                        {workouts.map((workout) => (
-                            <View key={workout.id} style={styles.workoutItem}>
+                        {workoutDetails.map((workout) => (
+                            <View key={workout.workout_detail_id} style={styles.workoutItem}>
                                 <View style={styles.nameNtime}>
-                                    <Text style={styles.workoutName}>{workout.name} {workout.reps}</Text>
+                                    <Text style={styles.workoutName}>{workout.exercise_name} {workout.reps}</Text>
                                     <View style={styles.iconNtime}>
                                         <Ionicons name="time-outline" size={16} color="#B3A0FF" /> 
-                                        <Text style={styles.restTime}>{workout.restTime}</Text>
+                                        <Text style={styles.restTime}>{workout.rest_time_seconds}s rest time</Text>
                                     </View>
                                 </View>
                                 <View style={styles.setNicon}>
                                     <Text style={styles.setsText}>Sets {workout.sets}</Text>
 
-                                    <TouchableOpacity style={styles.iconButton}>
+                                    <TouchableOpacity style={styles.iconButton} onPress={() => deleteWorkoutDetail(workout.workout_detail_id)}>
                                         <Feather name="trash" size={22} color="#000" />
                                     </TouchableOpacity>
                                 </View>
@@ -92,7 +218,7 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, workout }) => {
                     </View>
                     </ScrollView>
                     
-                    <TouchableOpacity style={styles.createButton}>
+                    <TouchableOpacity style={styles.createButton} onPress={() => createWorkoutPlan()}>
                         <Text style={styles.createButtonText}>Create</Text>
                     </TouchableOpacity>
                 </View>
@@ -107,7 +233,7 @@ const styles = StyleSheet.create({
     closeButton: { position: 'absolute', top: 10, right: 10 },
     title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 3 },
     label: { fontSize: 16, fontWeight: 'bold', marginTop: 3 },
-    input: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 5 },
+    input: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 5, marginBottom:10 },
     sectionTitle: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 },
     workoutText: { fontSize: 14, fontWeight: 'bold' },
     workoutSubText: { fontSize: 12, color: '#B3A0FF' },
@@ -131,6 +257,17 @@ const styles = StyleSheet.create({
     closeButtonText: { fontSize: 15, fontWeight: 'bold'},
     categoryTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 2 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
+
+    dropdown: {
+        width: "100%",
+        backgroundColor: "white",
+        borderRadius: 10,
+        marginTop:5
+    },
+    dropdownText: {
+        color: '#000',
+        fontSize: 16,
+    },
 });
 
 export default ViewSelectedWorkoutModal;

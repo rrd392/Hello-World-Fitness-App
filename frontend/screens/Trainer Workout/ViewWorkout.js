@@ -1,7 +1,7 @@
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Animated } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
-import HeaderVer2 from "../HeaderVer2";
+import HeaderVer4 from "../HeaderVer4";
 import { Ionicons, Feather } from '@expo/vector-icons';
 import React, { useRef, useState, useEffect } from "react";
 import DeleteModal from "./DeleteModal";
@@ -12,7 +12,7 @@ const ViewWorkout = () => {
 
     const navigation=useNavigation();
     const route = useRoute();
-    const { workoutId, memberName, refreshPage } = route.params || {};
+    const { workoutId, memberName, refreshPage, member } = route.params || {};
     const [workoutDetails, setWorkoutDetails] = useState([]);
     const [workoutName, setWorkoutName] = useState("");
 
@@ -83,7 +83,7 @@ const ViewWorkout = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <HeaderVer2
+            <HeaderVer4
                 title="Back" style={styles.headerRow}
                 onPress={() => {refreshPage(); navigation.goBack()}}
             />
@@ -140,7 +140,8 @@ const ViewWorkout = () => {
             <DeleteModal
                 visible={showDeleteModel}
                 onCancel={() => setShowDeleteModal(false)}
-                onConfirm={() => setShowDeleteModal(false)}
+                workoutId = {workoutId}
+                member = {member}
             />
             <EditModal
                 visible={showEditModal}
