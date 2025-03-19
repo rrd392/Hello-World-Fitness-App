@@ -1,15 +1,61 @@
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, Animated } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import HeaderVer2 from "../HeaderVer2";
 import { Ionicons, Feather } from '@expo/vector-icons';
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
+import API_BASE_URL from "../../env";
 
 const ViewWorkout = () => {
 
     const navigation=useNavigation();
+    const route = useRoute();
+    const { workoutId, memberName, refreshPage } = route.params || {};
+    const [workoutDetails, setWorkoutDetails] = useState([]);
+    const [workoutName, setWorkoutName] = useState("");
+
+    useEffect(() => {
+        fetchWorkoutName();
+        fetchWorkoutDetails();
+    }, []);
+
+    const fetchWorkoutName = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/displayWorkoutPlan/${workoutId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setWorkoutName(data.progress.plan_name);
+        }
+        } catch (error) {
+        console.error("Error fetching workout name:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+
+    const fetchWorkoutDetails = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/displayWorkoutDetails/${workoutId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setWorkoutDetails(data.progress);
+        }
+        } catch (error) {
+        console.error("Error fetching workout detail:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
 
     const [showDeleteModel, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -35,27 +81,20 @@ const ViewWorkout = () => {
         setIsVisible(!isVisible);
     };
 
-    const workouts = [
-        { id: 1, name: "Bench Press", reps: "8 Reps", restTime: "01:20 Rest Time", sets: "4x" },
-        { id: 2, name: "Dead Lifts", reps: "8 Reps", restTime: "01:50 Rest Time", sets: "4x" },
-        { id: 3, name: "Russian Twist", reps: "15 Reps", restTime: "01:30 Rest Time", sets: "4x" },
-        { id: 4, name: "Overhead Press", reps: "10 Reps", restTime: "01:00 Rest Time", sets: "4x" },
-    ];
-
     return (
         <SafeAreaView style={styles.container}>
             <HeaderVer2
                 title="Back" style={styles.headerRow}
-                onPress={() => navigation.navigate("MemberWorkoutPlan")}
+                onPress={() => {refreshPage(); navigation.goBack()}}
             />
 
             <ScrollView style={styles.content}>
-                <Text style={styles.titleText}>Emily Lai's Workout</Text>
+                <Text style={styles.titleText}>{memberName}'s Workout</Text>
                 <View style={styles.bgStyle}>
                     <View style={styles.iconNtitle}>
                         <View style={styles.leftContent}>
                             <Ionicons name="play" style={styles.playIcon} size={24}/>
-                            <Text style={styles.titleName}>Workout 1</Text>
+                            <Text style={styles.titleName}>{workoutName}</Text>
                         </View>
                         
                         {/* Ellipsis Button to Trigger Animation */}
@@ -70,10 +109,10 @@ const ViewWorkout = () => {
                             { pointerEvents: isVisible ? "auto" : "none" }
                         ]}>
                             <TouchableOpacity style={styles.iconButton} onPress={() => setShowEditModal(true)}>
-                                <Feather name="edit" size={22} color="#B3A0FF" />
+                                <Feather name="edit" size={22} color="#fff" />
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.iconButton} onPress={() => setShowDeleteModal(true)}>
-                                <Feather name="trash" size={22} color="#B3A0FF" />
+                                <Feather name="trash" size={22} color="#fff" />
                             </TouchableOpacity>
                         </Animated.View>
                     </View>
@@ -83,13 +122,13 @@ const ViewWorkout = () => {
                     <View style={styles.workoutDetailsContainer}>
                         <Text style={styles.workoutDetailsText}>Workout Details</Text>
                     
-                    {workouts.map((workout) => (
-                        <View key={workout.id} style={styles.workoutItem}>
+                    {workoutDetails.map((workout) => (
+                        <View key={workout.workout_detail_id} style={styles.workoutItem}>
                             <View style={styles.nameNtime}>
-                                <Text style={styles.workoutName}>{workout.name} {workout.reps}</Text>
+                                <Text style={styles.workoutName}>{workout.exercise_name} {workout.reps}</Text>
                                 <View style={styles.iconNtime}>
                                     <Ionicons name="time-outline" size={16} color="#B3A0FF" /> 
-                                    <Text style={styles.restTime}>{workout.restTime}</Text>
+                                    <Text style={styles.restTime}>{workout.rest_time_seconds}s rest time</Text>
                                 </View>
                             </View>
                             <Text style={styles.setsText}>Sets {workout.sets}</Text>
@@ -106,6 +145,10 @@ const ViewWorkout = () => {
             <EditModal
                 visible={showEditModal}
                 onCancel={() => setShowEditModal(false)}
+                workout={workoutDetails}
+                workoutId = {workoutId}
+                refreshWorkoutDetails = {() => fetchWorkoutDetails()}
+                refreshWorkoutName = {() => fetchWorkoutName()}
             />
         </SafeAreaView>
     );
@@ -113,13 +156,13 @@ const ViewWorkout = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#212020' },
-    content: { padding: 10},
+    content: { padding: 20},
     bgStyle: { padding: 10, backgroundColor: 'white', marginTop: 10, borderRadius: 10},
-    titleText: { color: '#E2F163', fontSize: 24, fontWeight: 'bold', alignSelf: 'center'},
+    titleText: { color: '#E2F163', fontSize: 24, fontWeight: 'bold', alignSelf: 'center', marginBottom:10},
     iconNtitle: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: 5, padding: 10},
     leftContent: { flexDirection: 'row', alignItems: 'center', gap: 5},
     playIcon: { color: '#B3A0FF' },
-    titleName: { color: '#B3A0FF', fontSize: 20, fontWeight: 'bold' },
+    titleName: { color: '#B3A0FF', fontSize: 20, fontWeight: 'bold', width:"85%"},
     actionsIcon: { alignItems: 'flex-end'},
     divider: { height: 3, backgroundColor: "#E2F163", marginBottom: 10, marginTop: 5},
 
@@ -132,7 +175,7 @@ const styles = StyleSheet.create({
     restTime: { fontSize: 14, color: "#B3A0FF", flex: 1, fontWeight: 'bold' },
     setsText: { fontSize: 16, fontWeight: "bold", color: "#A586FF" },
 
-    animatedIcons: { flexDirection: 'row', position: 'absolute', right: 40, top: 0, backgroundColor: "rgba(0,0,0,0.1)", paddingHorizontal: 5, paddingVertical: 5, borderRadius: 10, opacity: 0, zIndex: 10 },
+    animatedIcons: { flexDirection: 'row', position: 'absolute', right: 40, top: 0, backgroundColor: "#B3A0FF", paddingHorizontal: 5, paddingVertical: 5, borderRadius: 10, zIndex: 10 },
     iconButton: { padding: 8, borderRadius: 5, marginHorizontal: 3},
 });
 

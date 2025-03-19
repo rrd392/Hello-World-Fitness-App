@@ -1,47 +1,45 @@
-import { SafeAreaView, ScrollView, View, Text, TouchableOpacity, ScrollViewComponent} from "react-native";
+import { SafeAreaView, ScrollView, View, Text, TouchableOpacity, Alert} from "react-native";
 import HeaderVer4 from "../HeaderVer4";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ViewSelectedWorkoutModal from "./ViewSelectedWorkoutModal";
+import API_BASE_URL from "../../env";
 
 const CreateWorkout = () => {
 
     const [showViewSelectedWorkoutModal, setShowViewSelectedWorkoutModal] = useState(false);
+    const route = useRoute();
+    const { refreshPage } = route.params || {};
+    const [fullWorkoutDetails, setFullWorkoutDetails] = useState([]);
+    const [exerciseType, setExerciseType] = useState([]);
 
-    const exerciseData = {
-        Strength: [
-            { exercise_name: "Squats", sets: 4, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Bench Press", sets: 4, reps: 8, time_taken: "2:00 Rest Time" },
-            { exercise_name: "Deadlifts", sets: 4, reps: 6, time_taken: "2:30 Rest Time" },
-            { exercise_name: "Lunges", sets: 3, reps: 12, time_taken: "1:00 Rest Time" },
-            { exercise_name: "Overhead Press", sets: 3, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Dumbbell Rows", sets: 3, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Kettlebell Swings", sets: 4, reps: 15, time_taken: "1:00 Rest Time" }
-        ],
-        Cardio: [
-            { exercise_name: "Jump Rope", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Burpees", sets: 3, reps: 12, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Cycling", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Mountain Climbers", sets: 3, reps: 20, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Running", sets: 1, reps: null, time_taken: "0:30 Rest Time" }
-        ],
-        Bodyweight: [
-            { exercise_name: "Push-Ups", sets: 3, reps: 15, time_taken: "1:00 Rest Time" },
-            { exercise_name: "Pull-Ups", sets: 3, reps: 8, time_taken: "1:30 Rest Time" }
-        ],
-        Core: [
-            { exercise_name: "Plank", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Russian Twists", sets: 3, reps: 15, time_taken: "0:45 Rest Time" },
-            { exercise_name: "Side Plank", sets: 2, reps: null, time_taken: "0:30 Rest Time" }
-        ],
-        Plyometric: [
-            { exercise_name: "Box Jumps", sets: 3, reps: 15, time_taken: "0:45 Rest Time" }
-        ]
+    useEffect(() => {
+        fetchWorkoutDetails();
+    }, []);
+
+    const fetchWorkoutDetails = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/workout-plan/displayWorkoutDetail`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data) {
+            setFullWorkoutDetails(data.results);
+            setExerciseType(data.type);
+        }
+        } catch (error) {
+        console.error("Error fetching workout details:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
     };
 
-    const navigation=useNavigation();
+    const navigation = useNavigation();
+    console.log(fullWorkoutDetails);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -52,16 +50,17 @@ const CreateWorkout = () => {
 
             <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 80 }}>
                 {/* Loop through each category and then map the exercises */}
-                {Object.keys(exerciseData).map((category, index) => (
-                    <View key={category}>
-                        <Text style={[styles.categoryTitle, index !==0 && {marginTop: 15}]}>{category}</Text>
-                        {exerciseData[category].map((workout, i) => (
-                            <View key={i} style={styles.workoutItem}>
+                {exerciseType.map((category, index) => (
+                    <View key={category.exercise_type}>
+                        <Text style={[styles.categoryTitle, index !==0 && {marginTop: 15}]}>{category.exercise_type}</Text>
+                        {fullWorkoutDetails.map((workout) => (
+                            fullWorkoutDetails.exercise_type == category.exercise_type? (
+                            <View key={workout.workout_detail_id} style={styles.workoutItem}>
                                 <View style={styles.nameNtime}>
                                     <Text style={styles.workoutName}>{workout.exercise_name} {workout.reps ? `${workout.reps} Reps` : ''}</Text>
                                     <View style={styles.iconNtime}>
                                         <Ionicons name="time-outline" size={16} color="#B3A0FF" />
-                                        <Text style={styles.restTime}>{workout.time_taken}</Text>
+                                        <Text style={styles.restTime}>{workout.rest_time_seconds}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.setNicon}>
@@ -71,7 +70,7 @@ const CreateWorkout = () => {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                        ))}
+                        ):null))}
                     </View>
                 ))}
                 

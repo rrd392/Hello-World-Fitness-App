@@ -47,6 +47,9 @@ app.use('/api/progress', progressRoutes);
 const trainerMemberRoutes = require('./routes/trainer-member');
 app.use('/api/trainer-member', trainerMemberRoutes);
 
+const trainerWorkoutRoutes = require('./routes/trainer-workout');
+app.use('/api/trainer-workout', trainerWorkoutRoutes);
+
 app.use('/uploads', express.static(path.resolve(__dirname, '../../uploads')));
 
 // Start the server

@@ -202,7 +202,7 @@ const Workout = () => {
                 ):(
                     <ScrollView style={styles.membersSection}>
                         {memberDetails.map((member) => (
-                            <View key={member.member_id} style={styles.memberCardSection}>
+                            <View key={member.user_id} style={styles.memberCardSection}>
                             {/* Member Profile */}
                             <View style={styles.memberProfile}>
                                 <Image source={{ uri: `${API_BASE_URL}/uploads/${member.profile_picture}` }} style={styles.profileImage} />
@@ -242,7 +242,7 @@ const Workout = () => {
 
                             {/* Buttons Section */}
                             <View style={styles.btnSelection}>
-                                <TouchableOpacity style={styles.viewBtn} onPress={() => navigation.navigate("MemberWorkoutPlan")}>
+                                <TouchableOpacity style={styles.viewBtn} onPress={() => navigation.navigate("MemberWorkoutPlan", {member})}>
                                     <Text style={styles.buttonText}>View Workout</Text>
                                 </TouchableOpacity>
                             </View>
