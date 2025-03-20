@@ -101,24 +101,6 @@ const TrainerDashboard = () => {
         </View>
         <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
         <Text style={styles.membership}>Fitness Trainer</Text>
-        {/* Navigation Icons */}
-        <View style={styles.navButtons}>
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => navigation.navigate("CheckIn")}
-          >
-            <Ionicons name="checkbox" size={30} color="#B3A0FF" />
-            <Text style={styles.navText}>Mark Attendance</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => navigation.navigate("Classes")}
-          >
-            <Ionicons name="barbell" size={30} color="#B3A0FF" />
-            <Text style={styles.navText}>Classes</Text>
-          </TouchableOpacity>
-          
-        </View>
       </SafeAreaView>
 
       <ScrollView showsVerticalScrollIndicator={false}>

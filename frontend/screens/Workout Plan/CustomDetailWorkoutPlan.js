@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Image, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import EditExistingWorkoutModal from "./EditExistingWorkoutPlan";
 
 const CustomDetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
-    const { workout_plan, selectedDay } = route.params;
+    const { workout_plan, selectedDay, type } = route.params;
 
     //Profile icon dropdown button
     const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
@@ -21,7 +21,7 @@ const CustomDetailWorkoutPlan = ({ route }) => {
     const [userId, setUserId] = useState("");
     const [userName, setUserName] = useState("");
     const [planDetails, setPlanDetails] = useState([]);
-
+    const [showEditExistingWorkoutModal, setShowEditExistingWorkoutModal] = useState(false);
 
     useEffect(() => {
         async function fetchUserId() {
@@ -59,8 +59,6 @@ const CustomDetailWorkoutPlan = ({ route }) => {
         fetchPlanDetail();
     }, [workout_plan.workout_plan_id]);
 
-
-
     const deleteWorkoutPlan = async (user_id, workout_plan_id, selectedDay) => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/workout-plan/deleteUserWorkoutPlan`, {
@@ -95,7 +93,6 @@ const CustomDetailWorkoutPlan = ({ route }) => {
 
     };
 
-
     return (
         <View style={styles.container}>
             {/* Header Section */}
@@ -119,8 +116,15 @@ const CustomDetailWorkoutPlan = ({ route }) => {
                             <Text style={styles.levelText}>{workout_plan.difficulty}</Text>
                         </View>
                         <View style={styles.planTag}>
-                            <Text style={styles.workoutTitle}>{workout_plan.plan_name}</Text>
-                            <Text style={styles.workoutDetails}><Ionicons name="accessibility"></Ionicons> {workout_plan.count} Exercises</Text>
+                            <View>
+                                <Text style={styles.workoutTitle}>{workout_plan.plan_name}</Text>
+                                <Text style={styles.workoutDetails}><Ionicons name="accessibility"></Ionicons> {workout_plan.count} Exercises</Text>
+                            </View>
+                            {type == "Member"? (
+                                <TouchableOpacity style={styles.iconButton} onPress={() => setShowEditExistingWorkoutModal(true)}>
+                                    <Feather name="edit" size={28} color="white" />
+                                </TouchableOpacity>
+                            ):null}
                         </View>
                     </View>
                 </View>
@@ -150,6 +154,11 @@ const CustomDetailWorkoutPlan = ({ route }) => {
                         <Text style={styles.startButtonText}>Delete Workout Plan</Text>
                     </TouchableOpacity>
                 </View>
+                <EditExistingWorkoutModal
+                    visible={showEditExistingWorkoutModal}
+                    onCancel={() => setShowEditExistingWorkoutModal(false)}
+                    workoutId = {workout_plan.workout_plan_id}
+                />
             </ScrollView>
         </View>
     );
@@ -194,6 +203,9 @@ const styles = StyleSheet.create({
         bottom: 0,
         backgroundColor: 'rgba(33, 32, 32, 0.9)',
         width: '100%',
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center'
     },
     workoutTitle: {
         color: "#E2F163",

@@ -174,8 +174,8 @@ const MemberWorkoutPlan = () => {
     navigation.navigate('DetailWorkoutPlan', { workout_plan, selected });
   }
 
-  function toggleCustomWorkOutDetails(workout_plan, selectedDay){
-    navigation.navigate('CustomDetailWorkoutPlan', { workout_plan, selectedDay });
+  function toggleCustomWorkOutDetails(workout_plan, selectedDay, type){
+    navigation.navigate('CustomDetailWorkoutPlan', { workout_plan, selectedDay, type });
   }
 
   function toggleAddWorkoutPlan(){
@@ -356,7 +356,7 @@ const MemberWorkoutPlan = () => {
               data={customPlans}  
               keyExtractor={(item) => item.workout_plan_id.toString()} 
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => toggleCustomWorkOutDetails(item, selectedDay)} style={styles.generalCard} key={item.workout_plan_id}>
+                <TouchableOpacity onPress={() => toggleCustomWorkOutDetails(item, selectedDay, item.type)} style={styles.generalCard} key={item.workout_plan_id}>
                   <View style={styles.generalItem}>
                       <Text style={styles.generalTitle}>{item.plan_name}</Text>
                       <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
