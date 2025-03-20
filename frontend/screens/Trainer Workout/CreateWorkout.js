@@ -11,7 +11,7 @@ const CreateWorkout = () => {
 
     const [showViewSelectedWorkoutModal, setShowViewSelectedWorkoutModal] = useState(false);
     const route = useRoute();
-    const { memberId, member } = route.params || {};
+    const { memberId, member, category } = route.params || {};
     const [fullWorkoutDetails, setFullWorkoutDetails] = useState([]);
     const [exerciseType, setExerciseType] = useState([]);
     const [selectedExercise, setSelectedExercise] = useState([]);
@@ -65,7 +65,9 @@ const CreateWorkout = () => {
                                 </View>
                                 <View style={styles.setNicon}>
                                     <Text style={styles.setsText}>Sets {workout.sets}x</Text>
-                                    <TouchableOpacity style={styles.iconaddButton} onPress={() => setSelectedExercise((prevDetails) => [...prevDetails, workout.workout_detail_id])}>
+                                    <TouchableOpacity style={selectedExercise.includes(workout.workout_detail_id)? styles.iconButton :styles.iconaddButton} 
+                                    onPress={() => setSelectedExercise((prevDetails) => [...prevDetails, workout.workout_detail_id])}
+                                    disabled={selectedExercise.includes(workout.workout_detail_id)}>
                                         <Ionicons name="add" size={22} color="#000" />
                                     </TouchableOpacity>
                                 </View>
@@ -89,6 +91,7 @@ const CreateWorkout = () => {
                 refreshSelectedExercise = {setSelectedExercise}
                 memberId = {memberId}
                 member = {member}
+                category = {category}
             />
         </SafeAreaView>
     );
@@ -100,6 +103,7 @@ const styles = StyleSheet.create({
     scrollViewContent: { paddingBottom: 30},
     categoryTitle: { fontSize: 25, fontWeight: 'bold', color: 'white', alignSelf: 'center', marginBottom: 5, marginTop: -10 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
+    iconButton: { backgroundColor: '#A5A5A5', borderRadius: 50, padding: 5},
     workoutItem: { backgroundColor: 'white', padding: 15, borderRadius: 20, marginVertical: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     nameNtime: { flex: 1},
     workoutName: { fontSize: 14, fontWeight: 'bold', color: "#000" },

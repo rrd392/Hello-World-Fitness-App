@@ -7,7 +7,7 @@ import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
 import { useNavigation } from "@react-navigation/native";
 
-const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selectedExercise, refreshSelectedExercise, memberId, member }) => {
+const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selectedExercise, refreshSelectedExercise, memberId, member, category }) => {
 
     const navigation = useNavigation();
     
@@ -116,6 +116,7 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selec
         formData.append("workout_details", JSON.stringify(selectedExercise));
         formData.append("trainerId", userId);
         formData.append("memberId", memberId);
+        formData.append("category", category);
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/trainer-workout/createWorkoutPlan`, {
@@ -128,7 +129,11 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selec
             if (data.success) {
                 Alert.alert("Success", "Workout Plan successfully created.");
                 onCancel();
-                navigation.navigate('MemberWorkoutPlan', {member});
+                if(category == "Coach"){
+                    navigation.navigate('MemberWorkoutPlan', {member});
+                }else if (category == "General"){
+                    navigation.navigate('Workout');
+                }
             } else {
                 Alert.alert(data.message);
             }

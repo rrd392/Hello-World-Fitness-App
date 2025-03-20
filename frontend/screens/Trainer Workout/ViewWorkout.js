@@ -142,6 +142,8 @@ const ViewWorkout = () => {
                 onCancel={() => setShowDeleteModal(false)}
                 workoutId = {workoutId}
                 member = {member}
+                category = {"Coach"}
+                refreshPage={""}
             />
             <EditModal
                 visible={showEditModal}

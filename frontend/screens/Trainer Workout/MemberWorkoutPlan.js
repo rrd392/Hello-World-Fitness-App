@@ -64,7 +64,7 @@ const MemberWorkoutPlan = () => {
                     <View key={row.user_workout_id || row.id || index} style={styles.workoutRow}>
                         <TouchableOpacity 
                             style={[styles.workoutBox, row.id === "add" && styles.addWorkoutBox]}
-                            onPress={row.id === "add" ? () => navigation.navigate("CreateWorkout", { memberId: member.user_id, member}) : 
+                            onPress={row.id === "add" ? () => navigation.navigate("CreateWorkout", { memberId: member.user_id, member, category: "Coach"}) : 
                                 () => navigation.navigate("ViewWorkout", { workoutId: row.workout_plan_id, memberName: member.name, refreshPage:fetchMemberWorkout, member})}
                         >
                             {row.id === "add" ? (

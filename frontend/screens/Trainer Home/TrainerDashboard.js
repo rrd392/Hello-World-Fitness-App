@@ -108,7 +108,7 @@ const TrainerDashboard = () => {
             onPress={() => navigation.navigate("CheckIn")}
           >
             <Ionicons name="checkbox" size={30} color="#B3A0FF" />
-            <Text style={styles.navText}>Attendance</Text>
+            <Text style={styles.navText}>Mark Attendance</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.navItem}
@@ -117,13 +117,7 @@ const TrainerDashboard = () => {
             <Ionicons name="barbell" size={30} color="#B3A0FF" />
             <Text style={styles.navText}>Classes</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => navigation.navigate("Nutrition")}
-          >
-            <Ionicons name="nutrition" size={30} color="#B3A0FF" />
-            <Text style={styles.navText}>Nutrition</Text>
-          </TouchableOpacity>
+          
         </View>
       </SafeAreaView>
 

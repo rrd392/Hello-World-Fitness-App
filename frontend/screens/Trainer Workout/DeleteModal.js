@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { createElement } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import API_BASE_URL from "../../env";
 
-const DeleteModal = ({ visible, onCancel, workoutId, member }) => {
+const DeleteModal = ({ visible, onCancel, workoutId, member, category, refreshPage }) => {
 
     const navigation = useNavigation();
 
@@ -20,7 +20,12 @@ const DeleteModal = ({ visible, onCancel, workoutId, member }) => {
         if (data.success) {
             Alert.alert('Workout plan deleted successfully!');
             onCancel();
-            navigation.navigate('MemberWorkoutPlan', {member});
+            if(category == "Coach"){
+                navigation.navigate('MemberWorkoutPlan', {member});
+            }else if (category == "General"){
+                refreshPage();
+                navigation.navigate('Workout');
+            }
         }
         } catch (error) {
         console.error("Error updating workout plan:", error);

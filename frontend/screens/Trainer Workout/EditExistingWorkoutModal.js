@@ -1,11 +1,9 @@
-import React, { useState } from "react";
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import API_BASE_URL from "../../env";
 
-const EditExistingWorkoutModal = ({ visible, onCancel, workout }) => {
-    const [workoutName, setWorkoutName] = useState(workout?.name || "");
-    const [description, setDescription] = useState("");
-    const [selectedLevels, setSelectedLevels] = useState([]);
+const EditExistingWorkoutModal = ({ visible, onCancel, workoutId, refreshPage }) => {
 
     const toggleLevelSelection = (level) => {
         setSelectedLevels((prevLevels) => 
@@ -16,50 +14,156 @@ const EditExistingWorkoutModal = ({ visible, onCancel, workout }) => {
     };
 
     const [showAddButton, setShowAddButton] = useState(true);
+    const [workoutPlan, setWorkoutPlan] = useState([]);
+    const [fullWorkoutDetails, setFullWorkoutDetails] = useState([]);
+    const [exerciseType, setExerciseType] = useState([]);
+    const [workoutDetails, setWorkoutDetails] = useState([]);
+
+    useEffect(() => {
+        fetchFullWorkoutDetails();
+    }, []);
+
+    useEffect(() => {
+        if(workoutId){
+            fetchWorkoutPlan();
+            fetchWorkoutDetails();
+        }
+    }, [workoutId]);
+
+    const fetchWorkoutPlan = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/displayWorkoutPlan/${workoutId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setWorkoutPlan(data.progress);
+        }
+        } catch (error) {
+        console.error("Error fetching workout plan:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+
+    const fetchWorkoutDetails = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/displayWorkoutDetails/${workoutId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setWorkoutDetails(data.progress);
+        }
+        } catch (error) {
+        console.error("Error fetching workout plan:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+
+    const fetchFullWorkoutDetails = async () => {
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/workout-plan/displayWorkoutDetail`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data) {
+            setFullWorkoutDetails(data.results);
+            setExerciseType(data.type);
+        }
+        } catch (error) {
+        console.error("Error fetching workout details:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
 
     const handleToggleButton = () => {
         setShowAddButton(!showAddButton);
     };
-
-    const workouts = [
-        { id: 1, name: "Bench Press", reps: "8 Reps", restTime: "01:20 Rest Time", sets: "4x" },
-        { id: 2, name: "Dead Lifts", reps: "8 Reps", restTime: "01:50 Rest Time", sets: "4x" },
-        { id: 3, name: "Russian Twist", reps: "15 Reps", restTime: "01:30 Rest Time", sets: "4x" },
-        { id: 4, name: "Overhead Press", reps: "10 Reps", restTime: "01:00 Rest Time", sets: "4x" },
-    ];
-
-    const exerciseData = {
-        Strength: [
-            { exercise_name: "Squats", sets: 4, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Bench Press", sets: 4, reps: 8, time_taken: "2:00 Rest Time" },
-            { exercise_name: "Deadlifts", sets: 4, reps: 6, time_taken: "2:30 Rest Time" },
-            { exercise_name: "Lunges", sets: 3, reps: 12, time_taken: "1:00 Rest Time" },
-            { exercise_name: "Overhead Press", sets: 3, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Dumbbell Rows", sets: 3, reps: 10, time_taken: "1:30 Rest Time" },
-            { exercise_name: "Kettlebell Swings", sets: 4, reps: 15, time_taken: "1:00 Rest Time" }
-        ],
-        Cardio: [
-            { exercise_name: "Jump Rope", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Burpees", sets: 3, reps: 12, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Cycling", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Mountain Climbers", sets: 3, reps: 20, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Running", sets: 1, reps: null, time_taken: "0:30 Rest Time" }
-        ],
-        Bodyweight: [
-            { exercise_name: "Push-Ups", sets: 3, reps: 15, time_taken: "1:00 Rest Time" },
-            { exercise_name: "Pull-Ups", sets: 3, reps: 8, time_taken: "1:30 Rest Time" }
-        ],
-        Core: [
-            { exercise_name: "Plank", sets: 2, reps: null, time_taken: "0:30 Rest Time" },
-            { exercise_name: "Russian Twists", sets: 3, reps: 15, time_taken: "0:45 Rest Time" },
-            { exercise_name: "Side Plank", sets: 2, reps: null, time_taken: "0:30 Rest Time" }
-        ],
-        Plyometric: [
-            { exercise_name: "Box Jumps", sets: 3, reps: 15, time_taken: "0:45 Rest Time" }
-        ]
-    };
     
-    console.log(exerciseData);
+    const deleteWorkoutDetail = async(workout_detail_id) => {
+        const workout_plan_id = workoutId;
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/deleteWorkoutDetail`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ workout_detail_id, workout_plan_id }),
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            Alert.alert('Exercise deleted successfully!');
+            setWorkoutDetails(prevDetails =>
+                prevDetails.filter(workout => workout.workout_detail_id !== workout_detail_id)
+            );
+        }
+        } catch (error) {
+        console.error("Error fetching workout details:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    }
+
+    const addWorkoutDetail = async(workout_detail_id) => {
+        const workout_plan_id = workoutId;
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/addWorkoutDetail`, {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ workout_detail_id, workout_plan_id }),
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            Alert.alert('Exercise added successfully!');
+            setWorkoutDetails(prevDetails => [
+                ...prevDetails,  
+                data.result      
+            ]);
+        }else{
+            Alert.alert(data.message);
+        }
+        } catch (error) {
+        console.error("Error fetching workout details:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    }
+
+    const updateWorkoutPlan = async(workout_plan_id) => {
+        if(!workoutPlan.plan_name || !workoutPlan.description){
+            Alert.alert("Please fill in all the fields.");
+            return
+        }
+        try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/updateWorkoutPlan`, {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({planName: workoutPlan.plan_name, description: workoutPlan.description, workout_plan_id}),
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            Alert.alert('Workout plan updated successfully!');
+            refreshPage();
+            onCancel();
+        }else{
+            Alert.alert(data.message);
+        }
+        } catch (error) {
+        console.error("Error updating workout plan:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    }
 
     return (
         <Modal visible={visible} animationType="slide" transparent onRequestClose={onCancel}>
@@ -70,57 +174,72 @@ const EditExistingWorkoutModal = ({ visible, onCancel, workout }) => {
                     </TouchableOpacity>
                     <Text style={styles.title}>Custom Workout</Text>
                     <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                        <Text style={styles.label}>Name</Text>
-                        <TextInput style={styles.input} value={workoutName} onChangeText={setWorkoutName} />
+                        <Text style={styles.label}>Name <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                        <TextInput style={styles.input} value={workoutPlan.plan_name} onChangeText={(text) =>setWorkoutPlan((prevData) => ({...prevData,plan_name: text.replace(/[^a-zA-Z0-9_/ '-]/g, ''),}))} />
 
-                        <Text style={styles.label}>Description</Text>
-                        <TextInput style={styles.input} value={description} onChangeText={setDescription} />
-
-                        <Text style={styles.selectLevelText}>Select Level</Text>
-                        <View style={styles.selectLevelContainer}>
-                            {["Beginner", "Intermediate", "Advanced"].map((level) => (
-                                <TouchableOpacity 
-                                    key={level}
-                                    style={[
-                                        styles.levelButton, 
-                                        selectedLevels.includes(level) ? styles.selectedBtn : styles.unselectedBtn
-                                    ]}
-                                    onPress={() => toggleLevelSelection(level)}
-                                >
-                                    <Text style={[
-                                        styles.levelText, 
-                                        selectedLevels.includes(level) ? styles.selectedText : styles.unselectedText
-                                    ]}>
-                                        {level}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
+                        <Text style={styles.label}>Description <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
+                        <TextInput style={styles.input} value={workoutPlan.description} onChangeText={(text) =>setWorkoutPlan((prevData) => ({...prevData,description: text.replace(/[^a-zA-Z0-9_/ '-.!?:]/g, ''),}))} />
 
                         <View style={styles.workoutDetailsContainer}>
                         <Text style={styles.workoutDetailsText}>Workout Details</Text>
-                        {workouts.map((workout) => (
-                            <View key={workout.id} style={styles.workoutItem}>
+                        {workoutDetails.map((workout) => (
+                            <View key={workout.workout_detail_id} style={styles.workoutItem}>
                                 <View style={styles.nameNtime}>
-                                    <Text style={styles.workoutName}>{workout.name} {workout.reps}</Text>
+                                    <Text style={styles.workoutName}>{workout.exercise_name} {workout.reps}</Text>
                                     <View style={styles.iconNtime}>
                                         <Ionicons name="time-outline" size={16} color="#B3A0FF" /> 
-                                        <Text style={styles.restTime}>{workout.restTime}</Text>
+                                        <Text style={styles.restTime}>{workout.rest_time_seconds}s rest time</Text>
                                     </View>
                                 </View>
                                 <View style={styles.setNicon}>
                                     <Text style={styles.setsText}>Sets {workout.sets}</Text>
 
-                                    <TouchableOpacity style={styles.iconButton}>
+                                    <TouchableOpacity style={styles.iconButton} onPress={() => deleteWorkoutDetail(workout.workout_detail_id)}>
                                         <Feather name="trash" size={22} color="#000" />
                                     </TouchableOpacity>
                                 </View>
                                 
                             </View>
                         ))}
+                        {showAddButton ? (
+                            <TouchableOpacity style={styles.addButton} onPress={handleToggleButton}>
+                                <Ionicons name="add" size={30} color="white" />
+                            </TouchableOpacity>
+                        ) : (
+                            <>
+                            <TouchableOpacity style={styles.addButton} onPress={handleToggleButton}>
+                                <Ionicons name="arrow-up" size={30} color="white" />
+                            </TouchableOpacity>
+
+                            {/* Loop through each category and then map the exercises */}
+                            {exerciseType.map((category) => (
+                                <View key={category.exercise_type}>
+                                    <Text style={styles.categoryTitle}>{category.exercise_type}</Text>
+                                    {fullWorkoutDetails.map((workout) => (
+                                        workout.exercise_type == category.exercise_type? (
+                                        <View key={workout.workout_detail_id} style={styles.workoutItem}>
+                                            <View style={styles.nameNtime}>
+                                                <Text style={styles.workoutName}>{workout.exercise_name} {workout.reps ? `${workout.reps} Reps` : ''}</Text>
+                                                <View style={styles.iconNtime}>
+                                                    <Ionicons name="time-outline" size={16} color="#B3A0FF" />
+                                                    <Text style={styles.restTime}>{workout.rest_time_seconds}s rest time</Text>
+                                                </View>
+                                            </View>
+                                            <View style={styles.setNicon}>
+                                                <Text style={styles.setsText}>Sets {workout.sets}x</Text>
+                                                <TouchableOpacity style={styles.iconaddButton} onPress={() => addWorkoutDetail(workout.workout_detail_id)}>
+                                                    <Ionicons name="add" size={22} color="#000" />
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    ):null))}
+                                </View>
+                            ))}
+                        </>
+                    )}
                     </View>
                     </ScrollView>
-                    <TouchableOpacity style={styles.uploadButton}>
+                    <TouchableOpacity style={styles.uploadButton} onPress={() => updateWorkoutPlan(workoutId)}>
                         <Text style={styles.uploadButtonText}>Upload</Text>
                     </TouchableOpacity>
                 </View>
@@ -145,7 +264,7 @@ const styles = StyleSheet.create({
     uploadButtonText: { color: '#E2F163', fontSize: 16, fontWeight: 'bold' },
 
     workoutDetailsContainer: { padding: 5},
-    workoutDetailsText: { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 10, marginTop: 5},
+    workoutDetailsText: { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 10, marginTop: 20},
     workoutItem: { backgroundColor: 'white', padding: 15, borderRadius: 20, marginVertical: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
     nameNtime: { flex: 1},
     iconNtime: { flexDirection: 'row', alignItems: 'center', marginTop: 3, gap: 3},
@@ -157,7 +276,7 @@ const styles = StyleSheet.create({
 
     closeaddworkoutButton: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 10, width: 60},
     closeButtonText: { fontSize: 15, fontWeight: 'bold'},
-    categoryTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 2 },
+    categoryTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 10, marginBottom:5 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
 
     selectLevelText: { alignSelf: 'center', marginTop: 20, fontSize: 20, fontWeight: 'bold', marginBottom: 10},

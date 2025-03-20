@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     updateButtonText: { color: '#E2F163', fontSize: 16, fontWeight: 'bold' },
 
     workoutDetailsContainer: { padding: 5},
-    workoutDetailsText: { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 10, marginTop: 10},
+    workoutDetailsText: { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 10, marginTop: 20},
     workoutItem: { backgroundColor: 'white', padding: 15, borderRadius: 20, marginVertical: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
     nameNtime: { flex: 1},
     iconNtime: { flexDirection: 'row', alignItems: 'center', marginTop: 3, gap: 3},

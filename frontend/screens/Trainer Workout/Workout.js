@@ -7,25 +7,6 @@ import DeleteModal from "./DeleteModal";
 import EditExistingWorkoutModal from "./EditExistingWorkoutModal";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
-
-const existingPlans = [
-    {
-        workout_plan_id: 1,
-        plan_name: "Full Body Blast",
-        description: "A high-intensity workout focusing on all muscle groups.",
-        count: 10,
-        difficulty: "Intermediate",
-        workout_image: require("../../assets/bck1.png"),
-    },
-    {
-        workout_plan_id: 2,
-        plan_name: "Cardio Burn",
-        description: "A cardio-focused workout to get your heart pumping.",
-        count: 8,
-        difficulty: "Beginner",
-        workout_image: require("../../assets/bck1.png"),
-    },
-];
     
 const Workout = () => {
 
@@ -101,8 +82,8 @@ const Workout = () => {
 
     const [selectedTab, setSelectedTab] = useState("general");
     const [selectedWorkout, setSelectedWorkout] = useState(null);
-
-    const workoutPlans = selectedTab === "general" ? existingPlans : null;
+    const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
+    console.log(selectedWorkoutId);
 
     const toggleWorkOutDetails = (item) => {
         setSelectedWorkout(selectedWorkout === item.workout_plan_id ? null : item.workout_plan_id);
@@ -172,11 +153,11 @@ const Workout = () => {
                             </View>
                             {selectedTab === "general" && (
                                 <View style={styles.iconContainer}>
-                                    <TouchableOpacity style={styles.iconButton} onPress={() => setShowEditExistingWorkoutModal(true)}>
+                                    <TouchableOpacity style={styles.iconButton} onPress={() => {setSelectedWorkoutId(item.workout_plan_id); setShowEditExistingWorkoutModal(true);}}>
                                         <Feather name="edit" size={22} color="black" />
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.iconButton}>
-                                        <Feather name="trash" size={22} color="black" onPress={() => setShowDeleteModal(true)}/>
+                                        <Feather name="trash" size={22} color="black" onPress={() => {setSelectedWorkoutId(item.workout_plan_id); setShowDeleteModal(true);}}/>
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -238,7 +219,7 @@ const Workout = () => {
                 )}
             </SafeAreaView>
             {selectedTab === "general"? (
-                <TouchableOpacity style={styles.createBg} onPress={() => navigation.navigate("CreateWorkout")}>
+                <TouchableOpacity style={styles.createBg} onPress={() => navigation.navigate("CreateWorkout", {memberId: "", member: [], category: "General"})}>
                     <View style={styles.createButton}>
                         <Text style={styles.createText}>Create</Text>
                         <Ionicons name="add" size={22} color='black' />
@@ -248,11 +229,16 @@ const Workout = () => {
             <DeleteModal
                 visible={showDeleteModel}
                 onCancel={() => setShowDeleteModal(false)}
-                onConfirm={() => setShowDeleteModal(false)}
+                workoutId={selectedWorkoutId}
+                member = {[]}
+                category = {"General"}   
+                refreshPage = {fetchGeneralWorkout}             
             />
             <EditExistingWorkoutModal
                 visible={showEditExistingWorkoutModal}
                 onCancel={() => setShowEditExistingWorkoutModal(false)}
+                workoutId = {selectedWorkoutId}
+                refreshPage = {fetchGeneralWorkout}             
             />
         </View>
     )
