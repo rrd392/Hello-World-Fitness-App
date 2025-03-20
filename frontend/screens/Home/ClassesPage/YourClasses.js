@@ -17,7 +17,6 @@ import { Ionicons } from "@expo/vector-icons";
 import RatingPopup from "./RatingPopup";
 import API_BASE_URL from "../../../env";
 import { getUserId } from "../../getUserId";
-import { useFocusEffect } from "@react-navigation/native";
 const { width } = Dimensions.get("window");
 const cardWidth = width - 61; 
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -12,6 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import HeaderVer4 from "../../HeaderVer4";
 import UpcomingClassCards from "./UpcomingClassCards";
 import PastClassCards from "./PastClassCards";
+import API_BASE_URL from "../../../env";
+import { getUserId } from "../../getUserId";
 
 function Schedule1() {
   const navigation = useNavigation();
@@ -49,6 +51,80 @@ function Schedule1() {
     setSelectedClassStatus(status);
     setClassStatusDropdown(false);
   };
+
+  const [userId, setUserId] = useState("");
+  const [upcomingClass, setUpcomingClass] = useState([]);
+  const [classHistory, setClassHistory] = useState([]);
+
+  useEffect(() => {
+    async function fetchUserId() {
+        const token = await getUserId();
+        setUserId(token.id);
+    }
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    if(userId){
+      fetchUpcomingClasses();
+      fetchClassHistory();
+    }
+  }, [userId]);
+
+  const fetchUpcomingClasses = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/trainer-class/displayUpcomingClasses/${userId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        setUpcomingClass(data.results)
+      }
+    } catch (error) {
+      console.error("Error fetching upcoming class data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  };
+
+  const fetchClassHistory = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/trainer-class/displayClassHistory/${userId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        setClassHistory(data.results)
+      }
+    } catch (error) {
+      console.error("Error fetching class history data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  };
+
   const upcomingClassData = [
     {
       title: "Yoga Flow",
