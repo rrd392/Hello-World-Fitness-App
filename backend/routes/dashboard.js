@@ -35,7 +35,7 @@ router.get('/display/:user_id', (req, res) => {
                         GROUP BY c.class_id
                         ORDER BY c.schedule_date LIMIT 5`;
 
-    const workoutPlansQuery = 'SELECT * FROM workout_plans LIMIT 5';
+    const workoutPlansQuery = 'SELECT * FROM workout_plans WHERE type = "General" LIMIT 5';
 
     const dietQuery = 'SELECT * FROM meal LIMIT 5';
 
@@ -106,9 +106,9 @@ router.get('/displayTrainer/:user_id', (req, res) => {
                         GROUP BY c.class_id
                         ORDER BY c.schedule_date LIMIT 5`;
 
-    const workoutPlansQuery = 'SELECT * FROM workout_plans LIMIT 5';
+    const workoutPlansQuery = 'SELECT * FROM workout_plans WHERE type = "General" LIMIT 5';
 
-    const dietQuery = 'SELECT * FROM meal LIMIT 5';
+    const memberQuery = 'SELECT * FROM member_trainer mt INNER JOIN user u ON mt.member_id = u.user_id WHERE mt.trainer_id = ? LIMIT 5';
 
     db.query(userQuery, [user_id], (error, userResult) => {
         if (error) {
@@ -131,12 +131,12 @@ router.get('/displayTrainer/:user_id', (req, res) => {
                         console.error("Database error:", error);
                         return res.status(500).json({ success: false, message: "Internal server error" });
                     }
-                    db.query(dietQuery, (error, diet) => {
+                    db.query(memberQuery, [user_id], (error, member) => {
                         if (error) {
                             console.error("Database error:", error);
                             return res.status(500).json({ success: false, message: "Internal server error" });
                         }
-                        res.json({ success: true, classes: results[0], userName, disClass: classes, workoutPlans: workoutPlans, diet:diet});
+                        res.json({ success: true, classes: results[0], userName, disClass: classes, workoutPlans: workoutPlans, member:member});
                     });
                 });
             });

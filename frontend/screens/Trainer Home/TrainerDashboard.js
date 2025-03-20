@@ -23,7 +23,7 @@ const TrainerDashboard = () => {
   const [upcomingClassData, setUpcomingClassData] = useState([]);
   const [classData, setClassData] = useState([]);
   const [workoutPlans, setWorkoutPlans] = useState([]);
-  const [dietPlans, setDietPlans] = useState([]);
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
     async function fetchUserId() {
@@ -64,7 +64,7 @@ const TrainerDashboard = () => {
           }
           setClassData(data.disClass);
           setWorkoutPlans(data.workoutPlans);
-          setDietPlans(data.diet);
+          setMembers(data.member);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -150,7 +150,7 @@ const TrainerDashboard = () => {
 
         {/* Classes */}
         <View style={styles.announcementSection}>
-          <Text style={styles.announcementTitle}>Explore Classes</Text>
+          <Text style={styles.announcementTitle}>Manage Classes</Text>
           <FlatList
             data={[
               ...(Array.isArray(classData) ? classData : []),
@@ -193,7 +193,7 @@ const TrainerDashboard = () => {
 
         {/* Workout Plans */}
         <View style={styles.announcementSection}>
-          <Text style={styles.announcementTitle}>Explore Workout Plans</Text>
+          <Text style={styles.announcementTitle}>Manage Workout Plans</Text>
           <FlatList
             data={[
               ...(Array.isArray(workoutPlans) ? workoutPlans : []),
@@ -210,13 +210,13 @@ const TrainerDashboard = () => {
                 // "More >" Card
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => navigation.navigate("WorkoutPlanStack")}
+                  onPress={() => navigation.navigate("TrainerWorkoutStack")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card}>
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("TrainerWorkoutStack")}>
                   <Image
                     source={{
                       uri: `${API_BASE_URL}/uploads/${item.workout_image}`,
@@ -236,10 +236,10 @@ const TrainerDashboard = () => {
 
         {/* Diet Plans */}
         <View style={styles.announcementSection} marginBottom="40">
-          <Text style={styles.announcementTitle}>Explore Diet Plans</Text>
+          <Text style={styles.announcementTitle}>Manage Members</Text>
           <FlatList
             data={[
-              ...(Array.isArray(dietPlans) ? dietPlans : []),
+              ...(Array.isArray(members) ? members : []),
               { isMoreCard: true },
             ]}
             horizontal={true}
@@ -252,16 +252,16 @@ const TrainerDashboard = () => {
               item.isMoreCard ? (
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => navigation.navigate("Nutrition")}
+                  onPress={() => navigation.navigate("Member")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card}>
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Member")}>
                   <Image
                     source={{
-                      uri: `${API_BASE_URL}/uploads/${item.meal_pictures}`,
+                      uri: `${API_BASE_URL}/uploads/${item.profile_picture}`,
                     }}
                     style={styles.announcementImage}
                   />

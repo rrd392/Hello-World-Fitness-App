@@ -3,15 +3,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import TrainerDashboard from "../screens/Trainer Home/TrainerDashboard";
 import TrainerProfileStack from "./TrainerProfileStack";
-// import WorkoutPlanStack from "./WorkoutPlanStack";
+import TrainerWorkoutStack from "./TrainerWorkoutStack";
 import Notification from "../screens/Trainer Home/Notification";
-// import CheckIn from "../screens/Home/CheckIn";
 import TrainerMemberStack from "./TrainerMemberStack";
-// import SelectedClass from "../screens/Home/ClassesPage/SelectedClass";
-// import Nutrition from "../screens/Home/Nutrition/Nutrition";
-// import CalculateMeal from "../screens/Home/Nutrition/CalculateMeal";
-// import SelectedMeal from "../screens/Home/Nutrition/SelectedMeal";
-// import YourClasses from "../screens/Home/ClassesPage/YourClasses";
 import Schedule1 from "../screens/Trainer Home/SchedulePage/Schedule1";
 import MarkAttendance from "../screens/Trainer Home/SchedulePage/MarkAttendance";
 import ClassAttendance from "../screens/Trainer Home/SchedulePage/ClassAttendance";
@@ -38,6 +32,10 @@ const TrainerHomeStack = () => {
         component={TrainerProfileStack}
       />
       <TrainerHomeStackNavigator.Screen
+        name="TrainerWorkoutStack"
+        component={TrainerWorkoutStack}
+      />
+      <TrainerHomeStackNavigator.Screen
         name="Schedule1"
         component={Schedule1}
       />
@@ -58,19 +56,7 @@ const TrainerHomeStack = () => {
         name="ClassReport"
         component={ClassReport}
       />
-      {/* <TrainerHomeStackNavigator.Screen name="WorkoutPlanStack" component={WorkoutPlanStack} />
-      <TrainerHomeStackNavigator.Screen name="CheckIn" component={CheckIn} />
-      <TrainerHomeStackNavigator.Screen
-        name="SelectedClass"
-        component={SelectedClass}
-      />
-      <TrainerHomeStackNavigator.Screen name="YourClasses" component={YourClasses} />
-      <TrainerHomeStackNavigator.Screen name="Nutrition" component={Nutrition} />
-      <TrainerHomeStackNavigator.Screen
-        name="CalculateMeal"
-        component={CalculateMeal}
-      />
-      <TrainerHomeStackNavigator.Screen name="SelectedMeal" component={SelectedMeal} /> */}
+      
     </TrainerHomeStackNavigator.Navigator>
   );
 };

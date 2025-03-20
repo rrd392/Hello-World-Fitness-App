@@ -115,19 +115,32 @@ function Schedule1() {
         <Text style={styles.sectionTitle}>Classes</Text>
         <View style={styles.titleContainer}>
           <TouchableOpacity
-            style={styles.dropdownButton2}
+            style={[styles.dropdownButton, {borderColor:"#E2F163"}]}
             onPress={() => setClassStatusDropdown(!classStatusDropdown)}
           >
-            <Text style={styles.buttonText}>{selectedClassStatus}</Text>
+            <Text style={[styles.buttonText, {color:"#E2F163"}]}>{selectedClassStatus}</Text>
             <Ionicons name="chevron-down" size={20} color="#E2F163" />
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.dropdownButton}
+            style={[
+              styles.dropdownButton, 
+              selectedClassStatus === "Past" ? { borderColor: "#A5A5A5" } : { borderColor: "#E2F163" }
+            ]}
             onPress={() => setDateDropdownVisible(!dateDropdownVisible)}
+            disabled = {selectedClassStatus == "Past"}
           >
-            <Text style={styles.buttonText}>{selectedDate}</Text>
-            <Ionicons name="chevron-down" size={20} color="#E2F163" />
+            <Text style={[
+              styles.buttonText, 
+              selectedClassStatus === "Past" ? { color: "#A5A5A5" } : { color: "#E2F163" }
+            ]}>
+              {selectedDate}
+            </Text>
+            <Ionicons 
+              name="chevron-down" 
+              size={20} 
+              color={selectedClassStatus === "Past" ? "#A5A5A5" : "#E2F163"} 
+            />
           </TouchableOpacity>
         </View>
         {classStatusDropdown && (
@@ -196,48 +209,33 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    paddingLeft: 20,
+    paddingHorizontal: 20,
     fontSize: 24,
     color: "white",
     fontWeight: "bold",
+    marginBottom:10
   },
 
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderColor: "#E2F163",
     borderWidth: 2,
     padding: 10,
     borderRadius: 5,
     width: 150,
     backgroundColor: "black",
     marginTop: 10,
-    marginRight: 10,
-  },
-  dropdownButton2: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderColor: "#E2F163",
-    borderWidth: 2,
-    padding: 10,
-    borderRadius: 5,
-    width: 150,
-    backgroundColor: "black",
-    marginTop: 10,
-    alignSelf: "flex-end", // Moves button to the right
-    marginLeft: -10,
   },
 
-  buttonText: { fontSize: 16, color: "#E2F163", fontWeight: "bold" },
+  buttonText: { fontSize: 16, fontWeight: "bold" },
   dropdown: {
     position: "absolute",
     backgroundColor: "white",
     borderRadius: 5,
     width: 150,
     padding: 5,
-    top: 80,
+    top: 100,
     right: 20,
     zIndex: 10,
     marginLeft: "auto",
@@ -250,7 +248,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 150,
     padding: 5,
-    top: 80,
+    top: 100,
     left: 20,
     zIndex: 10,
     marginLeft: "auto",
@@ -292,14 +290,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  classesSection: { marginBottom: 20 },
-  titleContainer: {
-    marginLeft: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
+  classesSection: { marginBottom: 20, marginTop:-20 },
 
   selectedText: { marginTop: 10, fontSize: 16, color: "#E2F163" },
   classCards: { marginBottom: 10, backgroundColor: "#B3A0FF", width: "100%" },
