@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -53,7 +53,7 @@ function Schedule1() {
   };
 
   const [userId, setUserId] = useState("");
-  const [upcomingClass, setUpcomingClass] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [classHistory, setClassHistory] = useState([]);
 
   useEffect(() => {
@@ -66,15 +66,27 @@ function Schedule1() {
 
   useEffect(() => {
     if(userId){
-      fetchUpcomingClasses();
       fetchClassHistory();
     }
   }, [userId]);
 
-  const fetchUpcomingClasses = async () => {
+  useEffect(() => {
+    if(userId){
+      fetchUpcomingClasses();
+    }
+  }, [userId, selectedDate, selectedDay]);
+
+  const fetchUpcomingClasses = useCallback(async () => {
+    const [day, month, year] = selectedDate.split("/"); 
+    const formattedDate = `${year}-${month}-${day}`;
+
+    const classDate = new Date(formattedDate);
+    classDate.setDate(classDate.getDate() + Number(selectedDay)); 
+
+    const schedule_date = classDate.toISOString().split("T")[0];
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/trainer-class/displayUpcomingClasses/${userId}`,
+        `${API_BASE_URL}/api/trainer-class/displayClasses/${userId}/${schedule_date}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -89,14 +101,14 @@ function Schedule1() {
       const data = await response.json();
 
       if (data) {
-        setUpcomingClass(data.results)
+        setClasses(data.results)
       }
     } catch (error) {
       console.error("Error fetching upcoming class data:", error);
       Alert.alert("Error", error.message || "Network request failed");
     } finally {
     }
-  };
+  }, [userId, selectedDate, selectedDay]);
 
   const fetchClassHistory = async () => {
     try {
@@ -125,32 +137,6 @@ function Schedule1() {
     }
   };
 
-  const upcomingClassData = [
-    {
-      title: "Yoga Flow",
-      time: "08:00 - 09:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "20/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Yoga Flow",
-      time: "08:00 - 09:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "20/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Yoga Flow",
-      time: "08:00 - 09:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "20/20",
-      image: require("./yoga.jpg"),
-    },
-  ];
   const pastClassData = [
     {
       title: "Zumba Dance",
@@ -191,11 +177,10 @@ function Schedule1() {
         <Text style={styles.sectionTitle}>Classes</Text>
         <View style={styles.titleContainer}>
           <TouchableOpacity
-            style={[styles.dropdownButton, {borderColor:"#E2F163"}]}
-            onPress={() => setClassStatusDropdown(!classStatusDropdown)}
+            style={[styles.historyButton]}
+            onPress={() => navigation.navigate("ClassReport.js", {className: classItem.class_name})}
           >
-            <Text style={[styles.buttonText, {color:"#E2F163"}]}>{selectedClassStatus}</Text>
-            <Ionicons name="chevron-down" size={20} color="#E2F163" />
+            <Text style={[styles.buttonText, {color:"#000", textAlign:'center'}]}>View History</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -263,13 +248,10 @@ function Schedule1() {
       </View>
       {/* Class Cards*/}
       <ScrollView style={styles.classCards}>
-        {selectedClassStatus === "Upcoming"
-          ? upcomingClassData.map((classItem, index) => (
-              <UpcomingClassCards key={index} {...classItem} />
-            ))
-          : pastClassData.map((classItem, index) => (
-              <PastClassCards key={index} {...classItem} />
-            ))}
+        {/* {selectedClassStatus === "Upcoming"
+          ? (<UpcomingClassCards classData={classes} />)
+          : (<PastClassCards classData={classHistory} />)} */}
+        <UpcomingClassCards classData={classes} />
       </ScrollView>
     </View>
   );
@@ -290,6 +272,15 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     marginBottom:10
+  },
+
+  historyButton:{
+    borderWidth: 2,
+    padding: 10,
+    borderRadius: 5,
+    width: 150,
+    backgroundColor: "#E2F163",
+    marginTop: 10,
   },
 
   dropdownButton: {

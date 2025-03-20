@@ -252,7 +252,6 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 20,
     marginBottom: 10,
-    padding: 10,
   },
   classCard: {
     backgroundColor: "#232323",

@@ -76,7 +76,7 @@ router.post('/addUserClass', (req, res) => {
                     res.json({success:true});
                 });
             }else{
-                return res.status(400).json({ success:false, message: "Faied to attend. Class is over." });
+                return res.status(400).json({ success:false, message: "Failed to attend. Class is over." });
             }
         });
     });

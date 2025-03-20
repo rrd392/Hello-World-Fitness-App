@@ -116,9 +116,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: "white",
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: "center",
-    textDecorationLine: "underline",
   },
   card: {
     backgroundColor: "#4A4A4A",

@@ -14,7 +14,7 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import HeaderVer4 from "../../HeaderVer4";
 import API_BASE_URL from "../../../env";
 
-function SelectedClass() {
+function ClassPastAttendance() {
   const navigation = useNavigation();
   const route = useRoute();
   const { classData } = route.params || {};
@@ -160,6 +160,7 @@ function SelectedClass() {
                       <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{member.name}</Text>
                       <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">{member.email}</Text>
                     </View>
+                    <Text style={styles.Present}>Present</Text>
                   </View>
                 </View>
               )}
@@ -306,4 +307,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SelectedClass;
+export default ClassPastAttendance;
