@@ -11,6 +11,7 @@ import MarkAttendance from "../screens/Trainer Home/SchedulePage/MarkAttendance"
 import ClassAttendance from "../screens/Trainer Home/SchedulePage/ClassAttendance";
 import ClassPastAttendance from "../screens/Trainer Home/SchedulePage/ClassPastAttendance";
 import ClassReport from "../screens/Trainer Home/SchedulePage/ClassReport";
+import ClassHistory from "../screens/Trainer Home/SchedulePage/ClassHistory";
 
 const TrainerHomeStackNavigator = createStackNavigator();
 
@@ -60,6 +61,10 @@ const TrainerHomeStack = () => {
       <TrainerHomeStackNavigator.Screen
         name="ClassReport"
         component={ClassReport}
+      />
+      <TrainerHomeStackNavigator.Screen
+        name="ClassHistory"
+        component={ClassHistory}
       />
       
     </TrainerHomeStackNavigator.Navigator>

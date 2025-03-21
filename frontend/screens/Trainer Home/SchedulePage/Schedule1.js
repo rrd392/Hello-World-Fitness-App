@@ -11,7 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import HeaderVer4 from "../../HeaderVer4";
 import UpcomingClassCards from "./UpcomingClassCards";
-import PastClassCards from "./PastClassCards";
 import API_BASE_URL from "../../../env";
 import { getUserId } from "../../getUserId";
 
@@ -54,7 +53,6 @@ function Schedule1() {
 
   const [userId, setUserId] = useState("");
   const [classes, setClasses] = useState([]);
-  const [classHistory, setClassHistory] = useState([]);
 
   useEffect(() => {
     async function fetchUserId() {
@@ -63,12 +61,6 @@ function Schedule1() {
     }
     fetchUserId();
   }, []);
-
-  useEffect(() => {
-    if(userId){
-      fetchClassHistory();
-    }
-  }, [userId]);
 
   useEffect(() => {
     if(userId){
@@ -110,60 +102,6 @@ function Schedule1() {
     }
   }, [userId, selectedDate, selectedDay]);
 
-  const fetchClassHistory = async () => {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/trainer-class/displayClassHistory/${userId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-      }
-
-      const data = await response.json();
-
-      if (data) {
-        setClassHistory(data.results)
-      }
-    } catch (error) {
-      console.error("Error fetching class history data:", error);
-      Alert.alert("Error", error.message || "Network request failed");
-    } finally {
-    }
-  };
-
-  const pastClassData = [
-    {
-      title: "Zumba Dance",
-      time: "10:00 - 11:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "15/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Zumba Dance",
-      time: "10:00 - 11:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "15/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Zumba Dance",
-      time: "10:00 - 11:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "15/20",
-      image: require("./yoga.jpg"),
-    },
-  ];
-
   return (
     <View style={styles.container}>
       {/* Header Section */}
@@ -178,7 +116,7 @@ function Schedule1() {
         <View style={styles.titleContainer}>
           <TouchableOpacity
             style={[styles.historyButton]}
-            onPress={() => navigation.navigate("ClassReport.js", {className: classItem.class_name})}
+            onPress={() => navigation.navigate("ClassHistory")}
           >
             <Text style={[styles.buttonText, {color:"#000", textAlign:'center'}]}>View History</Text>
           </TouchableOpacity>
@@ -248,9 +186,6 @@ function Schedule1() {
       </View>
       {/* Class Cards*/}
       <ScrollView style={styles.classCards}>
-        {/* {selectedClassStatus === "Upcoming"
-          ? (<UpcomingClassCards classData={classes} />)
-          : (<PastClassCards classData={classHistory} />)} */}
         <UpcomingClassCards classData={classes} />
       </ScrollView>
     </View>
@@ -258,7 +193,7 @@ function Schedule1() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#212020" },
+  container: { flex: 1, backgroundColor: "#000" },
   titleContainer: {
     paddingHorizontal: 20,
     flexDirection: "row",

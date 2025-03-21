@@ -72,12 +72,9 @@ router.get('/displayClassHistory/:user_id', (req, res) => {
                             u.*, 
                             (SELECT COUNT(cp2.class_id) 
                             FROM class_participants cp2 
-                            WHERE cp2.class_id = c.class_id) AS participants,
-                            fc.* 
+                            WHERE cp2.class_id = c.class_id) AS participants
                         FROM classes c
                         INNER JOIN user u ON c.trainer_id = u.user_id
-                        LEFT JOIN class_participants cp ON c.class_id = cp.class_id  
-                        LEFT JOIN feedback fc ON c.class_id = fc.class_id AND c.trainer_id = fc.trainer_id
                         WHERE 
                             c.trainer_id = ? 
                             AND (
