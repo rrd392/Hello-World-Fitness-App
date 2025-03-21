@@ -61,7 +61,7 @@ function ClassReport() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
       {/* Header */}
-      <HeaderVer4 title="Home" onPress={() => navigation.goBack()} />
+      <HeaderVer4 title="Schedule" onPress={() => navigation.goBack()} />
 
       {/* Wrap everything in FlatList for optimized scrolling */}
       <KeyboardAvoidingView

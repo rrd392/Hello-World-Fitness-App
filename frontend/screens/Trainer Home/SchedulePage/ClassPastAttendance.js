@@ -29,7 +29,7 @@ function ClassPastAttendance() {
   const fetchClassParticipants = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/trainer-class/displayClassParticipants/${classData.class_id}`,
+        `${API_BASE_URL}/api/trainer-class/displayPastParticipants/${classData.class_id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -160,7 +160,7 @@ function ClassPastAttendance() {
                       <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{member.name}</Text>
                       <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">{member.email}</Text>
                     </View>
-                    <Text style={styles.Present}>Present</Text>
+                    <Text style={member.status == "Present"? styles.Present:styles.Absent}>{member.status}</Text>
                   </View>
                 </View>
               )}

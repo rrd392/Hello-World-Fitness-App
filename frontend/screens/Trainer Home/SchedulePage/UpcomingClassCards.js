@@ -46,11 +46,13 @@ function UpcomingClassCard({ classData }) {
 
         {/* Button Section*/}
         <View>
-          {new Date(classItem.schedule_date) > new Date()? (
+          {new Date(classItem.schedule_date) > new Date() || 
+          (new Date(classItem.schedule_date).toDateString() === new Date().toDateString() &&
+            classItem.start_time > new Date().toLocaleTimeString('en-GB', { hour12: false })) ? (
             <View style={styles.buttonRow}>
                 <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate("MarkAttendance")}
+                onPress={() => navigation.navigate("MarkAttendance", {classData: classItem})}
               >
                 <Text style={styles.buttonText}>Mark Attendance</Text>
               </TouchableOpacity>

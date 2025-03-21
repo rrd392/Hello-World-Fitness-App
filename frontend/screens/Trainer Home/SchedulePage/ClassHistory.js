@@ -108,7 +108,7 @@ function ClassHistory() {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() =>
-                  navigation.navigate("ClassAttendance", { classData: history })
+                  navigation.navigate("ClassPastAttendance", { classData: history })
                 }
               >
                 <Text style={styles.buttonText}>More</Text>

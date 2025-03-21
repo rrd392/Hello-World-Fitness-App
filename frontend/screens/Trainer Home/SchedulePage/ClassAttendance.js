@@ -177,7 +177,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop:10,
-    marginBottom:20
+    marginBottom:20,
+    gap:10
   },
 
   homeButton: { flexDirection: "row", alignItems: "center", gap: 3 },
@@ -225,7 +226,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: "100%",
   },
-  classTitle: { fontSize: 26, color: "#E2F163", fontWeight: "bold" },
+  classTitle: { fontSize: 26, color: "#E2F163", fontWeight: "bold", width:"60%" },
   classDescription: { fontSize: 14, color: "white",  marginBottom:10},
   infoRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 5 },
   classTime: { fontSize: 16, color: "white" },
@@ -285,20 +286,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "white",
     marginRight: 20,
-  },
-  Present: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#5ce681",
-    marginLeft: "auto",
-    marginRight: 10,
-  },
-  Absent: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#ed5858",
-    marginLeft: "auto",
-    marginRight: 10,
   },
   email: {
     fontSize: 14,
