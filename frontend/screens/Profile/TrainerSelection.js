@@ -15,11 +15,10 @@ import API_BASE_URL from "../../env";
 export default function SelectTrainerPage({ route }) {
   const navigation = useNavigation();
   
-  const { userId: member_id } = route?.params || {};
+  const { userId: member_id, plan, paymentMethod, totalPaid, payment_date, endDate } = route?.params || {};
 
   const [trainers, setTrainers] = useState([]);
   const [selectedTrainer, setSelectedTrainer] = useState(null);
-
 
   if (!member_id) {
     Alert.alert("Error", "TrainerSelectionPage Member ID is missing.");
@@ -69,7 +68,14 @@ export default function SelectTrainerPage({ route }) {
 
       if (data.success) {
         Alert.alert("Success", "Trainer assigned successfully!");
-        navigation.navigate("CreatedPage");
+        navigation.replace("PaymentConfirmation", {
+          userId:member_id,
+          plan,
+          paymentMethod,
+          totalPaid,
+          payment_date,
+          endDate 
+        });
       } else {
         Alert.alert("Error", data.message || "Trainer selection failed.");
       }

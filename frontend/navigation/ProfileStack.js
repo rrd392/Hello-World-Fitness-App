@@ -8,7 +8,7 @@ import Leaderboard from "../screens/Profile/Leaderboard";
 import MembershipStatus from "../screens/Profile/MembershipStatus";
 import MembershipRenew from "../screens/Profile/MembershipRenew";
 import PaymentConfirmation from "../screens/Profile/PaymentConfirmation";
-import TrainerSelection from "../screens/Sign up/TrainerSelection";
+import TrainerSelection from "../screens/Profile/TrainerSelection";
 import MemberDashboard from "../screens/Home/MemberDashboard";
 
 

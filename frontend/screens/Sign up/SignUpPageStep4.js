@@ -68,9 +68,8 @@ export default function SignUpPageStep4() {
       const data = await response.json();
   
       if (data.success) {
-        //console.log("User ID:", data.user_id);
         if (signupData.membershipPlan === 2 || signupData.membershipPlan === 4) {
-          navigation.navigate("TrainerSelection", { userId: data.user_id });
+          navigation.navigate("TrainerSelection", { userId: data.user_id});
         } else {
           navigation.navigate("CreatedPage");
         }

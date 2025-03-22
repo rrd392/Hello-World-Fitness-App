@@ -52,19 +52,30 @@ const MembershipRenew = () => {
       );
 
       if (response.data.success) {
-        navigation.replace("PaymentConfirmation", {
-          userId,
-          plan,
-          paymentMethod: paymentData.paymentMethod,
-          totalPaid: plan.price,
-          payment_date,
-          endDate: response.data.endDate 
-        });
+        if(plan.membership_id == 2 || plan.membership_id == 4){
+          navigation.replace("TrainerSelection", {
+            userId,
+            plan,
+            paymentMethod: paymentData.paymentMethod,
+            totalPaid: plan.price,
+            payment_date,
+            endDate: response.data.endDate 
+          });
+        }else{
+          navigation.replace("PaymentConfirmation", {
+            userId,
+            plan,
+            paymentMethod: paymentData.paymentMethod,
+            totalPaid: plan.price,
+            payment_date,
+            endDate: response.data.endDate 
+          });
+        }
       } else {
         Alert.alert("Payment Failed", response.data.message || "Please try again.");
       }
     } catch (error) {
-      console.error("💥 Payment Error:", {
+      console.error("Payment Error:", {
         message: error.message,
         responseData: error.response?.data, 
         responseStatus: error.response?.status, 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,16 +16,6 @@ const PaymentConfirmation = ({ route }) => {
   const [paymentDate, setPaymentDate] = useState(route.params?.paymentDate || currentDate);
 
   const { plan, paymentMethod, totalPaid, userId } = route.params;
-
-  useEffect(() => {
-    if (plan?.plan_name?.toLowerCase() === 'premium yearly' || plan?.plan_name?.toLowerCase() === 'premium monthly') {
-      navigation.replace('TrainerSelection', { userId}); // Navigate to TrainerSelection screen
-    }
-  }, [plan, navigation,userId ]);
-
-  console.log(userId);
-  
-  
 
   return (
     <View style={styles.container}>

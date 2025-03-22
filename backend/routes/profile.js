@@ -351,36 +351,47 @@ router.get("/trainers", (req, res) => {
     });
 });
   
-  // Save selected trainer
-  router.post("/selectTrainer", (req, res) => {
-    console.log("Received request body:", req.body); // Debugging
-  
+// Save selected trainer
+router.post("/selectTrainer", (req, res) => {
+
     const { member_id, trainer_id } = req.body;
-  
+
     if (!member_id || !trainer_id) {
-      console.log("Missing data:", { member_id, trainer_id }); // Debugging
-      return res.status(400).json({ error: "Member ID and Trainer ID are required" });
+        return res.status(400).json({ error: "Member ID and Trainer ID are required" });
     }
-  
-    const query = `
-      INSERT INTO member_trainer (member_id, trainer_id) 
-      VALUES (?, ?) 
-      ON DUPLICATE KEY UPDATE trainer_id = VALUES(trainer_id)
-    `;
-  
-    db.query(query, [member_id, trainer_id], (err, results) => {
-      if (err) {
-        console.error("Database error:", err); // Debugging
+
+    const checkQuery = `SELECT * FROM member_trainer WHERE member_id = ?`;
+
+    const query = `INSERT INTO member_trainer (member_id, trainer_id) 
+                    VALUES (?, ?) 
+                    ON DUPLICATE KEY UPDATE trainer_id = VALUES(trainer_id)`;
+
+    const updateQuery = `UPDATE member_trainer SET trainer_id = ? WHERE member_id = ?`;
+
+    db.query(checkQuery, [member_id], (err, checkResults) => {
+        if (err) {
+        console.error("Database error:", err); 
         return res.status(500).json({ error: "Failed to assign trainer" });
-      }
-      res.json({ success: true, message: "Trainer assigned successfully" });
+        }
+        if (checkResults.length == 0){
+            db.query(query, [member_id, trainer_id], (err, results) => {
+                if (err) {
+                console.error("Database error:", err); 
+                return res.status(500).json({ error: "Failed to assign trainer" });
+                }
+                res.json({ success: true, message: "Trainer assigned successfully" });
+            });
+        }else{
+            db.query(updateQuery, [trainer_id, member_id], (err, results) => {
+                if (err) {
+                console.error("Database error:", err); 
+                return res.status(500).json({ error: "Failed to assign trainer" });
+                }
+                res.json({ success: true, message: "Trainer assigned successfully" });
+            });
+        }
     });
-  });
-
-  
-
-
-  
+});
 
 
 module.exports = router;
