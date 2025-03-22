@@ -188,14 +188,23 @@ router.post('/addPoints', (req, res) => {
 
 router.post('/addUserWorkoutPlan', (req, res) => {
     const { user_id, workout_plan_id, selectedDay } = req.body;
+    const checkQuery = `SELECT * FROM user_workout_plans WHERE user_id = ? AND workout_plan_id = ?`;
     const addUserWorkoutPlanQuery = `INSERT INTO user_workout_plans (user_id, workout_plan_id, is_active, day_of_week)
                             VALUES (?, ?, ?, ?)`;
     
-    db.query(addUserWorkoutPlanQuery, [user_id, workout_plan_id, 1, selectedDay], (error, results)=>{
+    db.query(checkQuery, [user_id, workout_plan_id], (error, checkResults)=>{
         if (error) {
             return res.status(500).json({ error: "Database query failed" });
         }
-        res.json({success:true});
+        if(checkResults.length > 0){
+            return res.json({success:false, message: "Fail to add workout plan. It already exist."});
+        }
+        db.query(addUserWorkoutPlanQuery, [user_id, workout_plan_id, 1, selectedDay], (error, results)=>{
+            if (error) {
+                return res.status(500).json({ error: "Database query failed" });
+            }
+            res.json({success:true});
+        });
     });
 });
 

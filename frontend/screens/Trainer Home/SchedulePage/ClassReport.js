@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Text,
-  TouchableOpacity,
   Image,
   FlatList,
   KeyboardAvoidingView,
@@ -20,10 +19,7 @@ function ClassReport() {
   const navigation = useNavigation();
   const route = useRoute();
   const { classData } = route.params || {};
-
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const [memberFeedback, setMemberFeedback] = useState([]);
-  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
   useEffect(() => {
     if(classData.class_id){
@@ -169,25 +165,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  homeButton: { flexDirection: "row", alignItems: "center", gap: 3 },
-  homeText: { fontSize: 24, color: "#896CFE", fontWeight: "bold" },
-
   iconRow: { flexDirection: "row", gap: 20 },
-  dropdown: {
-    position: "absolute",
-    top: 30,
-    right: 0,
-    backgroundColor: "white",
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-    padding: 10,
-    width: 100,
-    zIndex: 10,
-  },
   pageContent: {
     alignItems: "center",
     marginTop: 0,
@@ -221,7 +199,7 @@ const styles = StyleSheet.create({
     top: "70%",
     left: "40%",
     transform: [{ translateX: -50 }, { translateY: -50 }],
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // Semi-transparent background
+    backgroundColor: "rgba(0, 0, 0, 0.7)", 
     paddingHorizontal: 20,
     paddingVertical: 5,
     borderRadius: 10,
@@ -256,16 +234,6 @@ const styles = StyleSheet.create({
   coachName: { fontSize: 18, fontWeight: 500, maxWidth:"100%" },
   coachEmail: { fontSize: 12, color: "#444" },
   coachNumber: { fontSize: 12, color: "#444" },
-
-  signUpButton: {
-    backgroundColor: "#1E1E1E",
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  signUpText: { fontSize: 18, color: "#E2F163", fontWeight: "bold" },
 
   errorText: { fontSize: 18, color: "red", textAlign: "center", marginTop: 20 },
 });

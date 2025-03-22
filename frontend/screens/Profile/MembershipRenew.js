@@ -15,7 +15,6 @@ const MembershipRenew = () => {
   const [selectedPayment, setSelectedPayment] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Validate params on component mount
   useEffect(() => {
     if (!params?.plan?.membership_id || !params?.userId) {
       Alert.alert("Invalid Request", "Please select a membership plan first.");
@@ -45,8 +44,6 @@ const MembershipRenew = () => {
         payment_date,
       };
 
-      // console.log("💳 Submitting payment:", paymentData);
-
       const response = await axios.post(
         `${API_BASE_URL}/api/profile/update-membership`,
         paymentData,
@@ -54,16 +51,13 @@ const MembershipRenew = () => {
         
       );
 
-      // console.log("🔗 API URL:", `${API_BASE_URL}/api/profile/update-membership`);
-
-
       if (response.data.success) {
         navigation.replace("PaymentConfirmation", {
           plan,
           paymentMethod: paymentData.paymentMethod,
           totalPaid: plan.price,
           payment_date,
-          endDate: response.data.endDate // Ensure backend returns this
+          endDate: response.data.endDate 
         });
       } else {
         Alert.alert("Payment Failed", response.data.message || "Please try again.");
@@ -71,8 +65,8 @@ const MembershipRenew = () => {
     } catch (error) {
       console.error("💥 Payment Error:", {
         message: error.message,
-        responseData: error.response?.data, // Capture backend response
-        responseStatus: error.response?.status, // Capture status code
+        responseData: error.response?.data, 
+        responseStatus: error.response?.status, 
         config: error.config
       });
       

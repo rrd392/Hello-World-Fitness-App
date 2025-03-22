@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ScrollView,
   View,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
@@ -36,47 +36,55 @@ const MemberDashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!userId) return; 
-
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/dashboard/display/${userId}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        if (!response.ok) {
-          const text = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-        }
-
-        const data = await response.json();
-
-        if (data.success) {
-          if (Array.isArray(data.classes)) {
-            setUpcomingClassData(data.classes);
-          } else if (data.classes) {
-            setUpcomingClassData([data.classes]); 
-          } else {
-            setUpcomingClassData([]); 
-          }
-          setClassData(data.disClass);
-          setWorkoutPlans(data.workoutPlans);
-          setDietPlans(data.diet);
-          setMembership(data.membership);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        Alert.alert("Error", error.message || "Network request failed");
-      } finally {
-      }
-    };
-
-    fetchUserData();
+    if (userId){
+      fetchUserData();
+    }
   }, [userId]);
+
+  useFocusEffect(
+      useCallback(() => {
+          if (userId) {
+              fetchUserData();
+          }
+      }, [userId])
+  );
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/dashboard/display/${userId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (Array.isArray(data.classes)) {
+          setUpcomingClassData(data.classes);
+        } else if (data.classes) {
+          setUpcomingClassData([data.classes]); 
+        } else {
+          setUpcomingClassData([]); 
+        }
+        setClassData(data.disClass);
+        setWorkoutPlans(data.workoutPlans);
+        setDietPlans(data.diet);
+        setMembership(data.membership);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  };
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -413,22 +421,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-
-  menuItem: {
-    padding: 10,
-  },
   moreCard: {
     width: 80,
     height: 120,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.1)", // Light grey background
+    backgroundColor: "rgba(255, 255, 255, 0.1)", 
     borderRadius: 10,
     marginHorizontal: 5,
   },
   moreText: {
     fontSize: 16,
-    // fontWeight: 'bold',
     color: "#fff",
     fontStyle: "italic",
   },

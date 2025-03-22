@@ -98,9 +98,8 @@ const CreateWorkout = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020' },
+    container: { flex: 1, backgroundColor: '#000' },
     content: { padding: 15, },
-    scrollViewContent: { paddingBottom: 30},
     categoryTitle: { fontSize: 25, fontWeight: 'bold', color: 'white', alignSelf: 'center', marginBottom: 5, marginTop: -10 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
     iconButton: { backgroundColor: '#A5A5A5', borderRadius: 50, padding: 5},
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
     workoutName: { fontSize: 14, fontWeight: 'bold', color: "#000" },
     iconNtime: { flexDirection: 'row', alignItems: 'center', marginTop: 3, gap: 3},
     restTime: { fontSize: 14, color: "#B3A0FF", flex: 1, fontWeight: 'bold' },
-    setsText: { fontSize: 16, fontWeight: "bold", color: "#A586FF" },
+    setsText: { fontSize: 14, fontWeight: "bold", color: "#A586FF" },
     setNicon: { gap: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'},
     viewButton: { flexDirection: 'row', marginTop: 10 ,backgroundColor: '#E2F163', width: "90%", height: 50, borderWidth:1, borderRadius: 10, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', position:'absolute', bottom:10},
     countingColumn: { borderWidth: 1, width: 25, height: 25, alignItems: 'center', borderRadius: 15, justifyContent: 'center', position: 'absolute', left:17},

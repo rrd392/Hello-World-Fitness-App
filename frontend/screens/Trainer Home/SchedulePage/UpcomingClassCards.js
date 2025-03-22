@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 15, // Adds spacing between card and buttons
+    marginTop: 15, 
   },
   button: {
     backgroundColor: "#111",

@@ -153,7 +153,7 @@ router.post('/createWorkoutPlan', upload.single("image"), async (req, res) => {
             return res.status(400).json({ error: "Invalid workout_details format" });
         }
 
-        const { plan_name, description, difficulty, day } = addData;
+        const { plan_name, description, difficulty } = addData;
         const imageUrl = req.file ? `workout_image/${req.file.filename}` : null;
         const type = category === "Coach" ? "Coach" : "General";
 
@@ -192,10 +192,10 @@ router.post('/createWorkoutPlan', upload.single("image"), async (req, res) => {
 
                             if (category === "Coach") {
                                 // Insert into user_workout_plans
-                                const addUserWorkoutPlan = `INSERT INTO user_workout_plans (user_id, workout_plan_id, is_active, day_of_week, trainer_id)
-                                                            VALUES (?, ?, ?, ?, ?)`;
+                                const addUserWorkoutPlan = `INSERT INTO user_workout_plans (user_id, workout_plan_id, is_active, trainer_id)
+                                                            VALUES (?, ?, ?, ?)`;
 
-                                db.query(addUserWorkoutPlan, [member_id, workout_plan_id, 1, day, trainer_id], (error) => {
+                                db.query(addUserWorkoutPlan, [member_id, workout_plan_id, 1, trainer_id], (error) => {
                                     if (error) return res.status(500).json({ error: "Database query failed" });
 
                                     return res.json({ success: true, message: "Workout plan created successfully!" });

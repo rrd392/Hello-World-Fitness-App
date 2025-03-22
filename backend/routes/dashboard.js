@@ -103,6 +103,7 @@ router.get('/displayTrainer/:user_id', (req, res) => {
     const classQuery = `SELECT c.*, u.*, COUNT(cp.class_id) AS participants FROM classes c
                         INNER JOIN user u ON c.trainer_id = u.user_id
                         LEFT JOIN class_participants cp ON c.class_id = cp.class_id
+                        WHERE c.schedule_date > ? OR (c.schedule_date = ? AND c.start_time > ?)
                         GROUP BY c.class_id
                         ORDER BY c.schedule_date LIMIT 5`;
 
@@ -121,7 +122,7 @@ router.get('/displayTrainer/:user_id', (req, res) => {
                 console.error("Database error:", error);
                 return res.status(500).json({ success: false, message: "Internal server error" });
             }
-            db.query(classQuery, (error, classes) => {
+            db.query(classQuery, [currentDateString, currentDateString, currentTime], (error, classes) => {
                 if (error) {
                     console.error("Database error:", error);
                     return res.status(500).json({ success: false, message: "Internal server error" });

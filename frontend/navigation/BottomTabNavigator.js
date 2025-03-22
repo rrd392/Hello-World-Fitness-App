@@ -12,9 +12,6 @@ import MemberProgressStack from "./MemberProgressStack";
 import TrainerMemberStack from "./TrainerMemberStack";
 import TrainerWorkoutStack from "./TrainerWorkoutStack";
 
-// Dummy Trainer Screens
-const TrainerScheduleScreen = () => <View><Text>Trainer Schedule</Text></View>;
-
 // Create Bottom Tab Navigator
 const Tab = createBottomTabNavigator();
 
@@ -52,7 +49,7 @@ const BottomTabNavigator = () => {
           let iconName;
           if (route.name === "Home") iconName = "home";
           else if (route.name === "View Progress") iconName = "document-text";
-          else if (route.name === "Member") iconName = "calendar";
+          else if (route.name === "Member") iconName = "people";
           else if (route.name === "Workout Plan" || route.name === "Schedule") iconName = "barbell";
           else if (route.name === "Workout" || route.name === "Schedule") iconName = "barbell";
           else if (route.name === "More") iconName = "ellipsis-vertical-outline";

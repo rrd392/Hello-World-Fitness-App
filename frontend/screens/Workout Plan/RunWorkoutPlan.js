@@ -1,18 +1,17 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { ScrollView, View, Image, Text, StyleSheet, TouchableOpacity, Animated, Easing, Modal } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { ScrollView, View, Image, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 
 const RunWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
     const { workout_plan, planDetails } = route.params;
 
-    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
+    const handleGoToProfile = () => navigation.navigate('ProfileStack');
     const toggleNotification = () => navigation.navigate('Notification');
 
     const [userName, setUserName] = useState("");
@@ -72,7 +71,7 @@ const RunWorkoutPlan = ({ route }) => {
     
     const addPoints = async (user_id, difficulty, completedExercise, planDetails) => {
         let workout_plan_id = workout_plan.workout_plan_id;
-        if (!startTime) return; // Ensure start time is available
+        if (!startTime) return;
         const totalDuration = Math.floor((Date.now() - startTime) / 1000);
         try {
             const response = await fetch(`${API_BASE_URL}/api/workout-plan/addPoints`, {
@@ -172,8 +171,8 @@ const RunWorkoutPlan = ({ route }) => {
                                 restProgress.setValue(0);
                                 Animated.timing(restProgress, {
                                     toValue: 1,
-                                    duration: workout.rest_time_seconds * 1000, // convert seconds to milliseconds
-                                    useNativeDriver: false, // width animation requires useNativeDriver false
+                                    duration: workout.rest_time_seconds * 1000, 
+                                    useNativeDriver: false, 
                                 }).start();
                             } else {
                                 // Optionally, reset progress when not resting.
@@ -319,7 +318,7 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         marginTop: 20,
         alignItems: 'center',
-        position: 'relative',  // Required for absolute positioning of the overlay
+        position: 'relative',  
         overflow: 'hidden',
     },
 
@@ -372,10 +371,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
     },
-    restButtonDisabled: { backgroundColor: "#ccc" },
-    disabledButton: { backgroundColor: "#ccc", },
-
-    
 });
 
 

@@ -8,12 +8,12 @@ const HeaderVer4 = ({
     title,
     onPress,
     showBackButton = true,
-    containerStyle, // optional additional styles for the container
+    containerStyle, 
 }) => {
 
     const navigation=useNavigation();
     const toggleNotification = () => navigation.navigate('Notification');
-    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
+    const handleGoToProfile = () => navigation.navigate('TrainerProfileStack');
 
     return (
         <View style={[styles.headerRow, containerStyle]}>

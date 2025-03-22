@@ -1,6 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import ProfileDashboard from "../screens/Profile/ProfileDashboard";
+import ProfileStack from "./ProfileStack";
 import MemberProgress from "../screens/MemberProgress";
 import Notification from "../screens/Home/Notification";
 
@@ -16,7 +16,7 @@ const MemberProgressStack = () => {
         >
             <MemberProgressStackNavigator.Screen name="MemberProgress" component={MemberProgress} />
             <MemberProgressStackNavigator.Screen name="Notification" component={Notification} />
-            <MemberProgressStackNavigator.Screen name="ProfileDashboard" component={ProfileDashboard} />
+            <MemberProgressStackNavigator.Screen name="ProfileStack" component={ProfileStack} />
 
             
         </MemberProgressStackNavigator.Navigator>

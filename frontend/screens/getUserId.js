@@ -7,7 +7,6 @@ export const getUserId = async () => {
 
     try {
         const decoded = jwtDecode(token);
-        // console.log(decoded);
         return decoded;
     } catch (error) {
         console.error("Error decoding token:", error);

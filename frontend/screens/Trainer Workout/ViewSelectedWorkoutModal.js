@@ -15,10 +15,8 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selec
         plan_name : "",
         description : "",
         difficulty : "",
-        day:"",
         workoutImage : "",
     });
-    const [showAddButton, setShowAddButton] = useState(true);
     const [workoutDetails, setWorkoutDetails] = useState([]);
     const [userId, setUserId] = useState("");
 
@@ -38,27 +36,11 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selec
         { label: 'Advanced', value: 'Advanced' },
     ];
 
-    const [showDayDropdown, setShowDayDropdown] = useState(false);
-    const day = [
-        { label: 'Select level', value: '', disabled: true },
-        { label: 'Monday', value: 'Monday' },
-        { label: 'Tuesday', value: 'Tuesday' },
-        { label: 'Wednesday', value: 'Wednesday' },
-        { label: 'Thursday', value: 'Thursday' },
-        { label: 'Friday', value: 'Friday' },
-        { label: 'Saturday', value: 'Saturday' },
-        { label: 'Sunday', value: 'Sunday' },
-    ];
-
     useEffect(() => {
         setWorkoutDetails(fullWorkoutDetails.filter((workout) => 
             selectedExercise.some((selected) => workout.workout_detail_id === selected)
         ));
     }, [fullWorkoutDetails, selectedExercise]);    
-
-    const handleToggleButton = () => {
-        setShowAddButton(!showAddButton);
-    };
 
     const deleteWorkoutDetail = (workout_detail_id) => {
         setWorkoutDetails(prevDetails =>
@@ -94,7 +76,6 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selec
             workoutPlan.plan_name.trim() === "" ||
             workoutPlan.description.trim() === "" ||
             workoutPlan.difficulty.trim() === "" ||
-            workoutPlan.day.trim() === "" ||
             workoutPlan.workoutImage.trim() === ""
         ) {
             Alert.alert("Missing Information", "Please fill in all required fields.");
@@ -177,25 +158,6 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selec
                             textStyle={styles.dropdownText}
                             containerStyle={{ marginBottom: 16, zIndex: 100 }}
                         />
-                        <Text style={styles.label}>Select day <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-                        <DropDownPicker
-                            open={showDayDropdown}
-                            value={workoutPlan.day}
-                            items={day}
-                            setOpen={setShowDayDropdown}
-                            setValue={(callback) =>
-                                setWorkoutPlan(prevData => ({
-                                    ...prevData,
-                                    day: callback(prevData.day)
-                                }))
-                            }
-                            placeholder="Select level"
-                            nestedScrollEnabled={true}
-                            listMode="SCROLLVIEW"
-                            style={styles.dropdown}
-                            textStyle={styles.dropdownText}
-                            containerStyle={{ marginBottom: 16, zIndex: 90 }}
-                        />
                         <Text style={styles.label}>Upload Image <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
                         <TouchableOpacity style={styles.input} onPress={pickImage}><Ionicons name="image" size={20}>  <Text style={{ fontSize: 16 }}>{workoutPlan.workoutImage ? `Image uploaded` : `Upload Image`}</Text></Ionicons></TouchableOpacity>
 
@@ -213,7 +175,7 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selec
                                 <View style={styles.setNicon}>
                                     <Text style={styles.setsText}>Sets {workout.sets}</Text>
 
-                                    <TouchableOpacity style={styles.iconButton} onPress={() => deleteWorkoutDetail(workout.workout_detail_id)}>
+                                    <TouchableOpacity onPress={() => deleteWorkoutDetail(workout.workout_detail_id)}>
                                         <Feather name="trash" size={22} color="#000" />
                                     </TouchableOpacity>
                                 </View>
@@ -239,11 +201,6 @@ const styles = StyleSheet.create({
     title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 3 },
     label: { fontSize: 16, fontWeight: 'bold', marginTop: 3 },
     input: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 5, marginBottom:10 },
-    sectionTitle: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 },
-    workoutText: { fontSize: 14, fontWeight: 'bold' },
-    workoutSubText: { fontSize: 12, color: '#B3A0FF' },
-    setsText: { fontSize: 14, fontWeight: 'bold', color: '#A586FF' },
-    addButton: { backgroundColor: '#A586FF', padding: 10, borderRadius: 50, alignSelf: 'center', marginVertical: 10 },
     createButton: { backgroundColor: 'black', padding: 10, borderRadius: 5, alignItems: 'center', marginTop: 5 },
     createButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
 
@@ -254,14 +211,8 @@ const styles = StyleSheet.create({
     iconNtime: { flexDirection: 'row', alignItems: 'center', marginTop: 3, gap: 3},
     workoutName: { fontSize: 14, fontWeight: 'bold', color: "#000" },
     restTime: { fontSize: 14, color: "#B3A0FF", flex: 1, fontWeight: 'bold' },
-    setsText: { fontSize: 16, fontWeight: "bold", color: "#A586FF" },
+    setsText: { fontSize: 14, fontWeight: "bold", color: "#A586FF" },
     setNicon: { gap: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'},
-    addButtonBg: { backgroundColor: 'white', borderRadius: 20, marginVertical: 5, alignItems: 'center' },
-
-    closeaddworkoutButton: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 10, width: 60},
-    closeButtonText: { fontSize: 15, fontWeight: 'bold'},
-    categoryTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 2 },
-    iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
 
     dropdown: {
         width: "100%",

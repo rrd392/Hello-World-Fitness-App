@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import HeaderVer4 from "../HeaderVer4";
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { SafeAreaView, View, TouchableOpacity, ScrollView, Text , Image } from 'react-native';
+import { SafeAreaView, View, TouchableOpacity, ScrollView, Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import React, { useState, useEffect, useCallback } from "react";
 import API_BASE_URL from "../../env";
@@ -85,7 +85,7 @@ const MemberWorkoutPlan = () => {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020' },
+    container: { flex: 1, backgroundColor: '#000' },
     content: { padding: 10},
     bgStyle: { padding: 10},
     titleText: { color: '#E2F163', fontSize: 24, fontWeight: 'bold', alignSelf: 'center', marginBottom:10},

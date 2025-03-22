@@ -5,14 +5,6 @@ import API_BASE_URL from "../../env";
 
 const EditExistingWorkoutModal = ({ visible, onCancel, workoutId, refreshPage }) => {
 
-    const toggleLevelSelection = (level) => {
-        setSelectedLevels((prevLevels) => 
-            prevLevels.includes(level) 
-                ? prevLevels.filter((item) => item !== level) // Remove if already selected
-                : [...prevLevels, level] // Add if not selected
-        );
-    };
-
     const [showAddButton, setShowAddButton] = useState(true);
     const [workoutPlan, setWorkoutPlan] = useState([]);
     const [fullWorkoutDetails, setFullWorkoutDetails] = useState([]);
@@ -194,7 +186,7 @@ const EditExistingWorkoutModal = ({ visible, onCancel, workoutId, refreshPage })
                                 <View style={styles.setNicon}>
                                     <Text style={styles.setsText}>Sets {workout.sets}</Text>
 
-                                    <TouchableOpacity style={styles.iconButton} onPress={() => deleteWorkoutDetail(workout.workout_detail_id)}>
+                                    <TouchableOpacity onPress={() => deleteWorkoutDetail(workout.workout_detail_id)}>
                                         <Feather name="trash" size={22} color="#000" />
                                     </TouchableOpacity>
                                 </View>
@@ -255,10 +247,6 @@ const styles = StyleSheet.create({
     title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 3 },
     label: { fontSize: 16, fontWeight: 'bold', marginTop: 3 },
     input: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 5 },
-    sectionTitle: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 },
-    workoutText: { fontSize: 14, fontWeight: 'bold' },
-    workoutSubText: { fontSize: 12, color: '#B3A0FF' },
-    setsText: { fontSize: 14, fontWeight: 'bold', color: '#A586FF' },
     addButton: { backgroundColor: '#A586FF', padding: 10, borderRadius: 50, alignSelf: 'center', marginVertical: 10 },
     uploadButton: { backgroundColor: 'black', padding: 10, borderRadius: 5, alignSelf: 'center', marginTop: 5, width: 150, alignItems: 'center' },
     uploadButtonText: { color: '#E2F163', fontSize: 16, fontWeight: 'bold' },
@@ -270,23 +258,11 @@ const styles = StyleSheet.create({
     iconNtime: { flexDirection: 'row', alignItems: 'center', marginTop: 3, gap: 3},
     workoutName: { fontSize: 14, fontWeight: 'bold', color: "#000" },
     restTime: { fontSize: 14, color: "#B3A0FF", flex: 1, fontWeight: 'bold' },
-    setsText: { fontSize: 16, fontWeight: "bold", color: "#A586FF" },
+    setsText: { fontSize: 14, fontWeight: "bold", color: "#A586FF" },
     setNicon: { gap: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'},
-    addButtonBg: { backgroundColor: 'white', borderRadius: 20, marginVertical: 5, alignItems: 'center' },
-
-    closeaddworkoutButton: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 10, width: 60},
-    closeButtonText: { fontSize: 15, fontWeight: 'bold'},
     categoryTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 10, marginBottom:5 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
 
-    selectLevelText: { alignSelf: 'center', marginTop: 20, fontSize: 20, fontWeight: 'bold', marginBottom: 10},
-    selectLevelContainer: { flexDirection: 'row', justifyContent: 'space-between', width: 330, alignSelf: 'center', gap: 8 },
-    levelButton: { borderRadius: 20, paddingHorizontal: 18, paddingVertical: 8},
-    selectedBtn: { backgroundColor: 'black'},
-    unselectedBtn: { backgroundColor: 'white'},
-    levelText: { fontWeight: 'bold'},
-    selectedText: { color: '#E2F163'},
-    unselectedText: { color: 'gray'},
 });
 
 export default EditExistingWorkoutModal;

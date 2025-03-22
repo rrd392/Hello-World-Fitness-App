@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image,
-  Button,
   Dimensions
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -168,9 +167,9 @@ const styles = StyleSheet.create({
   textContainer: {
     backgroundColor: '#B3A0FF',
     alignItems: 'center',
-    justifyContent: 'center',  // Center text vertically
-    width: '100%',             // Make it full width
-    paddingHorizontal: 20,     // Keep some horizontal padding
+    justifyContent: 'center',  
+    width: '100%',             
+    paddingHorizontal: 20,     
     marginTop: 20,
   },
   title: {
@@ -210,11 +209,11 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderWidth: 2,
     borderColor: 'white',
-    shadowColor: 'grey', // White shadow
-    shadowOffset: { width: 0, height: 4 }, // Shadow position
-    shadowOpacity: 0.66, // Shadow visibility
-    shadowRadius: 5, // How blurry the shadow is
-    elevation: 5, // Shadow for Android
+    shadowColor: 'grey', 
+    shadowOffset: { width: 0, height: 4 }, 
+    shadowOpacity: 0.66, 
+    shadowRadius: 5, 
+    elevation: 5, 
     width: '70%',
   },
   buttonText: {

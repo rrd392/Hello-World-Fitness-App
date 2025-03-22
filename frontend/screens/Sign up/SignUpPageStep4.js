@@ -224,16 +224,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
   },
-  featuresBox: {
-    backgroundColor: "rgba(255,255,255,0.9)",
-    borderRadius: 8,
-    padding: 10,
-  },
-  featureText: {
-    fontSize: 12,
-    color: "#000",
-    marginBottom: 3,
-  },
   payButton: {
     backgroundColor: "#E2F163",
     padding: 16,

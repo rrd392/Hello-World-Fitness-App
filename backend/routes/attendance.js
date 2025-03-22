@@ -31,18 +31,27 @@ router.post('/insertAttendance', (req, res) => {
                         if (error) {
                             return res.status(500).json({ error: "Database query failed", details: error.message });
                         }
-                        if (check3Result.length > 0) {
+                        if (check3Result.length > 0 && check3Result[0].status == "Present") {
                             return res.json({ success: false, message: "You already taken attendance." });
-                        }
-                        const insertQuery = `INSERT INTO attendance_classes (class_id, user_id, attendance_time, status)
-                                            VALUES (?, ?, NOW(), "Present")`;
+                        }else if(check3Result.length > 0 && check3Result[0].status == "Absent"){
+                            const updateQuery = `UPDATE attendance_classes SET status = "Present", attendance_time = NOW() WHERE user_id = ? AND class_id = ?`;
+                            db.query(updateQuery, [userId, class_id], (error, results) => {
+                                if (error) {
+                                    return res.status(500).json({ error: "Database query failed", details: error.message });
+                                }
+                                res.json({ success: true });
+                            });
+                        }else{
+                            const insertQuery = `INSERT INTO attendance_classes (class_id, user_id, attendance_time, status)
+                                                VALUES (?, ?, NOW(), "Present")`;
 
-                        db.query(insertQuery, [class_id, userId], (error, results) => {
-                            if (error) {
-                                return res.status(500).json({ error: "Database query failed", details: error.message });
-                            }
-                            res.json({ success: true });
-                        });
+                            db.query(insertQuery, [class_id, userId], (error, results) => {
+                                if (error) {
+                                    return res.status(500).json({ error: "Database query failed", details: error.message });
+                                }
+                                res.json({ success: true });
+                            });
+                        }
                     });
                 });
             } else {
@@ -82,6 +91,36 @@ router.get('/displayAttendanceHistory/:user_id', (req, res) => {
             }
             res.json({ classResults,  gymResults});
         });
+    });
+});
+
+router.post('/updateAttendance', (req, res) => {
+    const { userId } = req.body;
+
+    const currentDate = new Date();
+    const localCurrentDate = new Date(currentDate.getTime() - currentDate.getTimezoneOffset() * 60000); 
+    const currentDateString = localCurrentDate.toISOString().split('T')[0];
+    const hours = currentDate.getHours().toString().padStart(2, '0');
+    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+    const currentTime = `${hours}:${minutes}:${seconds}`;
+
+    const insertQuery = `INSERT INTO attendance_classes (class_id, user_id, attendance_time, status)
+                        SELECT cp.class_id, cp.user_id, c.schedule_date, 'Absent'
+                        FROM class_participants cp
+                        INNER JOIN classes c ON cp.class_id = c.class_id
+                        LEFT JOIN attendance_classes ac ON cp.class_id = ac.class_id AND cp.user_id = ac.user_id
+                        WHERE cp.user_id = ?
+                        AND (c.schedule_date < ? OR (c.schedule_date = ? AND c.end_time < ?))
+                        AND ac.class_id IS NULL`;
+
+    db.query(insertQuery, [userId, currentDateString, currentDateString, currentTime], (error, classResults) => {
+        if (error) {
+            return res.status(500).json({ error: "Database query failed", details: error.message });
+        }
+        
+        res.json({ success:true});
+              
     });
 });
 

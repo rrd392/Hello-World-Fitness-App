@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Text,
-  TouchableOpacity,
   Image,
   ScrollView,
 } from "react-native";
@@ -160,7 +159,7 @@ function ClassPastAttendance() {
                       <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{member.name}</Text>
                       <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">{member.email}</Text>
                     </View>
-                    <Text style={member.status == "Present"? styles.Present:styles.Absent}>{member.status}</Text>
+                    <Text style={member.status == "Present"? styles.Present:styles.Absent}>{member.status  == "Present" ? member.status:`Absent`}</Text>
                   </View>
                 </View>
               )}
@@ -181,25 +180,7 @@ const styles = StyleSheet.create({
     marginBottom:20
   },
 
-  homeButton: { flexDirection: "row", alignItems: "center", gap: 3 },
-  homeText: { fontSize: 24, color: "#896CFE", fontWeight: "bold" },
-
   iconRow: { flexDirection: "row", gap: 20 },
-  dropdown: {
-    position: "absolute",
-    top: 30,
-    right: 0,
-    backgroundColor: "white",
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-    padding: 10,
-    width: 100,
-    zIndex: 10,
-  },
   pageContent: {
     alignItems: "center",
     marginTop: 0,
@@ -245,16 +226,6 @@ const styles = StyleSheet.create({
   coachName: { fontSize: 18, fontWeight: 500, maxWidth:"100%" },
   coachEmail: { fontSize: 12, color: "#444" },
   coachNumber: { fontSize: 12, color: "#444" },
-
-  signUpButton: {
-    backgroundColor: "#1E1E1E",
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  signUpText: { fontSize: 18, color: "#E2F163", fontWeight: "bold" },
 
   errorText: { fontSize: 18, color: "red", textAlign: "center", marginTop: 20 },
   attendance:{

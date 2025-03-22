@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Image, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { ScrollView, View, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,7 +13,7 @@ const CustomDetailWorkoutPlan = ({ route }) => {
     const { workout_plan, selectedDay, type } = route.params;
 
     //Profile icon dropdown button
-    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
+    const handleGoToProfile = () => navigation.navigate('ProfileStack');
 
     //Notification icon pop up page
     const toggleNotification = () => navigation.navigate('Notification');

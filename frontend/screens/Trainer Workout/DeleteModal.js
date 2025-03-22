@@ -1,4 +1,4 @@
-import React, { createElement } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import API_BASE_URL from "../../env";

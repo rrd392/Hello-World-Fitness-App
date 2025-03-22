@@ -16,7 +16,6 @@ import { getUserId } from "../../getUserId";
 
 function Schedule1() {
   const navigation = useNavigation();
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const getMondayDates = () => {
     const currentDate = new Date();
     const dayOfWeek = currentDate.getDay();
@@ -38,8 +37,6 @@ function Schedule1() {
   const [selectedDate, setSelectedDate] = useState(mondayDates[0]);
   const daysOfWeek = ["MON", "TUE", "WED", "THU", "FRI"];
   const [selectedDay, setSelectedDay] = useState(0);
-
-  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
@@ -293,8 +290,6 @@ const styles = StyleSheet.create({
   },
 
   classesSection: { marginBottom: 20, marginTop:-20 },
-
-  selectedText: { marginTop: 10, fontSize: 16, color: "#E2F163" },
   classCards: { marginBottom: 10, backgroundColor: "#B3A0FF", width: "100%" },
 });
 

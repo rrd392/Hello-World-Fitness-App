@@ -97,7 +97,7 @@ router.get('/displayPastParticipants/:class_id', (req, res) => {
     const displayQuery = `SELECT u.*, ac.status
                         FROM class_participants cp
                         INNER JOIN user u ON cp.user_id = u.user_id
-                        INNER JOIN attendance_classes ac ON cp.class_id = ac.class_id
+                        LEFT JOIN attendance_classes ac ON cp.class_id = ac.class_id
                         WHERE cp.class_id = ?`;
     
     db.query(displayQuery, [class_id], (error, results)=>{

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ScrollView,
   View,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
@@ -35,46 +35,54 @@ const TrainerDashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!userId) return;
-
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/dashboard/displayTrainer/${userId}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        if (!response.ok) {
-          const text = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-        }
-
-        const data = await response.json();
-
-        if (data.success) {
-          if (Array.isArray(data.classes)) {
-            setUpcomingClassData(data.classes);
-          } else if (data.classes) {
-            setUpcomingClassData([data.classes]);
-          } else {
-            setUpcomingClassData([]);
-          }
-          setClassData(data.disClass);
-          setWorkoutPlans(data.workoutPlans);
-          setMembers(data.member);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        Alert.alert("Error", error.message || "Network request failed");
-      } finally {
-      }
+    if (userId){
+      fetchUserData();
     };
-
-    fetchUserData();
   }, [userId]);
+
+  useFocusEffect(
+      useCallback(() => {
+          if (userId) {
+              fetchUserData();
+          }
+      }, [userId])
+  );
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/dashboard/displayTrainer/${userId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (Array.isArray(data.classes)) {
+          setUpcomingClassData(data.classes);
+        } else if (data.classes) {
+          setUpcomingClassData([data.classes]);
+        } else {
+          setUpcomingClassData([]);
+        }
+        setClassData(data.disClass);
+        setWorkoutPlans(data.workoutPlans);
+        setMembers(data.member);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  };
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -150,12 +158,12 @@ const TrainerDashboard = () => {
 
         {/* Classes */}
         <View style={styles.announcementSection}>
-          <Text style={styles.announcementTitle}>Manage Classes</Text>
+          <Text style={styles.announcementTitle}>View Classes</Text>
           <FlatList
             data={[
               ...(Array.isArray(classData) ? classData : []),
               { isMoreCard: true },
-            ]} // Add a special item at the end
+            ]} 
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) =>
@@ -167,13 +175,13 @@ const TrainerDashboard = () => {
                 // "More >" Card
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => navigation.navigate("Classes")}
+                  onPress={() => navigation.navigate("Schedule1")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card}>
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Schedule1")}>
                   <Image
                     source={{
                       uri: `${API_BASE_URL}/uploads/${item.class_image}`,
@@ -198,7 +206,7 @@ const TrainerDashboard = () => {
             data={[
               ...(Array.isArray(workoutPlans) ? workoutPlans : []),
               { isMoreCard: true },
-            ]} // Add a special item at the end
+            ]} 
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) =>
@@ -300,13 +308,6 @@ const styles = StyleSheet.create({
   },
   headerRow: { flexDirection: "row", justifyContent: "space-between" },
   iconRow: { flexDirection: "row", justifyContent: "space-between", gap: 20 },
-  navButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 30,
-  },
-  navItem: { alignItems: "center" },
-  navText: { color: "#B3A0FF", marginTop: 5 },
 
   upcomingClass: { backgroundColor: "#B3A0FF", padding: 20 },
   sectionTitle: {
@@ -389,9 +390,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  menuItem: {
-    padding: 10,
-  },
   moreCard: {
     width: 80,
     height: 120,

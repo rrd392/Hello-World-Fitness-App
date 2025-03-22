@@ -8,9 +8,8 @@ import {
   TouchableOpacity,
   Modal,
   SafeAreaView,
-  Keyboard,
   ScrollView,
-  Alert
+  Alert, Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -40,6 +39,17 @@ const SignUpPageStep2 = () => {
   const heightInputRef = useRef();
   const weightInputRef = useRef();
 
+  const [showPicker, setShowPicker] = useState(false);
+
+  const handleDateChange = (event, selectedDate) => {
+      if (selectedDate) {
+          const fixedDate = new Date(selectedDate);
+          fixedDate.setHours(12, 0, 0, 0);
+          setSignupData((prevData) => ({ ...prevData, dob: fixedDate }));
+      }
+      setShowPicker(false); 
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -66,28 +76,51 @@ const SignUpPageStep2 = () => {
           </TouchableOpacity>
 
           <Text style={styles.label}>Date of Birth <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
-          <TouchableOpacity style={styles.DOBContainer} >
+          <TouchableOpacity style={styles.DOBContainer} onPress={() => setShowPicker(true)}>
             <TextInput
                 style={styles.input}
+                placeholder="Select Date"
                 placeholderTextColor="#777"
+                value={signupData.dob.toLocaleDateString('en-GB')}
                 editable={false}
             />
             <Ionicons style={styles.calendarIcon} name="calendar-outline" size={24} color="#000" />
 
-            <DateTimePicker
-              value={signupData.dob || new Date()}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-                if (selectedDate) {
-                    const fixedDate = new Date(selectedDate);
-                    fixedDate.setHours(12, 0, 0, 0);      
-                    setSignupData((prevData) => ({ ...prevData, dob: fixedDate }));
-                }
-              }}
-              style={styles.dateInput}
-            />
+            {Platform.OS === "ios" && showPicker && (
+              <DateTimePicker
+                value={signupData.dob || new Date()}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  if (selectedDate) {
+                      const fixedDate = new Date(selectedDate);
+                      fixedDate.setHours(12, 0, 0, 0);      
+                      setSignupData((prevData) => ({ ...prevData, dob: fixedDate }));
+                  }
+                }}
+                style={styles.dateInput}
+              />
+            )}
           </TouchableOpacity>
+          {/* Date Picker for Android (Modal) */}
+          {Platform.OS === "android" && showPicker && (
+            <Modal transparent={true} animationType="slide">
+                <View style={styles.modalContainer1}>
+                    <View style={styles.modalContent}>
+                        <DateTimePicker
+                            value={signupData.dob}
+                            mode="date"
+                            display="calendar"
+                            onChange={handleDateChange}
+                            maximumDate={new Date()}
+                        />
+                        <TouchableOpacity onPress={() => setShowPicker(false)}>
+                            <Text style={styles.closeButton}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+          )}
         
           <Text style={styles.label}>Height <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
           <TextInput 
@@ -157,8 +190,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000",
-    // padding: 24,
   },
+  modalContainer1: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
+  modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10 },
+  closeButton: { marginTop: 10, textAlign: "center", color: "blue" },
   header: {
     flexDirection: "row",
     alignItems: "center",

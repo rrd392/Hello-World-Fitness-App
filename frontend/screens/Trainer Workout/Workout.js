@@ -72,22 +72,12 @@ const Workout = () => {
         }
     };
     
-    const slideAnim = useRef(new Animated.Value(30)).current;
-    const opacityAnim = useRef(new Animated.Value(0)).current; 
-    const [isVisible, setIsVisible] = useState(false);
-
     const navigation = useNavigation();
     const toggleNotification = () => navigation.navigate('Notification');
-    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
+    const handleGoToProfile = () => navigation.navigate('TrainerProfileStack');
 
     const [selectedTab, setSelectedTab] = useState("general");
-    const [selectedWorkout, setSelectedWorkout] = useState(null);
     const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
-    console.log(selectedWorkoutId);
-
-    const toggleWorkOutDetails = (item) => {
-        setSelectedWorkout(selectedWorkout === item.workout_plan_id ? null : item.workout_plan_id);
-    };
 
     return (
         <View style={styles.container}>
@@ -266,7 +256,6 @@ const styles = StyleSheet.create({
     imageContainer: { width: '45%', height:'100%'},
     badge: { position: "absolute", top: 0, right: 0, backgroundColor: "#E2F163", paddingHorizontal: 20, paddingRight:28, paddingVertical: 4, borderRadius: 10 },
     badgeText: { color: "#000", fontSize: 12 },
-    addButton:{ borderRadius:"50%", backgroundColor:"#E2F163", width:50, height:50, alignItems:"center", position:'absolute', bottom:20, right:0 },
     iconContainer: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: -30, position: "absolute", bottom: 0, left: "50%", transform: [{ translateX: 80 }], backgroundColor: "rgba(255, 255, 255, 0.8)", padding: 5, borderRadius: 10, gap: 5 },
     iconButton: { padding: 8 },
     createBg: { position: 'absolute', bottom: 20, left: 0, right: 0, backgroundColor: '#E2F163', borderRadius: 10, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', padding: 10, marginHorizontal: 150, borderWidth: 1},

@@ -46,6 +46,7 @@ const CheckIn = () => {
 
     useEffect(() => {
         if(userId){
+            updateAttendance(userId);
             fetchAttendanceHistory();
         } 
     }, [userId]);
@@ -84,6 +85,34 @@ const CheckIn = () => {
         }
     };
 
+    const updateAttendance = async (userId) => {
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/api/attendance/updateAttendance`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({userId}),
+            }
+          );
+    
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+          }
+    
+          const data = await response.json();
+    
+          if (data.success) {
+            fetchAttendanceHistory();
+          }
+        } catch (error) {
+          console.error("Error updating attendance:", error);
+          Alert.alert("Error", error.message || "Network request failed");
+        } finally {
+        }
+    };
+
     const fetchAttendanceHistory = async () => {
         try {
           const response = await fetch(
@@ -106,24 +135,11 @@ const CheckIn = () => {
             setGymAttendance(data.gymResults);
           }
         } catch (error) {
-          console.error("Error inserting attendance:", error);
+          console.error("Error fetching attendance history:", error);
           Alert.alert("Error", error.message || "Network request failed");
         } finally {
         }
     };
-    
-    const attendanceHistory = [
-        { id: '1', date: '2024-03-06', time: '08:30 AM', status: 'Checked In' },
-        { id: '2', date: '2024-03-05', time: '08:35 AM', status: 'Checked In' },
-        { id: '3', date: '2024-03-04', time: '08:20 AM', status: 'Absent' },
-        { id: '4', date: '2024-03-03', time: '08:20 AM', status: 'Checked In' },
-        { id: '5', date: '2024-03-02', time: '08:30 AM', status: 'Absent' },
-        { id: '6', date: '2024-03-01', time: '08:10 AM', status: 'Checked In' },
-        { id: '7', date: '2024-02-30', time: '08:25 AM', status: 'Checked In' },
-        { id: '8', date: '2024-02-29', time: '08:15 AM', status: 'Checked In' },
-        { id: '9', date: '2024-02-28', time: '08:20 AM', status: 'Absent' },
-        { id: '10', date: '2024-02-27', time: '08:45 AM', status: 'Checked In' },
-    ];
 
     return (
         <View style={styles.container}>

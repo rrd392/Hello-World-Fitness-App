@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   centerFormContainer: {
     justifyContent: "center",
-    paddingBottom: 50, // Prevents button from sticking to the bottom
+    paddingBottom: 50, 
     paddingHorizontal: 32,
   },
   formBox: {
@@ -149,12 +149,6 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 20,
   },
-  label: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#000",
-    marginBottom: 5,
-  },
   input: {
     height: 50,
     backgroundColor: "#fff",
@@ -164,7 +158,7 @@ const styles = StyleSheet.create({
   },
 
   bottomActionContainer: {
-    marginTop: 50, // Ensures button is separate from the form
+    marginTop: 50, 
     justifyContent: "center",
     alignItems: "center",
   },

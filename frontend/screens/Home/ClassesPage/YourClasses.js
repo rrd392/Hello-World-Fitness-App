@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -130,7 +130,6 @@ function YourClasses() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
-      {/* Fixed Header */}
       <HeaderVer1
         title="Home"
         onPress={() => navigation.navigate("MemberDashboard")}
@@ -331,10 +330,6 @@ const styles = {
     marginBottom: 5,
   },
   detailText: {
-    fontSize: 14,
-    color: "#FFF",
-  },
-  slotText: {
     fontSize: 14,
     color: "#FFF",
   },
