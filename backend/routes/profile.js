@@ -262,9 +262,6 @@ router.post("/update-membership", (req, res) => {
     
     const { user_id, membership_id, description, amount, payment_date } = req.body;
 
-    // Log the received request body
-    console.log("Received request body:", req.body);
-
     // Determine membership plan duration
     let membership_plan;
     if (membership_id === 1 || membership_id === 3) {
