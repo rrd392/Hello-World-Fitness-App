@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ScrollView,
   View,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
@@ -23,7 +23,7 @@ const TrainerDashboard = () => {
   const [upcomingClassData, setUpcomingClassData] = useState([]);
   const [classData, setClassData] = useState([]);
   const [workoutPlans, setWorkoutPlans] = useState([]);
-  const [dietPlans, setDietPlans] = useState([]);
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
     async function fetchUserId() {
@@ -35,46 +35,54 @@ const TrainerDashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!userId) return;
-
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/dashboard/displayTrainer/${userId}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        if (!response.ok) {
-          const text = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
-        }
-
-        const data = await response.json();
-
-        if (data.success) {
-          if (Array.isArray(data.classes)) {
-            setUpcomingClassData(data.classes);
-          } else if (data.classes) {
-            setUpcomingClassData([data.classes]);
-          } else {
-            setUpcomingClassData([]);
-          }
-          setClassData(data.disClass);
-          setWorkoutPlans(data.workoutPlans);
-          setDietPlans(data.diet);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        Alert.alert("Error", error.message || "Network request failed");
-      } finally {
-      }
+    if (userId){
+      fetchUserData();
     };
-
-    fetchUserData();
   }, [userId]);
+
+  useFocusEffect(
+      useCallback(() => {
+          if (userId) {
+              fetchUserData();
+          }
+      }, [userId])
+  );
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/dashboard/displayTrainer/${userId}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (Array.isArray(data.classes)) {
+          setUpcomingClassData(data.classes);
+        } else if (data.classes) {
+          setUpcomingClassData([data.classes]);
+        } else {
+          setUpcomingClassData([]);
+        }
+        setClassData(data.disClass);
+        setWorkoutPlans(data.workoutPlans);
+        setMembers(data.member);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  };
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -101,30 +109,6 @@ const TrainerDashboard = () => {
         </View>
         <Text style={styles.subtitle}>It’s time to challenge your limits.</Text>
         <Text style={styles.membership}>Fitness Trainer</Text>
-        {/* Navigation Icons */}
-        <View style={styles.navButtons}>
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => navigation.navigate("CheckIn")}
-          >
-            <Ionicons name="checkbox" size={30} color="#B3A0FF" />
-            <Text style={styles.navText}>Attendance</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => navigation.navigate("Classes")}
-          >
-            <Ionicons name="barbell" size={30} color="#B3A0FF" />
-            <Text style={styles.navText}>Classes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => navigation.navigate("Nutrition")}
-          >
-            <Ionicons name="nutrition" size={30} color="#B3A0FF" />
-            <Text style={styles.navText}>Nutrition</Text>
-          </TouchableOpacity>
-        </View>
       </SafeAreaView>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -174,12 +158,12 @@ const TrainerDashboard = () => {
 
         {/* Classes */}
         <View style={styles.announcementSection}>
-          <Text style={styles.announcementTitle}>Explore Classes</Text>
+          <Text style={styles.announcementTitle}>View Classes</Text>
           <FlatList
             data={[
               ...(Array.isArray(classData) ? classData : []),
               { isMoreCard: true },
-            ]} // Add a special item at the end
+            ]} 
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) =>
@@ -191,13 +175,13 @@ const TrainerDashboard = () => {
                 // "More >" Card
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => navigation.navigate("Classes")}
+                  onPress={() => navigation.navigate("Schedule1")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card}>
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Schedule1")}>
                   <Image
                     source={{
                       uri: `${API_BASE_URL}/uploads/${item.class_image}`,
@@ -217,12 +201,12 @@ const TrainerDashboard = () => {
 
         {/* Workout Plans */}
         <View style={styles.announcementSection}>
-          <Text style={styles.announcementTitle}>Explore Workout Plans</Text>
+          <Text style={styles.announcementTitle}>Manage Workout Plans</Text>
           <FlatList
             data={[
               ...(Array.isArray(workoutPlans) ? workoutPlans : []),
               { isMoreCard: true },
-            ]} // Add a special item at the end
+            ]} 
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) =>
@@ -234,13 +218,13 @@ const TrainerDashboard = () => {
                 // "More >" Card
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => navigation.navigate("WorkoutPlanStack")}
+                  onPress={() => navigation.navigate("TrainerWorkoutStack")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card}>
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("TrainerWorkoutStack")}>
                   <Image
                     source={{
                       uri: `${API_BASE_URL}/uploads/${item.workout_image}`,
@@ -260,10 +244,10 @@ const TrainerDashboard = () => {
 
         {/* Diet Plans */}
         <View style={styles.announcementSection} marginBottom="40">
-          <Text style={styles.announcementTitle}>Explore Diet Plans</Text>
+          <Text style={styles.announcementTitle}>Manage Members</Text>
           <FlatList
             data={[
-              ...(Array.isArray(dietPlans) ? dietPlans : []),
+              ...(Array.isArray(members) ? members : []),
               { isMoreCard: true },
             ]}
             horizontal={true}
@@ -276,16 +260,16 @@ const TrainerDashboard = () => {
               item.isMoreCard ? (
                 <TouchableOpacity
                   style={styles.moreCard}
-                  onPress={() => navigation.navigate("Nutrition")}
+                  onPress={() => navigation.navigate("Member")}
                 >
                   <Text style={styles.moreText}>More &gt;</Text>
                 </TouchableOpacity>
               ) : (
                 // Regular Class Card
-                <TouchableOpacity style={styles.card}>
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Member")}>
                   <Image
                     source={{
-                      uri: `${API_BASE_URL}/uploads/${item.meal_pictures}`,
+                      uri: `${API_BASE_URL}/uploads/${item.profile_picture}`,
                     }}
                     style={styles.announcementImage}
                   />
@@ -324,13 +308,6 @@ const styles = StyleSheet.create({
   },
   headerRow: { flexDirection: "row", justifyContent: "space-between" },
   iconRow: { flexDirection: "row", justifyContent: "space-between", gap: 20 },
-  navButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 30,
-  },
-  navItem: { alignItems: "center" },
-  navText: { color: "#B3A0FF", marginTop: 5 },
 
   upcomingClass: { backgroundColor: "#B3A0FF", padding: 20 },
   sectionTitle: {
@@ -413,9 +390,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  menuItem: {
-    padding: 10,
-  },
   moreCard: {
     width: 80,
     height: 120,

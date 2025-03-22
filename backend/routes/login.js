@@ -19,14 +19,14 @@ router.post('/login', (req, res) => {
         }
 
         if (results.length === 0) {
-            return res.status(401).json({ success: false, message: "123Invalid username or password" });
+            return res.json({ success: false, message: "Username does not exist!" });
         }
 
         const user = results[0];
 
 
         if (password !== user.password) {
-            return res.status(401).json({ success: false, message: "456Invalid username or password" });
+            return res.json({ success: false, message: "Invalid password!" });
         }
 
         const SECRET_KEY = "your_secret_key";  // Replace with a secure key or use .env

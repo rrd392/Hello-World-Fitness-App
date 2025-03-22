@@ -25,7 +25,6 @@ const MembershipStatus = () => {
         const userId = userData.id;
         setUserId(userId);
 
-        // Fetch user membership data
         const response = await fetch(`${API_BASE_URL}/api/profile/displayUserData/${userId}`);
         if (!response.ok) {
           const errorText = await response.text();
@@ -33,7 +32,6 @@ const MembershipStatus = () => {
         }
 
         const data = await response.json();
-        //console.log("User membership response:", data);
 
         if (data?.membership_id) {
           setSelectedPlan(data.membership_id);
@@ -51,7 +49,6 @@ const MembershipStatus = () => {
         }
         
         const plansData = await plansResponse.json();
-       // console.log("Membership plans response:", plansData);
         setMembershipPlans(plansData.membershipPlan || []);
         
       } catch (error) {
@@ -115,7 +112,6 @@ const MembershipStatus = () => {
           </LinearGradient>
         </View>
 
-
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
@@ -167,7 +163,7 @@ const MembershipStatus = () => {
                             plan: selectedPlanDetails, 
                             userId, 
                             planName: selectedPlanDetails.plan_name,
-                            planID: selectedPlanDetails.membership_id // This should be the selected plan's ID
+                            planID: selectedPlanDetails.membership_id 
                         });
                         } else {
                             Alert.alert("Error", "Please select a membership plan.");
@@ -268,7 +264,7 @@ const styles = StyleSheet.create({
     marginBottom: 8
   },
 durationText: {
-  color: '#FFF', // Changed to white
+  color: '#FFF', 
   fontSize: 16,
   fontWeight: 'bold',
   marginBottom: 8
@@ -286,16 +282,16 @@ checkIcon: {
 },
 descriptionText: {
   color: '#E2E2E2',
-  fontSize: 14, // Increased font size for better readability
+  fontSize: 14, 
   fontWeight: '500'
 },
 
 buttonContainer: {
     position: 'absolute',
-    bottom: 20, // Adjust spacing from bottom
+    bottom: 20, 
     left: 0,
     right: 0,
-    alignItems: 'center', // Center button horizontally
+    alignItems: 'center', 
   },
   renewButton: {
     position: 'absolute',

@@ -7,25 +7,6 @@ import DeleteModal from "./DeleteModal";
 import EditExistingWorkoutModal from "./EditExistingWorkoutModal";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
-
-const existingPlans = [
-    {
-        workout_plan_id: 1,
-        plan_name: "Full Body Blast",
-        description: "A high-intensity workout focusing on all muscle groups.",
-        count: 10,
-        difficulty: "Intermediate",
-        workout_image: require("../../assets/bck1.png"),
-    },
-    {
-        workout_plan_id: 2,
-        plan_name: "Cardio Burn",
-        description: "A cardio-focused workout to get your heart pumping.",
-        count: 8,
-        difficulty: "Beginner",
-        workout_image: require("../../assets/bck1.png"),
-    },
-];
     
 const Workout = () => {
 
@@ -91,22 +72,12 @@ const Workout = () => {
         }
     };
     
-    const slideAnim = useRef(new Animated.Value(30)).current;
-    const opacityAnim = useRef(new Animated.Value(0)).current; 
-    const [isVisible, setIsVisible] = useState(false);
-
     const navigation = useNavigation();
     const toggleNotification = () => navigation.navigate('Notification');
-    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
+    const handleGoToProfile = () => navigation.navigate('TrainerProfileStack');
 
     const [selectedTab, setSelectedTab] = useState("general");
-    const [selectedWorkout, setSelectedWorkout] = useState(null);
-
-    const workoutPlans = selectedTab === "general" ? existingPlans : null;
-
-    const toggleWorkOutDetails = (item) => {
-        setSelectedWorkout(selectedWorkout === item.workout_plan_id ? null : item.workout_plan_id);
-    };
+    const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
 
     return (
         <View style={styles.container}>
@@ -172,11 +143,11 @@ const Workout = () => {
                             </View>
                             {selectedTab === "general" && (
                                 <View style={styles.iconContainer}>
-                                    <TouchableOpacity style={styles.iconButton} onPress={() => setShowEditExistingWorkoutModal(true)}>
+                                    <TouchableOpacity style={styles.iconButton} onPress={() => {setSelectedWorkoutId(item.workout_plan_id); setShowEditExistingWorkoutModal(true);}}>
                                         <Feather name="edit" size={22} color="black" />
                                     </TouchableOpacity>
                                     <TouchableOpacity style={styles.iconButton}>
-                                        <Feather name="trash" size={22} color="black" onPress={() => setShowDeleteModal(true)}/>
+                                        <Feather name="trash" size={22} color="black" onPress={() => {setSelectedWorkoutId(item.workout_plan_id); setShowDeleteModal(true);}}/>
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -238,7 +209,7 @@ const Workout = () => {
                 )}
             </SafeAreaView>
             {selectedTab === "general"? (
-                <TouchableOpacity style={styles.createBg} onPress={() => navigation.navigate("CreateWorkout")}>
+                <TouchableOpacity style={styles.createBg} onPress={() => navigation.navigate("CreateWorkout", {memberId: "", member: [], category: "General"})}>
                     <View style={styles.createButton}>
                         <Text style={styles.createText}>Create</Text>
                         <Ionicons name="add" size={22} color='black' />
@@ -248,11 +219,16 @@ const Workout = () => {
             <DeleteModal
                 visible={showDeleteModel}
                 onCancel={() => setShowDeleteModal(false)}
-                onConfirm={() => setShowDeleteModal(false)}
+                workoutId={selectedWorkoutId}
+                member = {[]}
+                category = {"General"}   
+                refreshPage = {fetchGeneralWorkout}             
             />
             <EditExistingWorkoutModal
                 visible={showEditExistingWorkoutModal}
                 onCancel={() => setShowEditExistingWorkoutModal(false)}
+                workoutId = {selectedWorkoutId}
+                refreshPage = {fetchGeneralWorkout}             
             />
         </View>
     )
@@ -280,7 +256,6 @@ const styles = StyleSheet.create({
     imageContainer: { width: '45%', height:'100%'},
     badge: { position: "absolute", top: 0, right: 0, backgroundColor: "#E2F163", paddingHorizontal: 20, paddingRight:28, paddingVertical: 4, borderRadius: 10 },
     badgeText: { color: "#000", fontSize: 12 },
-    addButton:{ borderRadius:"50%", backgroundColor:"#E2F163", width:50, height:50, alignItems:"center", position:'absolute', bottom:20, right:0 },
     iconContainer: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: -30, position: "absolute", bottom: 0, left: "50%", transform: [{ translateX: 80 }], backgroundColor: "rgba(255, 255, 255, 0.8)", padding: 5, borderRadius: 10, gap: 5 },
     iconButton: { padding: 8 },
     createBg: { position: 'absolute', bottom: 20, left: 0, right: 0, backgroundColor: '#E2F163', borderRadius: 10, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', padding: 10, marginHorizontal: 150, borderWidth: 1},

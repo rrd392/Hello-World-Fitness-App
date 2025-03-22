@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -11,11 +11,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import HeaderVer4 from "../../HeaderVer4";
 import UpcomingClassCards from "./UpcomingClassCards";
-import PastClassCards from "./PastClassCards";
+import API_BASE_URL from "../../../env";
+import { getUserId } from "../../getUserId";
 
 function Schedule1() {
   const navigation = useNavigation();
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const getMondayDates = () => {
     const currentDate = new Date();
     const dayOfWeek = currentDate.getDay();
@@ -38,8 +38,6 @@ function Schedule1() {
   const daysOfWeek = ["MON", "TUE", "WED", "THU", "FRI"];
   const [selectedDay, setSelectedDay] = useState(0);
 
-  const toggleDropdown = () => setDropdownVisible(!dropdownVisible);
-
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setDateDropdownVisible(false);
@@ -49,58 +47,57 @@ function Schedule1() {
     setSelectedClassStatus(status);
     setClassStatusDropdown(false);
   };
-  const upcomingClassData = [
-    {
-      title: "Yoga Flow",
-      time: "08:00 - 09:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "20/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Yoga Flow",
-      time: "08:00 - 09:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "20/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Yoga Flow",
-      time: "08:00 - 09:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "20/20",
-      image: require("./yoga.jpg"),
-    },
-  ];
-  const pastClassData = [
-    {
-      title: "Zumba Dance",
-      time: "10:00 - 11:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "15/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Zumba Dance",
-      time: "10:00 - 11:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "15/20",
-      image: require("./yoga.jpg"),
-    },
-    {
-      title: "Zumba Dance",
-      time: "10:00 - 11:00",
-      coach: "Coach Aaron",
-      date: "2025-01-02",
-      slots: "15/20",
-      image: require("./yoga.jpg"),
-    },
-  ];
+
+  const [userId, setUserId] = useState("");
+  const [classes, setClasses] = useState([]);
+
+  useEffect(() => {
+    async function fetchUserId() {
+        const token = await getUserId();
+        setUserId(token.id);
+    }
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    if(userId){
+      fetchUpcomingClasses();
+    }
+  }, [userId, selectedDate, selectedDay]);
+
+  const fetchUpcomingClasses = useCallback(async () => {
+    const [day, month, year] = selectedDate.split("/"); 
+    const formattedDate = `${year}-${month}-${day}`;
+
+    const classDate = new Date(formattedDate);
+    classDate.setDate(classDate.getDate() + Number(selectedDay)); 
+
+    const schedule_date = classDate.toISOString().split("T")[0];
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/trainer-class/displayClasses/${userId}/${schedule_date}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
+      }
+
+      const data = await response.json();
+
+      if (data) {
+        setClasses(data.results)
+      }
+    } catch (error) {
+      console.error("Error fetching upcoming class data:", error);
+      Alert.alert("Error", error.message || "Network request failed");
+    } finally {
+    }
+  }, [userId, selectedDate, selectedDay]);
 
   return (
     <View style={styles.container}>
@@ -115,19 +112,31 @@ function Schedule1() {
         <Text style={styles.sectionTitle}>Classes</Text>
         <View style={styles.titleContainer}>
           <TouchableOpacity
-            style={styles.dropdownButton2}
-            onPress={() => setClassStatusDropdown(!classStatusDropdown)}
+            style={[styles.historyButton]}
+            onPress={() => navigation.navigate("ClassHistory")}
           >
-            <Text style={styles.buttonText}>{selectedClassStatus}</Text>
-            <Ionicons name="chevron-down" size={20} color="#E2F163" />
+            <Text style={[styles.buttonText, {color:"#000", textAlign:'center'}]}>View History</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.dropdownButton}
+            style={[
+              styles.dropdownButton, 
+              selectedClassStatus === "Past" ? { borderColor: "#A5A5A5" } : { borderColor: "#E2F163" }
+            ]}
             onPress={() => setDateDropdownVisible(!dateDropdownVisible)}
+            disabled = {selectedClassStatus == "Past"}
           >
-            <Text style={styles.buttonText}>{selectedDate}</Text>
-            <Ionicons name="chevron-down" size={20} color="#E2F163" />
+            <Text style={[
+              styles.buttonText, 
+              selectedClassStatus === "Past" ? { color: "#A5A5A5" } : { color: "#E2F163" }
+            ]}>
+              {selectedDate}
+            </Text>
+            <Ionicons 
+              name="chevron-down" 
+              size={20} 
+              color={selectedClassStatus === "Past" ? "#A5A5A5" : "#E2F163"} 
+            />
           </TouchableOpacity>
         </View>
         {classStatusDropdown && (
@@ -174,20 +183,14 @@ function Schedule1() {
       </View>
       {/* Class Cards*/}
       <ScrollView style={styles.classCards}>
-        {selectedClassStatus === "Upcoming"
-          ? upcomingClassData.map((classItem, index) => (
-              <UpcomingClassCards key={index} {...classItem} />
-            ))
-          : pastClassData.map((classItem, index) => (
-              <PastClassCards key={index} {...classItem} />
-            ))}
+        <UpcomingClassCards classData={classes} />
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#212020" },
+  container: { flex: 1, backgroundColor: "#000" },
   titleContainer: {
     paddingHorizontal: 20,
     flexDirection: "row",
@@ -196,48 +199,42 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    paddingLeft: 20,
+    paddingHorizontal: 20,
     fontSize: 24,
     color: "white",
     fontWeight: "bold",
+    marginBottom:10
+  },
+
+  historyButton:{
+    borderWidth: 2,
+    padding: 10,
+    borderRadius: 5,
+    width: 150,
+    backgroundColor: "#E2F163",
+    marginTop: 10,
   },
 
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderColor: "#E2F163",
     borderWidth: 2,
     padding: 10,
     borderRadius: 5,
     width: 150,
     backgroundColor: "black",
     marginTop: 10,
-    marginRight: 10,
-  },
-  dropdownButton2: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderColor: "#E2F163",
-    borderWidth: 2,
-    padding: 10,
-    borderRadius: 5,
-    width: 150,
-    backgroundColor: "black",
-    marginTop: 10,
-    alignSelf: "flex-end", // Moves button to the right
-    marginLeft: -10,
   },
 
-  buttonText: { fontSize: 16, color: "#E2F163", fontWeight: "bold" },
+  buttonText: { fontSize: 16, fontWeight: "bold" },
   dropdown: {
     position: "absolute",
     backgroundColor: "white",
     borderRadius: 5,
     width: 150,
     padding: 5,
-    top: 80,
+    top: 100,
     right: 20,
     zIndex: 10,
     marginLeft: "auto",
@@ -250,7 +247,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 150,
     padding: 5,
-    top: 80,
+    top: 100,
     left: 20,
     zIndex: 10,
     marginLeft: "auto",
@@ -292,16 +289,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  classesSection: { marginBottom: 20 },
-  titleContainer: {
-    marginLeft: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-
-  selectedText: { marginTop: 10, fontSize: 16, color: "#E2F163" },
+  classesSection: { marginBottom: 20, marginTop:-20 },
   classCards: { marginBottom: 10, backgroundColor: "#B3A0FF", width: "100%" },
 });
 

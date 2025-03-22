@@ -1,8 +1,8 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import ProfileDashboard from "../screens/Trainer Profile/ProfileDashboard";
+import TrainerProfileStack from "./TrainerProfileStack";
 import Members from "../screens/Trainer Members/Members";
-import Notification from "../screens/Home/Notification";
+import Notification from "../screens/Trainer Home/Notification";
 import ViewProgress from "../screens/Trainer Members/ViewProgress";
 import TrainerDashboard from "../screens/Trainer Home/TrainerDashboard";
 
@@ -16,7 +16,7 @@ const TrainerMemberStack = () => {
         >
             <TrainerMemberStackNavigator.Screen name="Members" component={Members} />
             <TrainerMemberStackNavigator.Screen name="Notification" component={Notification} />
-            <TrainerMemberStackNavigator.Screen name="ProfileDashboard" component={ProfileDashboard} />
+            <TrainerMemberStackNavigator.Screen name="TrainerProfileStack" component={TrainerProfileStack} />
             <TrainerMemberStackNavigator.Screen name="ViewProgress" component={ViewProgress} />
             <TrainerMemberStackNavigator.Screen name="TrainerDashboard" component={TrainerDashboard} />
             

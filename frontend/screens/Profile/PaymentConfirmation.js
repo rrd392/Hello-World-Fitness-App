@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ const PaymentConfirmation = ({ route }) => {
   
   // Generate default values if they are not provided
   const generateTransactionId = () => `TXN${Math.floor(100000 + Math.random() * 900000)}`;
-  const currentDate = new Date().toLocaleDateString(); // Format: MM/DD/YYYY
+  const currentDate = new Date().toLocaleDateString(); 
 
   // State to store transaction ID and payment date
   const [transactionId, setTransactionId] = useState(route.params?.transactionId || generateTransactionId());

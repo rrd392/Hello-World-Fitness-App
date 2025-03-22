@@ -152,7 +152,6 @@ const Achievement = () => {
                                 : unknownBadge} style={styles.profileImage} />
                                 <View style={styles.badgeContent}>
                                     <Text style={styles.badgeName}>{badge.name}</Text>
-                                    {/* <Text style={styles.badgeDate}>{badge.description}</Text> */}
                                     <Text style={styles.badgePoints}>{badge.points_needed} points</Text>
                                 </View>
                             </View>
@@ -179,14 +178,10 @@ const styles = StyleSheet.create({
 
     badgeText: { color: "white", fontSize: 22, fontWeight: "bold", textShadowColor: "#896CFE", textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 5, marginBottom: 10, },
     badgeCard: { flexDirection: "column", alignItems: "center", width:"30%", marginBottom: 10, },
-    badgeImage: { width: 55, height: 55, marginRight: 10, },
     badgeContent: { flex: 1, alignItems:'center'},
     badgeName: { fontWeight: 'bold', fontSize: 16, color: "white",marginBottom:5 },
     badgeDate: { fontSize: 14, color: "#E2F163", marginBottom:5},
     badgePoints: { fontWeight: "bold", fontSize: 14, color: "white",marginBottom:20 },
-    lockedBadge: { opacity: 0.5 },
-    comingsoonBadge: { alignItems: "center", backgroundColor: "#fff", borderRadius: 15, padding: 18, marginBottom: 10, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5, elevation: 3,},
-    comingsoonText: { fontSize: 24, fontWeight: 'bold', flexDirection: "column", color: 'gray'},
 });
 
 export default Achievement;

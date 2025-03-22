@@ -13,7 +13,7 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import HeaderVer4 from "../../HeaderVer4";
 import API_BASE_URL from "../../../env";
 
-function SelectedClass() {
+function ClassPastAttendance() {
   const navigation = useNavigation();
   const route = useRoute();
   const { classData } = route.params || {};
@@ -28,7 +28,7 @@ function SelectedClass() {
   const fetchClassParticipants = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/trainer-class/displayClassParticipants/${classData.class_id}`,
+        `${API_BASE_URL}/api/trainer-class/displayPastParticipants/${classData.class_id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -159,6 +159,7 @@ function SelectedClass() {
                       <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{member.name}</Text>
                       <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">{member.email}</Text>
                     </View>
+                    <Text style={member.status == "Present"? styles.Present:styles.Absent}>{member.status  == "Present" ? member.status:`Absent`}</Text>
                   </View>
                 </View>
               )}
@@ -176,8 +177,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop:10,
-    marginBottom:20,
-    gap:10
+    marginBottom:20
   },
 
   iconRow: { flexDirection: "row", gap: 20 },
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: "100%",
   },
-  classTitle: { fontSize: 26, color: "#E2F163", fontWeight: "bold", width:"60%" },
+  classTitle: { fontSize: 26, color: "#E2F163", fontWeight: "bold" },
   classDescription: { fontSize: 14, color: "white",  marginBottom:10},
   infoRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 5 },
   classTime: { fontSize: 16, color: "white" },
@@ -258,10 +258,24 @@ const styles = StyleSheet.create({
     color: "white",
     marginRight: 20,
   },
+  Present: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#5ce681",
+    marginLeft: "auto",
+    marginRight: 10,
+  },
+  Absent: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#ed5858",
+    marginLeft: "auto",
+    marginRight: 10,
+  },
   email: {
     fontSize: 14,
     color: "#CCCCCC",
   },
 });
 
-export default SelectedClass;
+export default ClassPastAttendance;

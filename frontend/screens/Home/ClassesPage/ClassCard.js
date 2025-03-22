@@ -115,7 +115,8 @@ function ClassCard({ classData, refreshClasses }) {
           <Text style={styles.buttonText}>More</Text>
         </TouchableOpacity>
       </View>
-      {/* CLass sign up status */}
+
+      {/* Class sign up status */}
       <Modal visible={successModalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -154,7 +155,7 @@ function ClassCard({ classData, refreshClasses }) {
             <TouchableOpacity
               style={styles.viewMoreButton}
               onPress={() => {
-                setModalVisible(false);
+                setFailModalVisible(false);
                 navigation.navigate("Classes");
               }}
             >

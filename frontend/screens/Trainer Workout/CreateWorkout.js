@@ -11,7 +11,7 @@ const CreateWorkout = () => {
 
     const [showViewSelectedWorkoutModal, setShowViewSelectedWorkoutModal] = useState(false);
     const route = useRoute();
-    const { memberId, member } = route.params || {};
+    const { memberId, member, category } = route.params || {};
     const [fullWorkoutDetails, setFullWorkoutDetails] = useState([]);
     const [exerciseType, setExerciseType] = useState([]);
     const [selectedExercise, setSelectedExercise] = useState([]);
@@ -65,7 +65,9 @@ const CreateWorkout = () => {
                                 </View>
                                 <View style={styles.setNicon}>
                                     <Text style={styles.setsText}>Sets {workout.sets}x</Text>
-                                    <TouchableOpacity style={styles.iconaddButton} onPress={() => setSelectedExercise((prevDetails) => [...prevDetails, workout.workout_detail_id])}>
+                                    <TouchableOpacity style={selectedExercise.includes(workout.workout_detail_id)? styles.iconButton :styles.iconaddButton} 
+                                    onPress={() => setSelectedExercise((prevDetails) => [...prevDetails, workout.workout_detail_id])}
+                                    disabled={selectedExercise.includes(workout.workout_detail_id)}>
                                         <Ionicons name="add" size={22} color="#000" />
                                     </TouchableOpacity>
                                 </View>
@@ -89,23 +91,24 @@ const CreateWorkout = () => {
                 refreshSelectedExercise = {setSelectedExercise}
                 memberId = {memberId}
                 member = {member}
+                category = {category}
             />
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020' },
+    container: { flex: 1, backgroundColor: '#000' },
     content: { padding: 15, },
-    scrollViewContent: { paddingBottom: 30},
     categoryTitle: { fontSize: 25, fontWeight: 'bold', color: 'white', alignSelf: 'center', marginBottom: 5, marginTop: -10 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
+    iconButton: { backgroundColor: '#A5A5A5', borderRadius: 50, padding: 5},
     workoutItem: { backgroundColor: 'white', padding: 15, borderRadius: 20, marginVertical: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     nameNtime: { flex: 1},
     workoutName: { fontSize: 14, fontWeight: 'bold', color: "#000" },
     iconNtime: { flexDirection: 'row', alignItems: 'center', marginTop: 3, gap: 3},
     restTime: { fontSize: 14, color: "#B3A0FF", flex: 1, fontWeight: 'bold' },
-    setsText: { fontSize: 16, fontWeight: "bold", color: "#A586FF" },
+    setsText: { fontSize: 14, fontWeight: "bold", color: "#A586FF" },
     setNicon: { gap: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'},
     viewButton: { flexDirection: 'row', marginTop: 10 ,backgroundColor: '#E2F163', width: "90%", height: 50, borderWidth:1, borderRadius: 10, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', position:'absolute', bottom:10},
     countingColumn: { borderWidth: 1, width: 25, height: 25, alignItems: 'center', borderRadius: 15, justifyContent: 'center', position: 'absolute', left:17},

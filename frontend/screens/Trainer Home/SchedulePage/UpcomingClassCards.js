@@ -2,73 +2,103 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import API_BASE_URL from "../../../env";
 
-function UpcomingClassCard({ title, time, coach, date, slots, image }) {
+function UpcomingClassCard({ classData }) {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.cardContainer}>
-        {/* Class Info & Image */}
-        <View style={styles.topSection}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.title}>{title}</Text>
+    <View>
+    {classData.length > 0 ? (classData.map((classItem, index) => (
+      <View key={index} style={styles.wrapper}>
+        <View style={styles.cardContainer}>
+          {/* Class Info & Image */}
+          <View style={styles.topSection}>
+            <View style={styles.infoContainer}>
+              <Text style={styles.title}>{classItem.class_name}</Text>
 
-            <View style={styles.detailRow}>
-              <MaterialIcons name="schedule" size={20} color="white" />
-              <Text style={styles.detailText}> {time}</Text>
-            </View>
+              <View style={styles.detailRow}>
+                <MaterialIcons name="schedule" size={20} color="white" />
+                <Text style={styles.detailText}> {classItem.start_time.slice(0,-3)} - {classItem.end_time.slice(0,-3)}</Text>
+              </View>
 
-            <View style={styles.detailRow}>
-              <FontAwesome name="user" size={18} color="white" />
-              <Text style={styles.slotText}>
-                {" "}
-                <Text style={styles.redText}>{slots}</Text>
-              </Text>
-            </View>
+              <View style={styles.detailRow}>
+                <FontAwesome name="user" size={18} color="white" />
+                <Text style={styles.slotText}>
+                  {" "}
+                  <Text style={classItem.participants==classItem.max_participants? styles.redText: styles.yellowText}>{classItem.participants}/{classItem.max_participants}</Text>
+                </Text>
+              </View>
 
-            <View style={styles.detailRow}>
-              <FontAwesome name="headphones" size={18} color="white" />
-              <Text style={styles.detailText}> {coach}</Text>
-            </View>
+              <View style={styles.detailRow}>
+                <FontAwesome name="headphones" size={18} color="white" />
+                <Text style={styles.detailText}> {classItem.name}</Text>
+              </View>
 
-            <View style={styles.detailRow}>
-              <FontAwesome name="calendar" size={18} color="white" />
-              <Text style={styles.detailText}> {date}</Text>
+              <View style={styles.detailRow}>
+                <FontAwesome name="calendar" size={18} color="white" />
+                <Text style={styles.detailText}> {new Date(classItem.schedule_date).toLocaleDateString('en-GB')}</Text>
+              </View>
             </View>
+            <Image source={{ uri: `${API_BASE_URL}/uploads/${classItem.class_image}`}} style={styles.cardImage} />
           </View>
+        </View>
 
-          <Image source={image} style={styles.cardImage} />
+        {/* Button Section*/}
+        <View>
+          {new Date(classItem.schedule_date) > new Date() || 
+          (new Date(classItem.schedule_date).toDateString() === new Date().toDateString() &&
+            classItem.start_time > new Date().toLocaleTimeString('en-GB', { hour12: false })) ? (
+            <View style={styles.buttonRow}>
+                <TouchableOpacity
+                style={styles.button}
+                onPress={() => navigation.navigate("MarkAttendance", {classData: classItem})}
+              >
+                <Text style={styles.buttonText}>Mark Attendance</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() =>
+                  navigation.navigate("ClassAttendance", { classData: classItem })
+                }
+              >
+                <Text style={styles.buttonText}>More</Text>
+              </TouchableOpacity>
+            </View>
+          ):(
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => navigation.navigate("ClassReport", {classData: classItem})}
+              >
+                <Text style={styles.buttonText}>View Feedback</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() =>
+                  navigation.navigate("ClassPastAttendance", { classData: classItem })
+                }
+              >
+                <Text style={styles.buttonText}>More</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
-
-      {/* Button Section*/}
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("MarkAttendance")}
-        >
-          <Text style={styles.buttonText}>Mark Attendance</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() =>
-            navigation.navigate("ClassAttendance", { className: title })
-          }
-        >
-          <Text style={styles.buttonText}>More</Text>
-        </TouchableOpacity>
+    ))):(
+      <View style={styles.wrapper}>
+        <Text style={styles.noClassText}>No class available.</Text>
       </View>
+    )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginTop: 20,
-    width: "95%",
+    width: "100%",
+    padding:20,
     alignSelf: "center",
-    marginBottom: 10, // Space below card and buttons
   },
   cardContainer: {
     backgroundColor: "#212020",
@@ -107,6 +137,10 @@ const styles = StyleSheet.create({
     color: "red",
     fontWeight: "bold",
   },
+  yellowText: {
+    color: "#E2F163",
+    fontWeight: "bold",
+  },
   cardImage: {
     width: 200,
     height: 165,
@@ -114,21 +148,27 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 15, // Adds spacing between card and buttons
+    justifyContent: "space-between",
+    marginTop: 15, 
   },
   button: {
     backgroundColor: "#111",
-    paddingHorizontal: 25,
     paddingVertical: 10,
     borderRadius: 25,
-    marginHorizontal: 10,
+    width:"45%"
   },
   buttonText: {
     color: "#E2F163",
     fontSize: 16,
     fontWeight: "bold",
+    textAlign:'center'
   },
+  noClassText:{
+    color:"black",
+    textAlign:'center',
+    fontSize:18,
+    fontWeight:500
+  }
 });
 
 export default UpcomingClassCard;

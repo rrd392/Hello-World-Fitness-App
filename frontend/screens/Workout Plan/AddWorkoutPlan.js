@@ -12,12 +12,6 @@ import HeaderVer2 from '../HeaderVer2';
 const AddWorkoutPlan = () => {
     const navigation = useNavigation();
 
-    //Profile icon dropdown button
-    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
-
-    //Notification icon pop up page
-    const toggleNotification = () => navigation.navigate('Notification');
-
     const [userId, setUserId] = useState("");
     const [userName, setUserName] = useState("");
     const [planDetails, setPlanDetails] = useState([]);
@@ -146,7 +140,6 @@ const AddWorkoutPlan = () => {
             return;
         }
 
-        // Initialize FormData properly
         const formData = new FormData();
 
         // Append the image file

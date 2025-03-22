@@ -157,7 +157,6 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end"
     },
     profileContainer: { alignItems: "center", position: "absolute", top: -40, },
-    avatar: { width: 70, height: 70, borderRadius: 35, borderWidth: 2, },
     rankBadge: {
         position: "absolute",
         bottom: -10,

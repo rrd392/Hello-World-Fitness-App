@@ -22,10 +22,6 @@ const Notification = () => {
         fetchUserId();
     }, []);
 
-    function toggleBackHome() {
-        navigation.goBack();
-    };
-
     useEffect(() => {
         if (!userId || !userRole) return;
 
@@ -65,12 +61,10 @@ const Notification = () => {
                         <Ionicons name="chevron-back-outline" size={24} color="white" />
                     </TouchableOpacity>
 
-                    {/* This View helps to center the title */}
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>Notification</Text>
                     </View>
 
-                    {/* Placeholder View for balancing alignment */}
                     <View style={{ width: 24 }} />
                 </View>
 

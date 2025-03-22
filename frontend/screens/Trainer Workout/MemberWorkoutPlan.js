@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import HeaderVer4 from "../HeaderVer4";
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { SafeAreaView, View, TouchableOpacity, ScrollView, Text , Image } from 'react-native';
+import { SafeAreaView, View, TouchableOpacity, ScrollView, Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import React, { useState, useEffect, useCallback } from "react";
 import API_BASE_URL from "../../env";
@@ -64,7 +64,7 @@ const MemberWorkoutPlan = () => {
                     <View key={row.user_workout_id || row.id || index} style={styles.workoutRow}>
                         <TouchableOpacity 
                             style={[styles.workoutBox, row.id === "add" && styles.addWorkoutBox]}
-                            onPress={row.id === "add" ? () => navigation.navigate("CreateWorkout", { memberId: member.user_id, member}) : 
+                            onPress={row.id === "add" ? () => navigation.navigate("CreateWorkout", { memberId: member.user_id, member, category: "Coach"}) : 
                                 () => navigation.navigate("ViewWorkout", { workoutId: row.workout_plan_id, memberName: member.name, refreshPage:fetchMemberWorkout, member})}
                         >
                             {row.id === "add" ? (
@@ -85,7 +85,7 @@ const MemberWorkoutPlan = () => {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020' },
+    container: { flex: 1, backgroundColor: '#000' },
     content: { padding: 10},
     bgStyle: { padding: 10},
     titleText: { color: '#E2F163', fontSize: 24, fontWeight: 'bold', alignSelf: 'center', marginBottom:10},

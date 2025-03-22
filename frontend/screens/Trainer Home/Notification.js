@@ -61,19 +61,17 @@ const Notification = () => {
                         <Ionicons name="chevron-back-outline" size={24} color="white" />
                     </TouchableOpacity>
 
-                    {/* This View helps to center the title */}
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}>Notification</Text>
                     </View>
 
-                    {/* Placeholder View for balancing alignment */}
                     <View style={{ width: 24 }} />
                 </View>
 
                 {Array.isArray(notifications) && notifications.length > 0 ? (
                     <FlatList
-                        data={notifications}  // Ensure notifications is an array
-                        keyExtractor={(item) => item.notification_id.toString()} // Ensure it's a string
+                        data={notifications}  
+                        keyExtractor={(item) => item.notification_id.toString()} 
                         renderItem={({ item }) => (
                             <View style={styles.notificationItem}>
                                 <Text style={styles.notificationTitle}>{item.title}</Text>
@@ -84,7 +82,7 @@ const Notification = () => {
                     />
                 ) : (
                     <FlatList
-                        data={[]} // Required for FlatList to prevent errors
+                        data={[]} 
                         contentContainerStyle={styles.listSection}
                         ListEmptyComponent={
                             <View style={styles.notificationItem}>

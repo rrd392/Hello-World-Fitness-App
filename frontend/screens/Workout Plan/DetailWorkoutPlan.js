@@ -79,6 +79,8 @@ const DetailWorkoutPlan = ({ route }) => {
     
         if (data.success) {
             alert("Workout Plan successfully added.");
+        }else{
+            alert(data.message);
         }
         } catch (error) {
         console.error("Error adding workout plan:", error);
@@ -185,12 +187,7 @@ const DetailWorkoutPlan = ({ route }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#212020'},
-    // headertop:{marginBottom:10},
     header3:{padding:20},
-    greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
-    subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
-    headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
-    iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
     header2:{padding:20, backgroundColor:'#B3A0FF'},
     workoutCard: {
         backgroundColor: "#8D5CF6",

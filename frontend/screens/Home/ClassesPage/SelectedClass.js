@@ -186,7 +186,7 @@ function SelectedClass() {
                     <TouchableOpacity
                       style={styles.viewMoreButton}
                       onPress={() => {
-                        setModalVisible(false);
+                        setFailModalVisible(false);
                         navigation.navigate("Classes");
                       }}
                     >
@@ -215,25 +215,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom:10
   },
-
   iconRow: { flexDirection: "row", gap: 5 },
-  dropdown: {
-    position: "absolute",
-    top: 30,
-    right: 0,
-    backgroundColor: "white",
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-    padding: 10,
-    width: 100,
-    zIndex: 10,
-  },
-  menuItem: { padding: 10 },
-
+  
   pageContent: {
     alignItems: "center",
     gap: 10,
@@ -252,7 +235,6 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 20,
     marginBottom: 10,
-    padding: 10,
   },
   classCard: {
     backgroundColor: "#232323",

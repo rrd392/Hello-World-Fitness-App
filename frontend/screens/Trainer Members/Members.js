@@ -9,7 +9,7 @@ import { getUserId } from '../getUserId';
 const Members = () => {
     const navigation=useNavigation();
     const toggleNotification = () => navigation.navigate('Notification');
-    const handleGoToProfile = () => navigation.navigate('ProfileDashboard');
+    const handleGoToProfile = () => navigation.navigate('TrainerProfileStack');
     const [userId, setUserId] = useState("");
     const [userName, setUserName] = useState("");
     const [memberDetails, setMemberDetails] = useState([]);

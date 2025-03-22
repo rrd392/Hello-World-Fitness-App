@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Text, Image,TextInput,TouchableOpacity, Modal } from "react-native";
+import { View, ScrollView, Text, Image,TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderVer2 from "../../HeaderVer2";

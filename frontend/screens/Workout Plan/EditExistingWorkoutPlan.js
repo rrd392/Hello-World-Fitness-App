@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import API_BASE_URL from "../../env";
+import { useNavigation } from '@react-navigation/native';
 
-const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetails, refreshWorkoutName}) => {
-   
+const EditExistingWorkoutPlan = ({ visible, onCancel, workoutId }) => {
+
+    const navigation = useNavigation();
     const [showAddButton, setShowAddButton] = useState(true);
     const [workoutPlan, setWorkoutPlan] = useState([]);
     const [fullWorkoutDetails, setFullWorkoutDetails] = useState([]);
@@ -12,15 +14,15 @@ const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetail
     const [workoutDetails, setWorkoutDetails] = useState([]);
 
     useEffect(() => {
-        if (workout) {
-            setWorkoutDetails(workout);
-        }
-    }, [workout]);
+        fetchFullWorkoutDetails();
+    }, []);
 
     useEffect(() => {
-        fetchWorkoutPlan();
-        fetchWorkoutDetails();
-    }, []);
+        if(workoutId){
+            fetchWorkoutPlan();
+            fetchWorkoutDetails();
+        }
+    }, [workoutId]);
 
     const fetchWorkoutPlan = async () => {
         try {
@@ -42,6 +44,24 @@ const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetail
 
     const fetchWorkoutDetails = async () => {
         try {
+        const response = await fetch(`${API_BASE_URL}/api/trainer-workout/displayWorkoutDetails/${workoutId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            setWorkoutDetails(data.progress);
+        }
+        } catch (error) {
+        console.error("Error fetching workout plan:", error);
+        Alert.alert("Error", error.message || "Network request failed");
+        }
+    };
+
+    const fetchFullWorkoutDetails = async () => {
+        try {
         const response = await fetch(`${API_BASE_URL}/api/workout-plan/displayWorkoutDetail`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -62,7 +82,7 @@ const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetail
     const handleToggleButton = () => {
         setShowAddButton(!showAddButton);
     };
-
+    
     const deleteWorkoutDetail = async(workout_detail_id) => {
         const workout_plan_id = workoutId;
         try {
@@ -128,9 +148,8 @@ const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetail
     
         if (data.success) {
             Alert.alert('Workout plan updated successfully!');
-            refreshWorkoutDetails();
-            refreshWorkoutName();
             onCancel();
+            navigation.navigate("MemberWorkoutPlan");
         }else{
             Alert.alert(data.message);
         }
@@ -141,13 +160,13 @@ const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetail
     }
 
     return (
-        <Modal visible={visible} animationType="slide" transparent onRequestClose={() => {refreshWorkoutDetails(); onCancel();}}>
+        <Modal visible={visible} animationType="slide" transparent onRequestClose={onCancel}>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <TouchableOpacity style={styles.closeButton} onPress={() => {refreshWorkoutDetails(); onCancel();}}>
+                    <TouchableOpacity style={styles.closeButton} onPress={onCancel}>
                         <Ionicons name="close" size={30} color="#000" />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Edit Workout</Text>
+                    <Text style={styles.title}>Custom Workout</Text>
                     <ScrollView contentContainerStyle={styles.scrollViewContent}>
                         <Text style={styles.label}>Name <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
                         <TextInput style={styles.input} value={workoutPlan.plan_name} onChangeText={(text) =>setWorkoutPlan((prevData) => ({...prevData,plan_name: text.replace(/[^a-zA-Z0-9_/ '-]/g, ''),}))} />
@@ -214,9 +233,8 @@ const EditModal = ({ visible, onCancel, workout, workoutId, refreshWorkoutDetail
                     )}
                     </View>
                     </ScrollView>
-                    
-                    <TouchableOpacity style={styles.updateButton} onPress={() => updateWorkoutPlan(workoutId)}>
-                        <Text style={styles.updateButtonText}>Update</Text>
+                    <TouchableOpacity style={styles.uploadButton} onPress={() => updateWorkoutPlan(workoutId)}>
+                        <Text style={styles.uploadButtonText}>Upload</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -229,11 +247,11 @@ const styles = StyleSheet.create({
     modalContent: { backgroundColor: '#E2F163', padding: 20, borderRadius: 10, width: '90%', maxHeight: '80%' },
     closeButton: { position: 'absolute', top: 10, right: 10 },
     title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 3 },
-    label: { fontSize: 16, fontWeight: 'bold', marginTop: 3 },
-    input: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 5 },
+    label: { fontSize: 16, fontWeight: 'bold', marginTop: 5 },
+    input: { backgroundColor: 'white', padding: 10, borderRadius: 5, marginTop: 5, marginBottom:10 },
     addButton: { backgroundColor: '#A586FF', padding: 10, borderRadius: 50, alignSelf: 'center', marginVertical: 10 },
-    updateButton: { backgroundColor: 'black', padding: 10, borderRadius: 5, alignItems: 'center', marginTop: 5 },
-    updateButtonText: { color: '#E2F163', fontSize: 16, fontWeight: 'bold' },
+    uploadButton: { backgroundColor: 'black', padding: 10, borderRadius: 5, alignSelf: 'center', marginTop: 5, width: 150, alignItems: 'center' },
+    uploadButtonText: { color: '#E2F163', fontSize: 16, fontWeight: 'bold' },
 
     workoutDetailsContainer: { padding: 5},
     workoutDetailsText: { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 10, marginTop: 20},
@@ -247,6 +265,7 @@ const styles = StyleSheet.create({
 
     categoryTitle: { fontSize: 18, fontWeight: 'bold', marginTop: 10, marginBottom:5 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
+
 });
 
-export default EditModal;
+export default EditExistingWorkoutPlan;

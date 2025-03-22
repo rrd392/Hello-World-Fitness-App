@@ -7,7 +7,7 @@ const HeaderVer2 = ({
   title,
   onPress,
   showBackButton = true,
-  containerStyle, // optional additional styles for the container
+  containerStyle, 
 }) => {
   const navigation = useNavigation();
   const toggleNotification = () => navigation.navigate("Notification");

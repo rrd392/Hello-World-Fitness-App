@@ -15,7 +15,7 @@ const MemberWorkoutPlan = () => {
   const [userPlan, setUserPlan] = useState("");
 
   //Profile icon button
-  const handleGoToProfile = () =>navigation.navigate('ProfileDashboard');
+  const handleGoToProfile = () =>navigation.navigate('ProfileStack');
 
   //Notification icon pop up page
   const toggleNotification = () => navigation.navigate('Notification');
@@ -169,13 +169,12 @@ const MemberWorkoutPlan = () => {
     }
   };
 
-  //Navigate to workout detail page
   function toggleWorkOutDetails(workout_plan, selected){
     navigation.navigate('DetailWorkoutPlan', { workout_plan, selected });
   }
 
-  function toggleCustomWorkOutDetails(workout_plan, selectedDay){
-    navigation.navigate('CustomDetailWorkoutPlan', { workout_plan, selectedDay });
+  function toggleCustomWorkOutDetails(workout_plan, selectedDay, type){
+    navigation.navigate('CustomDetailWorkoutPlan', { workout_plan, selectedDay, type });
   }
 
   function toggleAddWorkoutPlan(){
@@ -334,6 +333,7 @@ const MemberWorkoutPlan = () => {
           customPlans.length > 0 ? (
             <View style={{ flex: 1 }}>
               <ModalDropdown
+                key="dayDropdown"
                 options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
                 defaultValue="All"
                 initialScrollIndex={0}
@@ -356,7 +356,7 @@ const MemberWorkoutPlan = () => {
               data={customPlans}  
               keyExtractor={(item) => item.workout_plan_id.toString()} 
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => toggleCustomWorkOutDetails(item, selectedDay)} style={styles.generalCard} key={item.workout_plan_id}>
+                <TouchableOpacity onPress={() => toggleCustomWorkOutDetails(item, selectedDay, item.type)} style={styles.generalCard} key={item.workout_plan_id}>
                   <View style={styles.generalItem}>
                       <Text style={styles.generalTitle}>{item.plan_name}</Text>
                       <Text style={styles.generalText} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
@@ -379,6 +379,7 @@ const MemberWorkoutPlan = () => {
           ):(
             <View style={{ flex: 1 }}>
               <ModalDropdown
+                key="dayDropdown"
                 options={["All","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]}
                 defaultValue="All"
                 initialScrollIndex="0"
@@ -423,7 +424,6 @@ const styles = StyleSheet.create({
   levelText: { color: '#000', fontSize:14 },
   selectedLevelItem:{backgroundColor: "rgba(226, 241, 99, 1)", width:'30%'},
 
-  listSection:{},
   dropdown: {
     position: "absolute",
     top: 30,
@@ -439,7 +439,6 @@ const styles = StyleSheet.create({
     width: 100,
     zIndex:99,
   },
-  menuItem: {padding: 10,},
 
   contentTitle:{color:'#E2F163', fontSize:20, textAlign:'left', marginBottom: 10, fontWeight:'bold'},
   contentSubTitle:{fontSize: 14, color: '#fff', marginBottom: 30, textAlign:'left'},

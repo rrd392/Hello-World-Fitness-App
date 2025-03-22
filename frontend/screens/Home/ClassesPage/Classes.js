@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import ClassCard from "./ClassCard";
 import HeaderVer2 from "../../HeaderVer2";
@@ -83,8 +83,11 @@ function Classes() {
 
       {/* Classes Section */}
       <View style={styles.classesSection}>
+        <Text style={styles.sectionTitle}>Classes</Text>
         <View style={styles.titleContainer}>
-          <Text style={styles.sectionTitle}>Classes</Text>
+          <TouchableOpacity style={styles.yourClassBtn} onPress={() => navigation.navigate("YourClasses")}>
+            <Text style={styles.yourClassText}>Your Classes</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.dropdownButton}
             onPress={() => setDropdownVisible(!dropdownVisible)}
@@ -133,9 +136,7 @@ function Classes() {
 
         
       </View>
-      <TouchableOpacity style={styles.yourClassBtn} onPress={() => navigation.navigate("YourClasses")}>
-        <Text style={styles.yourClassText}>Your Classes</Text>
-      </TouchableOpacity>
+      
     </View>
   );
 }
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  sectionTitle: { fontSize: 24, color: "white", fontWeight: "bold" },
+  sectionTitle: { fontSize: 24, color: "white", fontWeight: "bold", paddingHorizontal:20, marginBottom:20 },
 
   classCards: { paddingHorizontal: 20, paddingTop:30, backgroundColor: "#B3A0FF", width: "100%", flexGrow:1},
   dropdownButton: {
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     paddingHorizontal:20,
     paddingVertical:10,
     backgroundColor:'#B3A0FF',
-    marginBottom:10
+    marginBottom:20
   },
   daySelection:{
     color:"#E2F163",
@@ -213,17 +214,15 @@ const styles = StyleSheet.create({
   },
 
   classesSection:{
-    marginBottom:270,
+    marginBottom:290,
+    marginTop:-20
   },
 
   yourClassBtn:{
-    position:'absolute',
-    bottom:20,
-    right:20,
     backgroundColor:'#E2F163',
     paddingVertical:10,
     paddingHorizontal:20,
-    borderRadius:10
+    borderRadius:5
   },
   yourClassText:{
     fontWeight:500,

@@ -18,13 +18,6 @@ const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  // const { logoutContext } = useContext(AuthContext);
-
-  // async function logout() {
-  //   await SecureStore.deleteItemAsync("userToken");
-  //   logoutContext();
-  //   console.log("Logged out, token removed.");
-  // }
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -40,8 +33,6 @@ const LoginScreen = ({ navigation }) => {
         body: JSON.stringify({ username, password })
       });
 
-
-
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`HTTP error! Status: ${response.status} - ${text}`);
@@ -51,10 +42,9 @@ const LoginScreen = ({ navigation }) => {
 
       if (data.success) {
         await SecureStore.setItemAsync("userToken", data.token);
-        // navigation.navigate(data.role === "admin" ? "AdminPage" : "Home", { screen: "MemberDashboard" });
         loginContext();
       } else {
-        Alert.alert("Login Failed");
+        Alert.alert(data.message);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -108,12 +98,6 @@ const LoginScreen = ({ navigation }) => {
           >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity
-            style={styles.forgotPasswordButton}
-            onPress={() => logout()}
-          >
-            <Text style={styles.forgotPasswordText}>Logout</Text>
-          </TouchableOpacity> */}
         </View>
 
 

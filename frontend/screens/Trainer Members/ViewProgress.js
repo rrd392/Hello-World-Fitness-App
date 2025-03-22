@@ -190,7 +190,7 @@ const ViewProgress = () => {
                     </View>
 
                     {/* Workout Section */}
-                    {progressDetails.map((item) => (
+                    {progressDetails.length>0? (progressDetails.map((item) => (
                         <View key={item.title} style={styles.category}>
                             {/* Static Category Title */}
                             <View style={styles.categoryHeader}>
@@ -261,7 +261,11 @@ const ViewProgress = () => {
                             </View>
                             ))}
                         </View>
-                    ))}
+                    ))):(
+                        <View>
+                            <Text style={{color:"#000", textAlign:'center', fontWeight:500, marginTop:10}}>No progress yet.</Text>
+                        </View>
+                    )}
                 </View>
             </ScrollView>
             {/* Feedback Modal */}
@@ -381,34 +385,41 @@ const ViewProgress = () => {
                     <Ionicons name="close" size={26} color="black" />
                     </TouchableOpacity>
                     <Text style={styles.feedbackModalTitle}>Feedback History</Text>
-                    <FlatList
-                    data={feedbackDetails}
-                    keyExtractor={(feedback) => feedback.progress_id}
-                    renderItem={({ item }) => (
-                    <View style={styles.feedbackCategory}>
-                        <View style={styles.feedbackCategoryHeader}>
-                        <Image source={{ uri: `${API_BASE_URL}/uploads/${item.profile_picture}` }} style={styles.feedbackProfileImage} />
+                    {feedbackDetails.length > 0 ? (
+                        <FlatList
+                        data={feedbackDetails}
+                        keyExtractor={(feedback) => feedback.progress_id}
+                        renderItem={({ item }) => (
+                        <View style={styles.feedbackCategory}>
+                            <View style={styles.feedbackCategoryHeader}>
+                            <Image source={{ uri: `${API_BASE_URL}/uploads/${item.profile_picture}` }} style={styles.feedbackProfileImage} />
+                            <View>
+                                <Text style={styles.feedbackCategoryTitle}>{item.name}</Text>
+                                <Text style={styles.feedbackCategoryEmail}>{item.email}</Text>
+                            </View>
+                            </View>
+                        
+                            <Text style={styles.feedbackDate}>{new Date(item.progress_date).toLocaleDateString("en-GB")}</Text>
+                        
+                            <View style={styles.feedbackCard}>
+                            <Text style={styles.feedbackTitle}>Performance Feedback</Text>
+                            <Text style={styles.feedbackText}>{item.fitness_performance}</Text>
+                        
+                            <Text style={styles.feedbackTitle}>Weakness Area</Text>
+                            <Text style={styles.feedbackText}>{item.weak_areas}</Text>
+                        
+                            <Text style={styles.feedbackTitle}>Overall Feedback</Text>
+                            <Text style={styles.feedbackText}>{item.trainer_feedback}</Text>
+                            </View>
+                        </View>
+                        )}            
+                        />
+                    ):(
                         <View>
-                            <Text style={styles.feedbackCategoryTitle}>{item.name}</Text>
-                            <Text style={styles.feedbackCategoryEmail}>{item.email}</Text>
+                            <Text style={{color:"#000", fontSize:16, fontWeight:500, textAlign:'center'}}>No feedback yet.</Text>
                         </View>
-                        </View>
+                    )}
                     
-                        <Text style={styles.feedbackDate}>{new Date(item.progress_date).toLocaleDateString("en-GB")}</Text>
-                    
-                        <View style={styles.feedbackCard}>
-                        <Text style={styles.feedbackTitle}>Performance Feedback</Text>
-                        <Text style={styles.feedbackText}>{item.fitness_performance}</Text>
-                    
-                        <Text style={styles.feedbackTitle}>Weakness Area</Text>
-                        <Text style={styles.feedbackText}>{item.weak_areas}</Text>
-                    
-                        <Text style={styles.feedbackTitle}>Overall Feedback</Text>
-                        <Text style={styles.feedbackText}>{item.trainer_feedback}</Text>
-                        </View>
-                    </View>
-                    )}            
-                    />
                 </View>
                 </View>
             </Modal>
@@ -417,7 +428,7 @@ const ViewProgress = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {flex: 1, backgroundColor: '#212020'},
+    container: {flex: 1, backgroundColor: '#000'},
     bgStyle: { padding: 20},
     progressCard: { backgroundColor: '#E9E9E9', padding: 15, borderRadius: 15, marginBottom: 30 },
 
@@ -499,20 +510,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#aaa",
     },
-    
-    workoutContainer: { backgroundColor: '#A5A5A5', padding: 10, borderRadius: 10, marginTop: 15 },
-    titleNdate: { flexDirection: 'row',  justifyContent: 'space-between', marginBottom: 10},
-    titleName: { color: '#E2F163', fontWeight: 'bold', fontSize: 18},
-    iconNtitle: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 5,},
-    playIcon: { color: '#E2F163'},
-    dateStyle: { fontSize: 15, alignSelf: 'center', fontWeight: 'bold', fontSize: 16},
 
     workoutDetails: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', marginBottom: 3, padding: 4, opacity: 0.7, borderRadius: 5 },
-    exerciseNameText: { fontWeight: 'bold', paddingLeft: 5, width: 120, fontSize: 13},
-    exerciseTypeText: { fontWeight: 'bold', color: '#896CFE', width: 75, fontSize: 13, alignSelf: 'center'},
-    timeTakenIconNText: { flexDirection: 'row', alignSelf: 'center'},
-    exerciseTimeText: { fontSize: 13, width: 105},
-
     feedbackBtn: { backgroundColor: '#000', alignSelf: 'center', marginTop: 20, padding: 10, borderRadius: 15, width:"45%" },
     feedbackBtnText: { textAlign: 'center', color: '#E2F163', fontSize: 16, fontWeight: 'bold'},
     viewFeedback:{flexDirection:'row', justifyContent:'space-evenly', alignItems:'center'},

@@ -142,6 +142,8 @@ const ViewWorkout = () => {
                 onCancel={() => setShowDeleteModal(false)}
                 workoutId = {workoutId}
                 member = {member}
+                category = {"Coach"}
+                refreshPage={""}
             />
             <EditModal
                 visible={showEditModal}
@@ -156,7 +158,7 @@ const ViewWorkout = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020' },
+    container: { flex: 1, backgroundColor: '#000' },
     content: { padding: 20},
     bgStyle: { padding: 10, backgroundColor: 'white', marginTop: 10, borderRadius: 10},
     titleText: { color: '#E2F163', fontSize: 24, fontWeight: 'bold', alignSelf: 'center', marginBottom:10},
@@ -164,7 +166,6 @@ const styles = StyleSheet.create({
     leftContent: { flexDirection: 'row', alignItems: 'center', gap: 5},
     playIcon: { color: '#B3A0FF' },
     titleName: { color: '#B3A0FF', fontSize: 20, fontWeight: 'bold', width:"85%"},
-    actionsIcon: { alignItems: 'flex-end'},
     divider: { height: 3, backgroundColor: "#E2F163", marginBottom: 10, marginTop: 5},
 
     workoutDetailsContainer: { padding: 5},
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     iconNtime: { flexDirection: 'row', alignItems: 'center', marginTop: 3, gap: 3},
     workoutName: { fontSize: 14, fontWeight: 'bold', color: "#000" },
     restTime: { fontSize: 14, color: "#B3A0FF", flex: 1, fontWeight: 'bold' },
-    setsText: { fontSize: 16, fontWeight: "bold", color: "#A586FF" },
+    setsText: { fontSize: 14, fontWeight: "bold", color: "#A586FF" },
 
     animatedIcons: { flexDirection: 'row', position: 'absolute', right: 40, top: 0, backgroundColor: "#B3A0FF", paddingHorizontal: 5, paddingVertical: 5, borderRadius: 10, zIndex: 10 },
     iconButton: { padding: 8, borderRadius: 5, marginHorizontal: 3},

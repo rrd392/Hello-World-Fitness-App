@@ -1,24 +1,21 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import {
     View,
     Text,
     Image,
     StyleSheet,
     TouchableOpacity,
-    Dimensions,
     ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 import { AuthContext } from "../../context/AuthContext";
 import LogoutModal from './LogoutModal';
 import HeaderVer1 from '../HeaderVer1';
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
-
-
 
 const ProfileDashboard = () => {
     const navigation = useNavigation();
@@ -46,6 +43,14 @@ const ProfileDashboard = () => {
             fetchUserData();
         }
     }, [userId]);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (userId) {
+                fetchUserData();
+            }
+        }, [userId])
+    );
 
     const fetchUserData = async () => {
         try {
@@ -120,7 +125,7 @@ const ProfileDashboard = () => {
                     <Text style={styles.uidText}>ID: {userData.user_id}</Text>
                     <Image
                         source={userData.profile_picture? { uri: `${API_BASE_URL}/uploads/${userData.profile_picture}?t=${Date.now()}`}
-                        : require("../../assets/icon.png")} //put profile image here
+                        : require("../../assets/icon.png")} 
                         style={styles.profileImage}
                     />
                     <Text style={styles.userName}>{userData.name}</Text>
@@ -174,7 +179,6 @@ const ProfileDashboard = () => {
                 ></LogoutModal>
             </SafeAreaView>
         </ScrollView>
-
     );
 };
 
@@ -186,7 +190,6 @@ const styles = StyleSheet.create({
         position: "relative",
 
     },
-
 
     headerSection: {
         alignItems: "center",
@@ -217,7 +220,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#896CFE",
         borderRadius: 10,
         position: 'absolute',
-        top: 285,  // Adjust this value to overlap as desired
+        top: 285,  
         alignSelf: "center",
         zIndex: 10,
         elevation: 5,

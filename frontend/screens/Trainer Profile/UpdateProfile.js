@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     TextInput,
     ScrollView,
-    Alert
+    Alert, Platform, Modal
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -194,6 +194,17 @@ const UpdateProfile = () => {
         }
     };
 
+    const [showPicker, setShowPicker] = useState(false);
+
+    const handleDateChange = (event, selectedDate) => {
+        if (selectedDate) {
+            const fixedDate = new Date(selectedDate);
+            fixedDate.setHours(12, 0, 0, 0);
+            setUpdateData((prevData) => ({ ...prevData, dob: fixedDate }));
+        }
+        setShowPicker(false); 
+    };
+
     return (
         <View style={styles.container} nestedScrollEnabled={true}>
             <SafeAreaView>
@@ -281,29 +292,53 @@ const UpdateProfile = () => {
                         />
 
                         <Text style={styles.label}>Date of Birth</Text>
-                        <TouchableOpacity style={styles.DOBContainer} >
+                        <TouchableOpacity style={styles.DOBContainer} onPress={() => setShowPicker(true)}>
                             <TextInput
                                 style={styles.input}
+                                placeholder="Select Date"
                                 placeholderTextColor="#777"
+                                value={updateData.dob.toLocaleDateString('en-GB')}
                                 editable={false}
                             />
                             <Ionicons style={styles.calendarIcon} name="calendar-outline" size={24} color="#000" />
 
-                            <DateTimePicker
-                                value={updateData.dob}
-                                mode="date"
-                                display="default"
-                                onChange={(event, selectedDate) => {
-                                    if (selectedDate) {
-                                        const fixedDate = new Date(selectedDate);
-                                        fixedDate.setHours(12, 0, 0, 0);
-                                        setUpdateData((prevData) => ({ ...prevData, dob: fixedDate }));
-                                    }
-                                }}                                                                                                                       
-                                maximumDate={new Date()} 
-                                style={styles.picker}
-                            />
+                            {Platform.OS === "ios" && showPicker && (
+                                <DateTimePicker
+                                    value={updateData.dob}
+                                    mode="date"
+                                    display="default"
+                                    onChange={(event, selectedDate) => {
+                                        if (selectedDate) {
+                                            const fixedDate = new Date(selectedDate);
+                                            fixedDate.setHours(12, 0, 0, 0);
+                                            setUpdateData((prevData) => ({ ...prevData, dob: fixedDate }));
+                                        }
+                                    }}                                                                                                                       
+                                    maximumDate={new Date()} 
+                                    style={styles.picker}
+                                />
+                            )}
                         </TouchableOpacity>
+
+                        {/* Date Picker for Android (Modal) */}
+                        {Platform.OS === "android" && showPicker && (
+                            <Modal transparent={true} animationType="slide">
+                                <View style={styles.modalContainer}>
+                                    <View style={styles.modalContent}>
+                                        <DateTimePicker
+                                            value={updateData.dob}
+                                            mode="date"
+                                            display="calendar"
+                                            onChange={handleDateChange}
+                                            maximumDate={new Date()}
+                                        />
+                                        <TouchableOpacity onPress={() => setShowPicker(false)}>
+                                            <Text style={styles.closeButton}>Close</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </Modal>
+                        )}
 
                         <Text style={styles.label}>Weight</Text>
                         <TextInput
@@ -363,6 +398,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#212020",
 
     },
+    modalContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
+    modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10 },
+    closeButton: { marginTop: 10, textAlign: "center", color: "blue" },
 
     headerSection: {
         marginTop: 10,
@@ -469,11 +507,6 @@ const styles = StyleSheet.create({
     dropdownText: {
         color: '#000',
         fontSize: 18,
-    },
-    selectedText: {
-        color: '#fff',
-        fontSize: 18,
-        marginTop: 8,
     },
 
     updateButton: {

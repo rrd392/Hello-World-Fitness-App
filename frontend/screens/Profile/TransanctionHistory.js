@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, TextInput, ScrollView} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -130,12 +130,11 @@ const TransactionHistory = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#212020'},
+    container: { flex: 1, backgroundColor: '#000'},
     header: { padding: 20, marginBottom:-30},
     ProfileButton: { flexDirection: 'row', alignItems: 'center', gap: 3, marginLeft: -10},
     ProfileText: { fontSize: 24, color: '#896CFE', fontWeight: 'bold' },
     headerRow: { flexDirection: 'row', justifyContent: 'space-between'},
-    iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
 
     transactionSection: { backgroundColor: '#B3A0FF', padding: 15, marginTop: 30, height: 170, borderRadius: 20, margin: 25},
     sectionTitle: { fontSize: 24, color: 'white', marginBottom: 5, textAlign: 'center', fontWeight: 'bold' },

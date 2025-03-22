@@ -2,90 +2,61 @@ import React from "react";
 import { View, Text, Image, FlatList, StyleSheet } from "react-native";
 import { Rating } from "react-native-ratings";
 import { Ionicons } from "@expo/vector-icons";
-
-// Dummy data for feedback
-const feedbackData = [
-  {
-    id: "1",
-    userName: "EmilyLai",
-    email: "emily.lai@example.com",
-    userImage: require("./coach.jpg"), // Replace with actual image
-    className: "Yoga Flow",
-    classRating: 5,
-    coachName: "Coach Aaron",
-    coachRating: 3,
-    feedback:
-      "The trainer was very motivating and gave clear instructions. The class was a bit crowded, though.",
-    daysAgo: "3 days ago",
-  },
-  {
-    id: "2",
-    userName: "JohnDoe",
-    email: "john.doe@example.com",
-    userImage: require("./coach.jpg"),
-    className: "Pilates Core",
-    classRating: 4,
-    coachName: "Coach Sarah",
-    coachRating: 5,
-    feedback:
-      "The session was well-structured, and I learned a lot. Great experience overall!",
-    daysAgo: "5 days ago",
-  },
-];
+import API_BASE_URL from "../../../env";
 
 const FeedbackCard = ({ item }) => {
   return (
     <View style={styles.card}>
       {/* User Info & Date */}
       <View style={styles.header}>
-        <Image source={item.userImage} style={styles.userImage} />
+        <Image source={{ uri: `${API_BASE_URL}/uploads/${item.profile_picture}`}} style={styles.userImage} />
         <View>
-          <Text style={styles.userName}>{item.userName}</Text>
+          <Text style={styles.userName}>{item.name}</Text>
           <Text style={styles.email}>{item.email}</Text>
         </View>
-        <Text style={styles.date}>{item.daysAgo}</Text>
+        <Text style={styles.date}>{new Date(item.feedback_date).toLocaleDateString('en-GB')}</Text>
       </View>
 
       {/* Class & Coach Ratings */}
       <View style={styles.ratingContainer}>
         <View style={styles.ratingRow}>
           <Ionicons name="barbell-outline" size={18} color="white" />
-          <Text style={styles.className}>{item.className}</Text>
+          <Text style={styles.className}> {item.class_name} </Text>
           <Rating
             type="star"
             imageSize={15}
             readonly
-            startingValue={item.classRating}
+            startingValue={item.class_rating}
             tintColor="#4A4A4A"
           />
         </View>
 
         <View style={styles.ratingRow}>
           <Ionicons name="headset-outline" size={18} color="white" />
-          <Text style={styles.coachName}>{item.coachName}</Text>
+          <Text style={styles.coachName}> {item.trainerName} </Text>
           <Rating
             type="star"
             imageSize={15}
             readonly
-            startingValue={item.coachRating}
+            startingValue={item.trainer_rating}
             tintColor="#4A4A4A"
           />
         </View>
       </View>
 
       {/* Feedback Text */}
-      <Text style={styles.feedback}>{item.feedback}</Text>
+      <Text style={styles.feedback}>{item.comments}</Text>
     </View>
   );
 };
 
-const MemberReviews = () => {
+const MemberReviews = ({feedbackData}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Member Feedback</Text>
       <FlatList
         data={feedbackData}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.feedback_id}
         renderItem={({ item }) => <FeedbackCard item={item} />}
         nestedScrollEnabled={true}
       />
@@ -104,15 +75,14 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: "white",
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: "center",
-    textDecorationLine: "underline",
   },
   card: {
     backgroundColor: "#4A4A4A",
     padding: 15,
     borderRadius: 15,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   header: {
     flexDirection: "row",

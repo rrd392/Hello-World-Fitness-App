@@ -1,7 +1,7 @@
 import HeaderVer2 from "../../HeaderVer2";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import API_BASE_URL from "../../../env";
 import { getUserId } from '../../getUserId';
