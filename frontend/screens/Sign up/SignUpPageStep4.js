@@ -16,6 +16,8 @@ export default function SignUpPageStep4() {
   const navigation = useNavigation();
   const { signupData, setSignupData } = useSignup();
   const [plans, setPlans] = useState([]);
+  const selectedPlan = plans.find(plan => plan.membership_id === signupData.membershipPlan);
+
 
   useEffect(() => {
     fetchMembershipPlan();
@@ -50,23 +52,29 @@ export default function SignUpPageStep4() {
     }
   };
 
-  const handlePayment = async() => {
-    if (signupData.membershipPlan === null || signupData.membershipPlan === undefined) {
+  const handlePayment = async () => {
+    if (!signupData.membershipPlan) {
       Alert.alert("Missing Information", "Please select a membership plan.");
-      return; 
+      return;
     }
+  
     try {
       const response = await fetch(`${API_BASE_URL}/api/signup/signupProcess`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(signupData)
+        body: JSON.stringify(signupData),
       });
-
+  
       const data = await response.json();
-
+  
       if (data.success) {
-        navigation.navigate("CreatedPage");
-      }else{
+        //console.log("User ID:", data.user_id);
+        if (signupData.membershipPlan === 2 || signupData.membershipPlan === 4) {
+          navigation.navigate("TrainerSelection", { userId: data.user_id });
+        } else {
+          navigation.navigate("CreatedPage");
+        }
+      } else {
         Alert.alert(data.message);
       }
     } catch (error) {
@@ -74,6 +82,9 @@ export default function SignUpPageStep4() {
       Alert.alert("Error", error.message || "Network request failed");
     }
   };
+  
+  
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -97,7 +108,6 @@ export default function SignUpPageStep4() {
           {plans.map((plan) => (              
             <View key={plan.membership_id} style={styles.optionsRow}>
               <TouchableOpacity
-                key={plan.membership_id}
                 style={[
                   styles.planCard,
                   signupData.membershipPlan === plan.membership_id && styles.selectedPlan
@@ -118,7 +128,8 @@ export default function SignUpPageStep4() {
           style={styles.payButton} 
           onPress={handlePayment}
         >
-          <Text style={styles.payButtonText}>Pay RM{plans.find(plan => plan.membership_id === signupData.membershipPlan)?.price}</Text>
+          <Text style={styles.payButtonText}>Pay RM{plans.find(plan => plan.membership_id === signupData.membershipPlan)?.price ?? "0.00"}</Text>
+
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

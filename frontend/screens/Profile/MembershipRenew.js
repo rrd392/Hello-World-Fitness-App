@@ -53,6 +53,7 @@ const MembershipRenew = () => {
 
       if (response.data.success) {
         navigation.replace("PaymentConfirmation", {
+          userId,
           plan,
           paymentMethod: paymentData.paymentMethod,
           totalPaid: plan.price,

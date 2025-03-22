@@ -15,7 +15,17 @@ const PaymentConfirmation = ({ route }) => {
   const [transactionId, setTransactionId] = useState(route.params?.transactionId || generateTransactionId());
   const [paymentDate, setPaymentDate] = useState(route.params?.paymentDate || currentDate);
 
-  const { plan, paymentMethod, totalPaid } = route.params;
+  const { plan, paymentMethod, totalPaid, userId } = route.params;
+
+  useEffect(() => {
+    if (plan?.plan_name?.toLowerCase() === 'premium yearly' || plan?.plan_name?.toLowerCase() === 'premium monthly') {
+      navigation.replace('TrainerSelection', { userId}); // Navigate to TrainerSelection screen
+    }
+  }, [plan, navigation,userId ]);
+
+  console.log(userId);
+  
+  
 
   return (
     <View style={styles.container}>

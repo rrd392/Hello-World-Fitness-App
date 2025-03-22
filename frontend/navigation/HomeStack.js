@@ -12,6 +12,7 @@ import Nutrition from "../screens/Home/Nutrition/Nutrition";
 import CalculateMeal from "../screens/Home/Nutrition/CalculateMeal";
 import SelectedMeal from "../screens/Home/Nutrition/SelectedMeal";
 import YourClasses from "../screens/Home/ClassesPage/YourClasses";
+import TrainerSelection from "../screens/Sign up/TrainerSelection";
 
 const HomeStackNavigator = createStackNavigator();
 
@@ -41,6 +42,7 @@ const HomeStack = () => {
         component={CalculateMeal}
       />
       <HomeStackNavigator.Screen name="SelectedMeal" component={SelectedMeal} />
+      <HomeStackNavigator.Screen name="TrainerSelection" component={TrainerSelection} />
     </HomeStackNavigator.Navigator>
   );
 };

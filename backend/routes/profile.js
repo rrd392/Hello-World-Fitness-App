@@ -336,7 +336,46 @@ router.post("/update-membership", (req, res) => {
     });
 });
 
+
+//TrainerSelection
+router.get("/trainers", (req, res) => {
+    const query = "SELECT user_id, name, gender,email, profile_picture FROM user WHERE role = 'trainer'";
+    
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error("DB Error:", err);
+        return res.status(500).json({ error: "Failed to fetch trainers" });
+      }
+      console.log("Trainers fetched:", results);
+      res.json({ trainers: results });
+    });
+});
   
+  // Save selected trainer
+  router.post("/selectTrainer", (req, res) => {
+    console.log("Received request body:", req.body); // Debugging
+  
+    const { member_id, trainer_id } = req.body;
+  
+    if (!member_id || !trainer_id) {
+      console.log("Missing data:", { member_id, trainer_id }); // Debugging
+      return res.status(400).json({ error: "Member ID and Trainer ID are required" });
+    }
+  
+    const query = `
+      INSERT INTO member_trainer (member_id, trainer_id) 
+      VALUES (?, ?) 
+      ON DUPLICATE KEY UPDATE trainer_id = VALUES(trainer_id)
+    `;
+  
+    db.query(query, [member_id, trainer_id], (err, results) => {
+      if (err) {
+        console.error("Database error:", err); // Debugging
+        return res.status(500).json({ error: "Failed to assign trainer" });
+      }
+      res.json({ success: true, message: "Trainer assigned successfully" });
+    });
+  });
 
   
 
