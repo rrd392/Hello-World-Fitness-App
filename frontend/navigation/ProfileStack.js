@@ -8,6 +8,8 @@ import Leaderboard from "../screens/Profile/Leaderboard";
 import MembershipStatus from "../screens/Profile/MembershipStatus";
 import MembershipRenew from "../screens/Profile/MembershipRenew";
 import PaymentConfirmation from "../screens/Profile/PaymentConfirmation";
+import TrainerSelection from "../screens/Sign up/TrainerSelection";
+import MemberDashboard from "../screens/Home/MemberDashboard";
 
 
 const ProfileStackNavigator = createStackNavigator();
@@ -26,6 +28,8 @@ const ProfileStack = () => {
             <ProfileStackNavigator.Screen name="Achievement" component={Achievement} />
             <ProfileStackNavigator.Screen name="Leaderboard" component={Leaderboard} />
             <ProfileStackNavigator.Screen name="PaymentConfirmation" component={PaymentConfirmation} />
+            <ProfileStackNavigator.Screen name="TrainerSelection" component={TrainerSelection} />
+            <ProfileStackNavigator.Screen name="MemberDashboard" component={MemberDashboard}/>
         </ProfileStackNavigator.Navigator>
     );
 };

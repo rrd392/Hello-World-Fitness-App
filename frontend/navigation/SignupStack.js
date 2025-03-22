@@ -7,6 +7,8 @@ import SignUpPageStep2 from "../screens/Sign up/SignUpPageStep2";
 import SignUpPageStep3 from "../screens/Sign up/SignUpPageStep3";
 import SignUpPageStep4 from "../screens/Sign up/SignUpPageStep4";
 import CreatedPage from "../screens/Sign up/CreatedPage";
+import TrainerSelection from "../screens/Sign up/TrainerSelection";
+import MemberDashboard from "../screens/Home/MemberDashboard";
 
 const SignupStackNavigator = createStackNavigator();
 
@@ -18,6 +20,8 @@ export default function SignupStack() {
         <SignupStackNavigator.Screen name="SignUpPageStep3" component={SignUpPageStep3} />
         <SignupStackNavigator.Screen name="SignUpPageStep4" component={SignUpPageStep4} />
         <SignupStackNavigator.Screen name="CreatedPage" component={CreatedPage} />
+        <SignupStackNavigator.Screen name="TrainerSelection" component={TrainerSelection} />
+        <SignupStackNavigator.Screen name="MemberDashboard" component={MemberDashboard}/>
         </SignupStackNavigator.Navigator>
     );
   }

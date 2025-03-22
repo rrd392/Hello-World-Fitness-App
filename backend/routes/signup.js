@@ -57,6 +57,7 @@ router.post('/signupProcess', (req, res) => {
                     const userId = userResult[0].user_id;
                     const status = 'Active';
 
+
                     db.query('INSERT INTO user_membership (membership_id, user_id, start_date, end_date, status) VALUES (?, ?, ?, ?, ?)', 
                         [membershipPlan, userId, startDateFormatted, endDateFormatted, status], (err) => {
                             if (err) return res.status(500).json({ message: 'Database error.', error: err });
@@ -66,7 +67,7 @@ router.post('/signupProcess', (req, res) => {
                                 [userId, updatedDescription, price, "Paid", paymentDate], (err) => {
                                     if (err) return res.status(500).json({ message: 'Database error.', error: err });
 
-                                    res.status(201).json({ success: true });
+                                    res.status(201).json({ success: true, user_id: userResult[0].user_id });
                                 }
                             );
                         }
@@ -76,6 +77,7 @@ router.post('/signupProcess', (req, res) => {
         });
     });
 });
+
 
 
 router.get('/displayMembership', (req, res) => {
