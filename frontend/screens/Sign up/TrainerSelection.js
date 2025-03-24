@@ -7,10 +7,13 @@ import {
   SafeAreaView,
   ScrollView, 
   Alert,
-  Image
+  Image,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import API_BASE_URL from "../../env";
+import HeaderVer3 from "../HeaderVer3";
+
 
 export default function SelectTrainerPage({ route }) {
   const navigation = useNavigation();
@@ -80,7 +83,14 @@ export default function SelectTrainerPage({ route }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.container}>
+        <HeaderVer3
+          title="Create Account"
+          onPress={() => navigation.goBack()}
+        />
+      </KeyboardAvoidingView>
+
       <ScrollView style={{paddingHorizontal:20}}>
         <Text style={styles.title}>Select Your Trainer</Text>
 
@@ -116,18 +126,20 @@ export default function SelectTrainerPage({ route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: "#000",
-    paddingHorizontal: 50,
-    justifyContent: "center",
+    backgroundColor: "#232323",
+  },
+  container: {
+    marginTop: 50,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#E2F163",
+    color: "#fff",
     textAlign: "center",
-    marginVertical: 20,
+    marginBottom: 20,
+    marginTop:40,
   },
   trainerCard: {
     backgroundColor: "#FFF",

@@ -5,12 +5,13 @@ import {
   TouchableOpacity, 
   StyleSheet, 
   SafeAreaView,
-  ScrollView, Alert
+  ScrollView, Alert, KeyboardAvoidingView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSignup } from "../../context/SignupForm";
 import API_BASE_URL from "../../env";
+import HeaderVer3 from "../HeaderVer3";
 
 export default function SignUpPageStep4() {
   const navigation = useNavigation();
@@ -86,16 +87,13 @@ export default function SignUpPageStep4() {
   
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.container}>
+        <HeaderVer3
+          title="Create Account"
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="chevron-back" size={26} color="#E2F163" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Create Account</Text>
-      </View>
+        />
+      </KeyboardAvoidingView>
 
       <ScrollView contentContainerStyle={styles.plansContainer}>
         <Text style={styles.mainTitle}>Select Your Membership Plan</Text>
@@ -136,29 +134,15 @@ export default function SignUpPageStep4() {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#232323",
+  },
   container: {
-    flex: 1,
-    backgroundColor: "#000",
-    paddingHorizontal: 24,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-  },
-  backButton: {
-    padding: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#E2F163",
-    textAlign: "center",
-    flex: 1,
+    marginTop: 50,
   },
   formContainer: {
     backgroundColor: "#B3A0FF",
-    borderRadius: 10,
     paddingHorizontal: 20,
     paddingTop:30,
     paddingBottom:10,

@@ -6,11 +6,12 @@ import {
   StyleSheet, 
   SafeAreaView,
   ScrollView,
-  Alert
+  Alert,
+  KeyboardAvoidingView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 import { useSignup } from "../../context/SignupForm";
+import HeaderVer3 from "../HeaderVer3";
 
 export default function SignUpPageStep3() {
   const navigation = useNavigation();
@@ -27,19 +28,16 @@ export default function SignUpPageStep3() {
     navigation.navigate("SignUpPageStep4"); 
   };
 
-  const goals = ["Lose Weight", "Gain Weight", "Muscle Mass Gain", "Shope Body", "Others"];
+  const goals = ["Lose Weight", "Gain Weight", "Muscle Mass Gain", "Shape Body", "Others"];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.container}>
+        <HeaderVer3
+          title="Create Account"
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="chevron-back" size={26} color="#E2F163" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Create Account</Text>
-      </View>
+        />
+      </KeyboardAvoidingView>
 
       <ScrollView contentContainerStyle={styles.viewContainer}>
         <Text style={styles.mainTitle}>What Is Your Goal?</Text>
@@ -77,25 +75,12 @@ export default function SignUpPageStep3() {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#232323",
+  },
   container: {
-    flex: 1,
-    backgroundColor: "#000",
-    paddingHorizontal: 24,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-  },
-  backButton: {
-    padding: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#E2F163",
-    textAlign: "center",
-    flex: 1,
+    marginTop: 50,
   },
   viewContainer: {
     flex: 1,                
@@ -107,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#B3A0FF",
     padding: 30,
     width:"100%",
-    borderRadius: 10,
+    // borderRadius: 10,
   },
   mainTitle: {
     fontSize: 20,
@@ -153,6 +138,8 @@ const styles = StyleSheet.create({
     width: "60%",
     alignSelf: "center",
     marginTop: 30,
+    backgroundColor: "#363636",
+
   },
   continueText: {
     fontSize: 18,

@@ -9,12 +9,15 @@ import {
   Modal,
   SafeAreaView,
   ScrollView,
-  Alert, Platform
+  Alert, Platform,
+  KeyboardAvoidingView
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSignup } from "../../context/SignupForm";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import HeaderVer3 from "../HeaderVer3";
+
 
 const SignUpPageStep2 = () => {
   const navigation = useNavigation();
@@ -51,16 +54,13 @@ const SignUpPageStep2 = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.container}>
+        <HeaderVer3
+          title="Create Account"
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="chevron-back" size={26} color="#E2F163" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Create Account</Text>
-      </View>
+        />
+      </KeyboardAvoidingView>
       
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.subtitle}>Let's Get To Know More About You!</Text>
@@ -187,35 +187,20 @@ const SignUpPageStep2 = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#232323",
+  },
+  container: {
+    marginTop: 50,
   },
   modalContainer1: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
   modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10 },
   closeButton: { marginTop: 10, textAlign: "center", color: "blue" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    backgroundColor: "#000",
-    paddingHorizontal: 15,
-  },
-  backButton: {
-    padding: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#E2F163",
-    textAlign: "center",
-    flex: 1,
-  },
   scrollContainer: {
     flexGrow: 1,                
     justifyContent: "center",   
-    alignItems: "center",       
-    paddingVertical: 20,       
+    alignItems: "center",             
   },
   subtitle: {
     fontSize: 18,
@@ -229,7 +214,6 @@ const styles = StyleSheet.create({
     marginTop:30,
     marginBottom: 30,
     width:"100%",
-    borderRadius: 10,
   },
   label: {
     fontSize: 16,
@@ -272,6 +256,8 @@ const styles = StyleSheet.create({
     borderColor: "#FFF",
     width: "60%",
     alignSelf: "center",
+    backgroundColor: "#363636",
+
   },
   buttonText: {
     fontSize: 18,

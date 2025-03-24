@@ -7,11 +7,13 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
-  ScrollView
+  ScrollView,
+  KeyboardAvoidingView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; 
+import { Ionicons } from "@expo/vector-icons";
 import { useSignup } from "../../context/SignupForm";
+import HeaderVer3 from "../HeaderVer3";
 
 const SignUpPageStep1 = () => {
   const navigation = useNavigation();
@@ -26,23 +28,22 @@ const SignUpPageStep1 = () => {
       !signupData.contact.trim()
     ) {
       Alert.alert("Missing Information", "Please fill in all required fields.");
-      return; 
+      return;
     }
 
-    navigation.navigate("SignUpPageStep2"); 
+    navigation.navigate("SignUpPageStep2");
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView style={styles.container}>
+
+        <HeaderVer3
+          title="Create Account"
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="chevron-back" size={26} color="#E2F163" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Create Account</Text>
-      </View>
+        />
+      </KeyboardAvoidingView>
+
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.subtitle}>Let's Start!</Text>
@@ -83,7 +84,7 @@ const SignUpPageStep1 = () => {
             placeholder="Your Name"
             placeholderTextColor="#999"
             value={signupData.name}
-          onChangeText={(text) => setSignupData({ ...signupData, name: text.replace(/[^a-zA-Z0-9_/ ]/g, '') })}
+            onChangeText={(text) => setSignupData({ ...signupData, name: text.replace(/[^a-zA-Z0-9_/ ]/g, '') })}
           />
 
           <Text style={styles.label}>Contact No. <Text style={{ color: "rgb(255, 0, 0)" }}>*</Text></Text>
@@ -126,32 +127,19 @@ const SignUpPageStep1 = () => {
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#232323",
+  },
   container: {
-    flex: 1,
-    backgroundColor: "#000",
+    marginTop: 50,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    backgroundColor: "#000",
-    paddingHorizontal: 15,
-  },
-  backButton: {
-    padding: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#E2F163",
-    textAlign: "center",
-    flex: 1,
-  },
+
   scrollContainer: {
-    flexGrow: 1,                
-    justifyContent: "center",   
-    alignItems: "center",       
-    paddingVertical: 20,       
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 20,
   },
   subtitle: {
     fontSize: 18,
@@ -162,9 +150,9 @@ const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: "#B3A0FF",
     padding: 30,
-    borderRadius: 10,
+    // borderRadius: 10,
     marginTop: 15,
-    width:'100%'
+    width: '100%'
   },
   label: {
     fontSize: 16,
@@ -185,7 +173,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 13,
     marginTop: 15,
-    paddingHorizontal:30,
+    paddingHorizontal: 30,
   },
   linkText: {
     color: "#E2F163",
@@ -200,6 +188,7 @@ const styles = StyleSheet.create({
     width: "60%",
     alignSelf: "center",
     marginTop: 15,
+    backgroundColor:"#363636",
   },
   buttonText: {
     fontSize: 18,
