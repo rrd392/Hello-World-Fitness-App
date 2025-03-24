@@ -44,24 +44,51 @@ router.post('/insertAttendance', (req, res) => {
                         }else{
                             const insertQuery = `INSERT INTO attendance_classes (class_id, user_id, attendance_time, status)
                                                 VALUES (?, ?, NOW(), "Present")`;
+                            const addPointsQuery = `INSERT INTO points (user_id, activity_type, points, date_received)
+                                                VALUES (?, 'attendance', '10', NOW())`;
 
                             db.query(insertQuery, [class_id, userId], (error, results) => {
                                 if (error) {
                                     return res.status(500).json({ error: "Database query failed", details: error.message });
                                 }
-                                res.json({ success: true });
-                            });
+                                db.query(addPointsQuery, [userId], (error, pointResults) => {
+                                    if (error) {
+                                        return res.status(500).json({ error: "Database query failed", details: error.message });
+                                    }
+                                    res.json({ success: true });
+                                });
+                            }); 
                         }
                     });
                 });
             } else {
-                const insertQuery = `INSERT INTO attendance_gym (user_id, check_in_time) VALUES (?, NOW())`;
+                const checkAttendance = `SELECT * FROM attendance_gym WHERE DATE(check_in_time) = CURDATE()`;
 
-                db.query(insertQuery, [userId], (error, results) => {
+                db.query(checkAttendance, (error, attendanceResults) => {
                     if (error) {
                         return res.status(500).json({ error: "Database query failed", details: error.message });
                     }
-                    res.json({ success: true });
+
+                    if(attendanceResults.length > 0){
+                        return res.json({ success: false, message: "You already taken attendance." });
+
+                    }
+                    const insertQuery = `INSERT INTO attendance_gym (user_id, check_in_time) VALUES (?, NOW())`;
+
+                    const addPointsQuery = `INSERT INTO points (user_id, activity_type, points, date_received)
+                                            VALUES (?, 'attendance', '10', NOW())`;
+
+                    db.query(insertQuery, [userId], (error, results) => {
+                        if (error) {
+                            return res.status(500).json({ error: "Database query failed", details: error.message });
+                        }
+                        db.query(addPointsQuery, [userId], (error, pointResults) => {
+                            if (error) {
+                                return res.status(500).json({ error: "Database query failed", details: error.message });
+                            }
+                            res.json({ success: true });
+                        });
+                    });
                 });
             }
         } else {
@@ -120,7 +147,7 @@ router.post('/updateAttendance', (req, res) => {
         }
         
         res.json({ success:true});
-              
+           
     });
 });
 
