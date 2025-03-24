@@ -346,7 +346,6 @@ router.get("/trainers", (req, res) => {
         console.error("DB Error:", err);
         return res.status(500).json({ error: "Failed to fetch trainers" });
       }
-      console.log("Trainers fetched:", results);
       res.json({ trainers: results });
     });
 });
