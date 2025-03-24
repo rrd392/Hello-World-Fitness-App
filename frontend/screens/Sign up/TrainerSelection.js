@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import API_BASE_URL from "../../env";
-import HeaderVer3 from "../HeaderVer3";
 
 
 export default function SelectTrainerPage({ route }) {
@@ -85,10 +84,7 @@ export default function SelectTrainerPage({ route }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView style={styles.container}>
-        <HeaderVer3
-          title="Create Account"
-          onPress={() => navigation.goBack()}
-        />
+        <Text style={styles.titleHeader}>Create Account</Text>
       </KeyboardAvoidingView>
 
       <ScrollView style={{paddingHorizontal:20}}>
@@ -132,6 +128,12 @@ const styles = StyleSheet.create({
   },
   container: {
     marginTop: 50,
+  },
+  titleHeader: {
+    fontSize: 24,
+    color: "#E2F163",
+    textAlign: "center",
+    fontWeight: "bold",
   },
   title: {
     fontSize: 20,

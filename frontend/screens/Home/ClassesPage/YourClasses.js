@@ -129,7 +129,7 @@ function YourClasses() {
   const [selectedClass, setSelectedClass] = useState(null);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor:"#232323"}}>
       <HeaderVer1
         title="Home"
         onPress={() => navigation.navigate("MemberDashboard")}
@@ -308,12 +308,12 @@ const styles = {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#000",
+    backgroundColor: "#232323",
     borderRadius: 20,
     overflow:'hidden',
   },
   infoContainer: {
-    backgroundColor: "#000",
+    backgroundColor: "#232323",
     padding: 15,
     flex: 1,
     width:"60%"
@@ -411,7 +411,6 @@ const styles = {
     right: 10,
   },
   historyContainer: {
-    backgroundColor: "#111",
     paddingHorizontal: 20,
   },
   historyTitle: {
