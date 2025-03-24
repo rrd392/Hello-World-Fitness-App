@@ -44,6 +44,7 @@ function ClassPastAttendance() {
 
       if (data) {
         setClassParticipants(data.results)
+
       }
     } catch (error) {
       console.error("Error fetching class participants data:", error);
@@ -171,7 +172,7 @@ function ClassPastAttendance() {
   );
 }
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#212020" },
 
   headerRow: {
     flexDirection: "row",

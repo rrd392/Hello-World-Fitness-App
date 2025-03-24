@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     width: 160,
-    backgroundColor: "black",
+    backgroundColor: "#212020",
   },
   buttonText: { fontSize: 16, color: "#E2F163", fontWeight: "bold" },
   dropdown: {
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   daySelection:{
     color:"#E2F163",
     fontSize:14,
-    backgroundColor:'black',
+    backgroundColor:'#212020',
     paddingVertical:5,
     borderRadius:5,
     width:70,

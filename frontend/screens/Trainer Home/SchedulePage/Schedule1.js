@@ -190,7 +190,7 @@ function Schedule1() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#212020" },
   titleContainer: {
     paddingHorizontal: 20,
     flexDirection: "row",
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     width: 150,
-    backgroundColor: "black",
+    backgroundColor: "#212020",
     marginTop: 10,
   },
 
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   daySelection: {
     color: "#E2F163",
     fontSize: 14,
-    backgroundColor: "black",
+    backgroundColor: "#212020",
     paddingVertical: 5,
     borderRadius: 5,
     width: 70,
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  classesSection: { marginBottom: 20, marginTop:-20 },
+  classesSection: { marginBottom: 20},
   classCards: { marginBottom: 10, backgroundColor: "#B3A0FF", width: "100%" },
 });
 
