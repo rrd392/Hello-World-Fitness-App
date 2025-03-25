@@ -20,9 +20,13 @@ function ClassCard({ classData, refreshClasses }) {
   const [classFull, setClassFull] = useState(false); 
   const [userId, setUserId] = useState("");
 
-  if(classData.participants == classData.max_participants){
-    setClassFull(true);
-  }
+  useEffect(() => {
+    if (classData.participants === classData.max_participants) {
+      setClassFull(true);
+    } else {
+      setClassFull(false);
+    }
+  }, [classData.participants, classData.max_participants]); 
 
   useEffect(() => {
     async function fetchUserId() {
@@ -49,7 +53,7 @@ function ClassCard({ classData, refreshClasses }) {
         Alert.alert(data.message);
       }
     } catch (error) {
-      console.error("Error fetching class data:", error);
+      console.error("Error adding class data:", error);
       Alert.alert("Error", error.message || "Network request failed");
     }
   }
