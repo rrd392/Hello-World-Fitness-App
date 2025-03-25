@@ -428,7 +428,7 @@ const ViewProgress = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {flex: 1, backgroundColor: '#000'},
+    container: { flex: 1, backgroundColor: '#212020'},
     bgStyle: { padding: 20},
     progressCard: { backgroundColor: '#E9E9E9', padding: 15, borderRadius: 15, marginBottom: 30 },
 
@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
     feedbackProfileImage: {
         width: 50,
         height: 50,
-        borderRadius: "50%",
+        borderRadius: 25,
     },
     feedbackDate:{
         marginLeft:'auto',

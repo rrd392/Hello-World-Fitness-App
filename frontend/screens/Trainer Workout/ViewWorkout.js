@@ -158,7 +158,7 @@ const ViewWorkout = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000' },
+    container: { flex: 1, backgroundColor: '#212020' },
     content: { padding: 20},
     bgStyle: { padding: 10, backgroundColor: 'white', marginTop: 10, borderRadius: 10},
     titleText: { color: '#E2F163', fontSize: 24, fontWeight: 'bold', alignSelf: 'center', marginBottom:10},
