@@ -119,7 +119,7 @@ const Achievement = () => {
 
                 <ScrollView style={{marginBottom: -20}}>
                     <View style={styles.profileSection}>
-                        <Image source={userData.profile_picture? { uri: `${API_BASE_URL}/uploads/${userData.profile_picture}`}
+              <Image source={userData.profile_picture ? { uri: `${API_BASE_URL}/uploads/${userData.profile_picture}?t=${Date.now()}`}
                             : require("../../assets/icon.png")} style={styles.profileImage} />
                         <Text style={styles.nameText}>{userData.name}</Text>
                         <View style={styles.pointsContainer}>

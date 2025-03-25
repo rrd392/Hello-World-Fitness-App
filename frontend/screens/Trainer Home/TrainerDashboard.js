@@ -270,7 +270,7 @@ const TrainerDashboard = () => {
                 <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Member")}>
                   <Image
                     source={{
-                      uri: `${API_BASE_URL}/uploads/${item.profile_picture}`,
+                        uri: `${API_BASE_URL}/uploads/${item.profile_picture}?t=${Date.now()}`,
                     }}
                     style={styles.announcementImage}
                   />

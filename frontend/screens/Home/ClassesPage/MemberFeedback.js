@@ -11,7 +11,7 @@ const FeedbackCard = ({ feedback, classData }) => {
       {/* User Info & Date */}
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image source={{uri: `${API_BASE_URL}/uploads/${feedback.profile_picture}`}} style={styles.userImage}/>
+          <Image source={{ uri: `${API_BASE_URL}/uploads/${feedback.profile_picture}?t=${Date.now()}`}} style={styles.userImage}/>
           <View>
             <Text style={styles.userName}>{feedback.username}</Text>
             <Text style={styles.email}>{feedback.email}</Text>

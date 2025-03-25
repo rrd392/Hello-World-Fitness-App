@@ -98,7 +98,7 @@ const Leaderboard = () => {
                             key={user.user_id} style={[ styles.podiumBlock, {backgroundColor: user.color, height: user.height }]}
                         >
                             <View style={styles.profileContainer}>
-                                <Image source={user.profile_picture? { uri: `${API_BASE_URL}/uploads/${user.profile_picture}`}
+                                <Image source={user.profile_picture ? { uri: `${API_BASE_URL}/uploads/${user.profile_picture}?t=${Date.now()}`}
                         : require("../../assets/icon.png")} style={styles.profileImage(user.rank)} />
                                 <View style={[styles.rankBadge, { backgroundColor: user.badgeColor }]}>
                                     <Text style={styles.rankText}>{user.rank}</Text>
