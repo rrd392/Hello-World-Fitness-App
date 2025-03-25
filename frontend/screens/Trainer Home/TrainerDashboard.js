@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     color: "#896CFE",
     marginBottom: 30,
   },
-  headerRow: { flexDirection: "row", justifyContent: "space-between" },
+  headerRow: { flexDirection: "row", justifyContent: "space-between", marginTop: -10 },
   iconRow: { flexDirection: "row", justifyContent: "space-between", gap: 20 },
 
   upcomingClass: { backgroundColor: "#B3A0FF", padding: 20 },

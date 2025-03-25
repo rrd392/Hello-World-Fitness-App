@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     container: {flex: 1, backgroundColor: '#212020', padding:20, paddingBottom:0},
     greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold'},
     subtitle: { fontSize: 14, color: '#fff', marginBottom: 30 },
-    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 13, backgroundColor: "#212020", gap: 20 },
+    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 13, backgroundColor: "#212020", gap: 20, marginTop: 20 },
     iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20, },
     titleText: {color: 'white', fontWeight: 'bold', fontSize: 24, alignSelf: 'center'},
     membersSection: { paddingVertical: 15},
