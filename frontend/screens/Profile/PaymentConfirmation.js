@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   container: {  marginTop:40 },
   safeArea: { flex: 1, backgroundColor: '#000' },
   content: { padding: 20, paddingBottom: 40 },
-  successContainer: { alignItems: 'center', marginBottom: 30 },
+  successContainer: { alignItems: 'center', marginBottom: 30, marginTop: 30 },
   successCircle: { width: 100, height: 100, borderRadius: 50, justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
   successTitle: { color: '#E2F163', fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
   successSubtitle: { color: '#FFF', fontSize: 16, opacity: 0.8 },

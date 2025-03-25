@@ -514,6 +514,7 @@ const styles = StyleSheet.create({
         marginTop: 8,
         marginBottom:20,
         alignSelf: "center",
+        marginBottom: 40,
     },
     updateButtonText: {
         color: '#212020',

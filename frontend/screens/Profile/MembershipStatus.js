@@ -91,7 +91,7 @@ const MembershipStatus = () => {
           title="Renew Membership"
           onPress={() => navigation.goBack()}
         />
-
+        <View style={styles.addPaddingStyle}>
         <View style={styles.currentPlanCard}>
           <LinearGradient colors={['#1A1A1A', '#2D2D2D']} style={styles.currentPlanGradient}>
             <Text style={[styles.currentBadge, isExpired && styles.expiredBadge]}>
@@ -110,7 +110,9 @@ const MembershipStatus = () => {
 
           </LinearGradient>
         </View>
-
+        </View>
+        
+        <View style={styles.addPaddingStyle}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -151,6 +153,7 @@ const MembershipStatus = () => {
           ))}
 
         </ScrollView>
+        </View>
       </View>
 
       <View style={styles.buttonContainer}>
@@ -187,10 +190,10 @@ const styles = StyleSheet.create({
 
   },
   container: {
-    marginTop: 30,
-    padding: 16,
+    marginTop: 50,
   },
   header: {
+    marginTop: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -203,9 +206,9 @@ const styles = StyleSheet.create({
     color: '#E2F163',
   },
   currentPlanCard: {
-    marginTop:40,
+    marginTop: 20,
     borderRadius: 16,
-    marginBottom: 32,
+    marginBottom: 5,
     overflow: 'hidden',
   },
   currentPlanGradient: {
@@ -231,7 +234,7 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   plansContainer: {
-    paddingHorizontal: 8
+    paddingHorizontal: 8,
   },
   planContainer: {
     width: 280,
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
   descriptionText: {
     color: '#E2E2E2',
     fontSize: 14,
-    fontWeight: '500'
+    fontWeight: '500', width: 200
   },
 
   buttonContainer: {
@@ -326,6 +329,9 @@ const styles = StyleSheet.create({
   },
   buttonIcon: {
     marginLeft: 8,
+  },
+  addPaddingStyle: {
+    padding: 15
   },
 });
 

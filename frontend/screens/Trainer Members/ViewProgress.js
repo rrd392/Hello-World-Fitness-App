@@ -167,10 +167,12 @@ const ViewProgress = () => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.addMTStyle}>
             <HeaderVer4
                 title="Back" style={styles.headerRow}
                 onPress={() => navigation.navigate("Members")}
             />
+            </View>
 
             {/* Content */}
             <ScrollView style={styles.bgStyle}>
@@ -425,6 +427,7 @@ const ViewProgress = () => {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#212020'},
     bgStyle: { padding: 20},
+    addMTStyle: { marginTop: 40},
     progressCard: { backgroundColor: '#E9E9E9', padding: 15, borderRadius: 15, marginBottom: 30 },
 
     memberProfile: { flexDirection: 'row', gap: 10},

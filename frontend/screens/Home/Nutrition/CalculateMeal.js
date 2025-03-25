@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     
     mealContainer: { width: '30%', padding: 10, alignItems: 'center', position: 'relative'},
     mealImage: { width: 125, height: 125, borderRadius: 20 },
-    mealTitle: { fontSize: 14, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginTop: 5 },
+    mealTitle: { fontSize: 15, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginTop: 5 },
     plusButton: { position: 'absolute', bottom: 50, left: 88, backgroundColor: '#E2F163', width: 35, height: 35, borderRadius: 10, justifyContent: 'center', alignItems: 'center'},
     plusText: { fontSize: 25, fontWeight: 'bold'},
 

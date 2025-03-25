@@ -43,10 +43,12 @@ const CreateWorkout = () => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.headerContainer}>
             <HeaderVer4
                 title="Back" style={styles.headerRow}
                 onPress={() => navigation.goBack()}
             />
+            </View>
 
             <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 80 }}>
                 {/* Loop through each category and then map the exercises */}
@@ -100,6 +102,7 @@ const CreateWorkout = () => {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#000' },
     content: { padding: 15, },
+    headerContainer: { marginTop: 40},
     categoryTitle: { fontSize: 25, fontWeight: 'bold', color: 'white', alignSelf: 'center', marginBottom: 5, marginTop: -10 },
     iconaddButton: { backgroundColor: '#A586FF', borderRadius: 50, padding: 5},
     iconButton: { backgroundColor: '#A5A5A5', borderRadius: 50, padding: 5},
