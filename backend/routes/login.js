@@ -29,7 +29,7 @@ router.post('/login', (req, res) => {
             return res.json({ success: false, message: "Invalid password!" });
         }
 
-        const SECRET_KEY = "your_secret_key";  // Replace with a secure key or use .env
+        const SECRET_KEY = "your_secret_key";  
         const token = jwt.sign({ id: user.user_id, role: user.role, name: user.name }, SECRET_KEY, { expiresIn: "1h" });
 
         res.json({

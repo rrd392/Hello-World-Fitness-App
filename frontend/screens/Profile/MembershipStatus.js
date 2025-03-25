@@ -102,7 +102,7 @@ const MembershipStatus = () => {
             </Text>
             <Text style={styles.expiryDate}>
               {isExpired
-                ? (!expiryDate || expiryDate === 'N/A' || expiryDate.trim() === '')
+                ? (expiryDate || expiryDate === 'N/A' || expiryDate.trim() === '')
                   ? 'Renew the membership plan to get more benefits'
                   : `Expired on ${getCurrentPlanDetails().expiry}`
                 : `Renews: ${getCurrentPlanDetails().expiry}`}
@@ -155,7 +155,7 @@ const MembershipStatus = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={isExpired ? styles.renewButton : styles.upgradeButton}
+          style={isExpired? styles.renewButton: styles.upgradeButton}
           onPress={() => {
             const selectedPlanDetails = membershipPlans.find(p => p.membership_id === selectedPlan);
             if (selectedPlanDetails) {
@@ -169,13 +169,12 @@ const MembershipStatus = () => {
               Alert.alert("Error", "Please select a membership plan.");
             }
           }}
+          disabled = {!isExpired}
         >
-          <Text style={styles.buttonText}>{isExpired ? "Renew" : "Upgrade"}</Text>
+          <Text style={styles.buttonText}>Renew</Text>
           <Ionicons name="arrow-forward" size={18} color="#000" style={styles.buttonIcon} />
         </TouchableOpacity>
       </View>
-
-
     </SafeAreaView>
   );
 };
@@ -313,7 +312,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: 16,
     right: 16,
-    backgroundColor: '#E2F163',
+    backgroundColor: 'rgba(226, 241, 99, 0.5)',
     borderRadius: 25,
     paddingVertical: 14,
     flexDirection: 'row',
