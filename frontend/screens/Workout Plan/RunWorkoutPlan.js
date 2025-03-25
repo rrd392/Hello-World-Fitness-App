@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     header: { padding: 20, marginBottom: -30 },
     header3: { padding: 20 },
     greeting: { fontSize: 24, color: '#896CFE', fontWeight: 'bold', marginBottom: 10 },
-    subtitle: { fontSize: 14, color: '#fff', marginBottom: 10 },
+    subtitle: { fontSize: 14, color: '#fff', marginBottom: 20},
     headerRow: { flexDirection: 'row', justifyContent: 'space-between' },
     iconRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 20 },
     header2: { padding: 20, backgroundColor: '#B3A0FF' },

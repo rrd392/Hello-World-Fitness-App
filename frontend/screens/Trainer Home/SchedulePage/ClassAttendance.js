@@ -53,7 +53,7 @@ function SelectedClass() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#212020" }}>
       {/* Header Section */}
       <HeaderVer4 title="Back" onPress={() => navigation.goBack()} />
 
@@ -170,7 +170,7 @@ function SelectedClass() {
   );
 }
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#212020" },
 
   headerRow: {
     flexDirection: "row",

@@ -35,17 +35,17 @@ const TrainerDashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (userId){
+    if (userId) {
       fetchUserData();
     };
   }, [userId]);
 
   useFocusEffect(
-      useCallback(() => {
-          if (userId) {
-              fetchUserData();
-          }
-      }, [userId])
+    useCallback(() => {
+      if (userId) {
+        fetchUserData();
+      }
+    }, [userId])
   );
 
   const fetchUserData = async () => {
@@ -117,30 +117,31 @@ const TrainerDashboard = () => {
           <Text style={styles.sectionTitle}>Your Upcoming Event</Text>
           {Array.isArray(upcomingClassData) && upcomingClassData.length > 0 ? (
             <View style={styles.classCard}>
-              <View>
+              <View style={styles.leftClassCard}>
                 <Text style={styles.classTitle}>
                   {upcomingClassData[0].class_name}
                 </Text>
                 <Text style={styles.classDetails}>
                   <Ionicons name="time-outline" size={15} color="white" />{" "}
-                  {upcomingClassData[0].start_time} -{" "}
-                  {upcomingClassData[0].end_time}
+                  {upcomingClassData[0].start_time} - {upcomingClassData[0].end_time}
                 </Text>
                 <Text style={styles.classDetails}>
                   <Ionicons name="person-outline" size={15} color="white" />{" "}
                   {upcomingClassData[0].name}
                 </Text>
-                <Text style={styles.lastClassDetails} marginBottom="40">
+                <Text style={styles.classDetails}>
                   <Ionicons name="calendar-outline" size={15} color="white" />{" "}
                   {formatDate(upcomingClassData[0].schedule_date)}
                 </Text>
               </View>
-              <Image
-                source={{
-                  uri: `${API_BASE_URL}/uploads/${upcomingClassData[0].class_image}`,
-                }}
-                style={styles.classImage}
-              />
+              <View style={styles.rightClassCard}>
+                <Image
+                  source={{
+                    uri: `${API_BASE_URL}/uploads/${upcomingClassData[0].class_image}`,
+                  }}
+                  style={styles.classImage}
+                />
+              </View>
             </View>
           ) : (
             <View style={styles.classCard}>
@@ -163,7 +164,7 @@ const TrainerDashboard = () => {
             data={[
               ...(Array.isArray(classData) ? classData : []),
               { isMoreCard: true },
-            ]} 
+            ]}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) =>
@@ -206,7 +207,7 @@ const TrainerDashboard = () => {
             data={[
               ...(Array.isArray(workoutPlans) ? workoutPlans : []),
               { isMoreCard: true },
-            ]} 
+            ]}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) =>
@@ -322,17 +323,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#212020",
     borderRadius: 10,
+    height: 180,
+  },
+  leftClassCard: {
+    paddingLeft: 30,
+    // paddingTop: 30,
+    flex: 6,
+    gap: 10,
+  },
+  rightClassCard: {
+    flex: 4,
+    justifyContent: "center",
+    alignItems: "center",
   },
   classTitle: {
     fontSize: 24,
-    color: "yellow",
-    marginTop: 30,
-    marginLeft: 40,
-    marginBottom: 10,
+    color: "#E2F163",
   },
-  classDetails: { color: "#fff", marginLeft: 40, marginBottom: 5 },
-  lastClassDetails: { color: "#fff", marginLeft: 40, marginBottom: 30 },
-  classImage: { width: 150, height: "100%", borderRadius: 10 },
+  classDetails: { color: "#fff" },
+  classImage: { width: "100%", height: "100%", borderRadius: 10, flex: 1, resizeMode: "cover" },
   noClassTitle: {
     fontSize: 24,
     color: "yellow",

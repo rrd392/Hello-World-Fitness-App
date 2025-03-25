@@ -6,10 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 
 const PaymentConfirmation = ({ route }) => {
   const navigation = useNavigation();
-  
+
   // Generate default values if they are not provided
   const generateTransactionId = () => `TXN${Math.floor(100000 + Math.random() * 900000)}`;
-  const currentDate = new Date().toLocaleDateString(); 
+  const currentDate = new Date().toLocaleDateString();
 
   // State to store transaction ID and payment date
   const [transactionId, setTransactionId] = useState(route.params?.transactionId || generateTransactionId());
@@ -18,8 +18,9 @@ const PaymentConfirmation = ({ route }) => {
   const { plan, paymentMethod, totalPaid, userId } = route.params;
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.successContainer}>
             <LinearGradient colors={['#E2F163', '#B6D83C']} style={styles.successCircle}>
@@ -77,15 +78,16 @@ const PaymentConfirmation = ({ route }) => {
             <Text style={styles.homeButtonText}>Back to Profile</Text>
           </TouchableOpacity>
         </ScrollView>
-      </SafeAreaView>
-    </View>
+      </View>
+
+    </SafeAreaView>
   );
 };
 
 // Styles remain unchanged
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  safeArea: { flex: 1 },
+  container: {  marginTop:40 },
+  safeArea: { flex: 1, backgroundColor: '#000' },
   content: { padding: 20, paddingBottom: 40 },
   successContainer: { alignItems: 'center', marginBottom: 30 },
   successCircle: { width: 100, height: 100, borderRadius: 50, justifyContent: 'center', alignItems: 'center', marginBottom: 20 },

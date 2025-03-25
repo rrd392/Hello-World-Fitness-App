@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 18,
     fontWeight: "bold",
-    color: "#000",
+    color: "#E2F163",
   },
   categoryEmail: {
     marginLeft: 10,
