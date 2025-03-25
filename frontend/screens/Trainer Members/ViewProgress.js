@@ -194,8 +194,8 @@ const ViewProgress = () => {
                         <View key={item.title} style={styles.category}>
                             {/* Static Category Title */}
                             <View style={styles.categoryHeader}>
-                            <Ionicons name="play" size={18} color="#E2F163" />
-                            <Text style={styles.categoryTitle}>{item.title}</Text>
+                                <Ionicons name="play" size={18} color="#E2F163" />
+                                <Text style={styles.categoryTitle}>{item.title}</Text>
                             </View>
 
                             {/* Expandable Workout Sessions */}
@@ -245,21 +245,22 @@ const ViewProgress = () => {
                                     )}
                                 </View>
                                 )}
-                                <View style={styles.viewFeedback}>
-                                    <TouchableOpacity style={styles.feedbackBtn} onPress={() => {
-                                        setFeedbackVisible(true);
-                                        setUserWorkoutId(session.user_workout_id);
-                                    }}>
-                                        <Text style={styles.feedbackBtnText}>Feedback</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.feedbackBtn} onPress={() => {
-                                        viewFeedback(session.user_workout_id);
-                                    }}>
-                                        <Text style={styles.feedbackBtnText}>View Feedback</Text>
-                                    </TouchableOpacity>
-                                </View>
                             </View>
+                            
                             ))}
+                            <View style={styles.viewFeedback}>
+                                <TouchableOpacity style={styles.feedbackBtn} onPress={() => {
+                                    setFeedbackVisible(true);
+                                    setUserWorkoutId(item.user_workout_id);
+                                }}>
+                                    <Text style={styles.feedbackBtnText}>Feedback</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.feedbackBtn} onPress={() => {
+                                    viewFeedback(item.user_workout_id);
+                                }}>
+                                    <Text style={styles.feedbackBtnText}>View Feedback</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     ))):(
                         <View>
@@ -293,16 +294,10 @@ const ViewProgress = () => {
                     ))}
                     </View>
 
-                    {/* Workout Details Toggle */}
-                    <TouchableOpacity onPress={() => setExpandDetails(!expandDetails)} style={styles.expandButton}>
-                    <Text style={{ fontWeight: "bold", color: "#B3A0FF" }}>Workout Details</Text>
-                    <Ionicons name={expandDetails ? "chevron-up" : "chevron-down"} size={18} color="#B3A0FF" />
-                    </TouchableOpacity>
-
                     {/* Collapsible Workout Details */}
                     {expandDetails && (
                     <ScrollView style={styles.workoutModalContainer}>
-                        {workoutDetails.map((workout, index) => (
+                        {progressDetails.sessions.map((workout, index) => (
                         <Text key={index} style={{ fontSize: 14 }}>
                             🔸 {workout.exercise} ({workout.type}) - {workout.time}
                         </Text>
@@ -514,7 +509,7 @@ const styles = StyleSheet.create({
     workoutDetails: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', marginBottom: 3, padding: 4, opacity: 0.7, borderRadius: 5 },
     feedbackBtn: { backgroundColor: '#000', alignSelf: 'center', marginTop: 20, padding: 10, borderRadius: 15, width:"45%" },
     feedbackBtnText: { textAlign: 'center', color: '#E2F163', fontSize: 16, fontWeight: 'bold'},
-    viewFeedback:{flexDirection:'row', justifyContent:'space-evenly', alignItems:'center'},
+    viewFeedback:{flexDirection:'row', justifyContent:'space-evenly', alignItems:'center', marginTop:-10},
 
     modalBackground: {flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: 'center', alignItems: 'center'},
     modalContainer: { backgroundColor: '#E2F163', width: '90%', padding: 20, borderRadius: 10},
