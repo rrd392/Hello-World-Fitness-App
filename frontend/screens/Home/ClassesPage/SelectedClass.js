@@ -28,9 +28,13 @@ function SelectedClass() {
   const [classFull, setClassFull] = useState(false); 
   const [userId, setUserId] = useState("");
   
-  if(classData.participants == classData.max_participants){
-    setClassFull(true);
-  }
+  useEffect(() => {
+    if (classData.participants === classData.max_participants) {
+      setClassFull(true);
+    } else {
+      setClassFull(false);
+    }
+  }, [classData.participants, classData.max_participants]); 
 
   useEffect(() => {
     async function fetchUserId() {
