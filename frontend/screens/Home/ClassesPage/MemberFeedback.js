@@ -3,8 +3,21 @@ import { View, Text, Image, FlatList, StyleSheet } from "react-native";
 import { Rating } from "react-native-ratings";
 import { Ionicons } from "@expo/vector-icons";
 import API_BASE_URL from "../../../env";
+import { FontAwesome } from "@expo/vector-icons";
 
 const FeedbackCard = ({ feedback, classData }) => {
+  const StarRating = ({ rating }) => {
+    const maxStars = 5;
+    const filledStars = Math.floor(rating || 0);
+    const halfStar = (rating || 0) - filledStars >= 0.5;
+    const emptyStars = maxStars - filledStars - (halfStar ? 1 : 0);
+
+    return (
+      <View style={styles.starRow}>
+        
+      </View>
+    );
+  };
 
   return (
     <View style={styles.card}>
@@ -26,25 +39,13 @@ const FeedbackCard = ({ feedback, classData }) => {
         <View style={styles.ratingRow}>
           <Ionicons name="barbell-outline" size={18} color="white" />
           <Text style={styles.className}>{classData.class_name}</Text>
-          <Rating
-            type="star"
-            imageSize={15}
-            readonly
-            startingValue={feedback.class_rating}
-            tintColor="#4A4A4A"
-          />
+          <StarRating rating={feedback.class_rating} />
         </View>
 
         <View style={styles.ratingRow}>
           <Ionicons name="person-circle-outline" size={18} color="white" />
           <Text style={styles.coachName}>Coach {classData.name}</Text>
-          <Rating
-            type="star"
-            imageSize={15}
-            readonly
-            startingValue={feedback.coach_rating}
-            tintColor="#4A4A4A"
-          />
+          <StarRating startingValue={feedback.coach_rating} />
         </View>
       </View>
 

@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
     calculateButtonText: { color: '#E2F163', fontWeight: 'bold', fontSize: 17 },
 
     suggestMealText: { color: '#E2F163', fontSize: 20, textAlign: 'center', marginTop: 20, fontWeight: 'bold', marginBottom:10},
-    scrollContainer: { marginTop: 10 },
 
     mealContainer: { margin: 10 },
     mealTitle: { width: "50%", marginLeft: 3, backgroundColor: "#E2F163", paddingVertical: 1, paddingHorizontal: 10, borderRadius: 20, alignSelf: "flex-center", fontWeight: "bold", marginBottom: 10, textAlign: 'center' },

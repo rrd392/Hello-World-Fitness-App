@@ -115,8 +115,8 @@ const Leaderboard = () => {
                         </View>
                     ))}
                 </View>
-
-                <View style={styles.rank4NbelowContainer}>
+                <View style={styles.rank4NbelowPaddingStyle}>
+                    <View style={styles.rank4NbelowContainer}>
                     <ScrollView style={{ maxHeight: 400 }}>
                         {userPoints.slice(3).map((user, index) => (
                             <View key={user.user_id}>
@@ -138,6 +138,8 @@ const Leaderboard = () => {
                         
                     </ScrollView>
                 </View>
+                </View>
+                
             </SafeAreaView>
         </View>
     );
@@ -145,7 +147,7 @@ const Leaderboard = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#212020' },
-    header: { paddingTop: 40, marginBottom:-30, padding: 10},
+    header: { paddingTop: 40, marginBottom:-30},
     title: { color: "white", fontSize: 24, fontWeight: "bold", textAlign: "center", textShadowColor: "#896CFE", textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 5, marginBottom: 10, },
 
     podium: { flexDirection: "row", alignItems: "flex-end", justifyContent: "center", gap: 10, marginTop: 60 },
@@ -187,6 +189,7 @@ const styles = StyleSheet.create({
     score: { fontSize: 19, fontWeight: "bold", marginTop: 2 },
     usernameTag: { color: "#DFDADA", fontSize: 12, },
 
+    rank4NbelowPaddingStyle: { padding: 15},
     rank4NbelowContainer: { backgroundColor: "#323653", marginTop: 20, borderRadius: 15, padding: 15},
     rankCard: { flexDirection: 'row', alignItems: 'center', padding: 10, marginBottom: 10},
     rank4NbelowprofileImage: { width: 50, height: 50, borderRadius: 25, marginRight: 10},
