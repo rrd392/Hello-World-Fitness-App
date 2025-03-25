@@ -182,14 +182,13 @@ const MemberProgress = () => {
                     )}
                   </View>
                 )}
-  
-                {item?.type === "Coach" && (
-                  <TouchableOpacity style={styles.feedbackBtn} onPress={() => displayFeedback(session?.user_workout_id)}>
-                    <Text style={styles.feedbackBtnText}>View Feedback</Text>
-                  </TouchableOpacity>
-                )}
               </View>
             ))}
+            {item?.type === "Coach" && (
+              <TouchableOpacity style={styles.feedbackBtn} onPress={() => displayFeedback(item?.user_workout_id)}>
+                <Text style={styles.feedbackBtnText}>View Feedback</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
         />
