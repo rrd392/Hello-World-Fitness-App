@@ -182,14 +182,13 @@ const MemberProgress = () => {
                     )}
                   </View>
                 )}
-  
-                {item?.type === "Coach" && (
-                  <TouchableOpacity style={styles.feedbackBtn} onPress={() => displayFeedback(session?.user_workout_id)}>
-                    <Text style={styles.feedbackBtnText}>View Feedback</Text>
-                  </TouchableOpacity>
-                )}
               </View>
             ))}
+            {item?.type === "Coach" && (
+              <TouchableOpacity style={styles.feedbackBtn} onPress={() => displayFeedback(item?.user_workout_id)}>
+                <Text style={styles.feedbackBtnText}>View Feedback</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
         />
@@ -380,7 +379,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 18,
     fontWeight: "bold",
-    color: "#000",
+    color: "#E2F163",
   },
   categoryEmail: {
     marginLeft: 10,
@@ -391,7 +390,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 50,
     height: 50,
-    borderRadius: "50%",
+    borderRadius: 25,
   },
   feedbackDate:{
     marginLeft:'auto',

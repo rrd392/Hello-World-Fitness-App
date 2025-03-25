@@ -43,6 +43,7 @@ router.get('/displayProgress/:user_id', (req, res) => {
             if (!plan) {
                 plan = {
                     title: row.plan_name,
+                    user_workout_id: row.user_workout_id,
                     sessions: []
                 };
                 formattedData.push(plan);

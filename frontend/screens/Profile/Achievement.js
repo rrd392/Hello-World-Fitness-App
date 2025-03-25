@@ -119,19 +119,20 @@ const Achievement = () => {
 
                 <ScrollView style={{marginBottom: -20}}>
                     <View style={styles.profileSection}>
-                        <Image source={userData.profile_picture? { uri: `${API_BASE_URL}/uploads/${userData.profile_picture}`}
+              <Image source={userData.profile_picture ? { uri: `${API_BASE_URL}/uploads/${userData.profile_picture}?t=${Date.now()}`}
                             : require("../../assets/icon.png")} style={styles.profileImage} />
                         <Text style={styles.nameText}>{userData.name}</Text>
                         <View style={styles.pointsContainer}>
                             <Ionicons name="flame" size={20} color="#F24814" paddingLeft={5} />
-                            <Text style={styles.pointsText}>{points} Points</Text>
+                            <Text style={styles.pointsText}>{points? points: 0} Points</Text>
                         </View>
                     </View>
 
                     
                     <Text style={styles.badgeText}>Your Badges</Text>
                     <View style={{flex:1, flexDirection:'row', flexWrap:'wrap', justifyContent:'space-between'}}>
-                        {userBadge.map((badge) => (
+                        {userBadge.length > 0?
+                          (userBadge.map((badge) => (
                             <View key={badge.badge_id} style={styles.badgeCard}>
                                 <Image source={badge.icon? { uri: `${API_BASE_URL}/uploads/${badge.icon}`}
                                 : unknownBadge} style={styles.profileImage} />
@@ -141,7 +142,11 @@ const Achievement = () => {
                                     <Text style={styles.badgePoints}>{badge.points_needed} points</Text>
                                 </View>
                             </View>
-                        ))}
+                        ))):(
+                          <View>
+                            <Text style={{color:"#fff", marginBottom:10, fontWeight:500, fontSize:16}}>No badges.</Text>
+                          </View>
+                        )}
                     </View>
 
                     <Text style={styles.badgeText}>Other Badges</Text>

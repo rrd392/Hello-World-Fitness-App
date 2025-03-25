@@ -154,7 +154,7 @@ const MarkAttendance = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1, backgroundColor: "#212020" },
   numberBox: {
     backgroundColor: "#9e8df5",
     paddingVertical: 30,

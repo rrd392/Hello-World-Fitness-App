@@ -22,7 +22,7 @@ function ClassReport() {
   const [memberFeedback, setMemberFeedback] = useState([]);
 
   useEffect(() => {
-    if(classData.class_id){
+    if (classData.class_id) {
       fetchMemberFeedback();
     }
   }, [classData]);
@@ -55,7 +55,7 @@ function ClassReport() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#212020" }}>
       {/* Header */}
       <HeaderVer4 title="Schedule" onPress={() => navigation.goBack()} />
 
@@ -72,16 +72,18 @@ function ClassReport() {
                 {classData ? (
                   <>
                     <View style={styles.imageContainer}>
-                      <Image source={{ uri: `${API_BASE_URL}/uploads/${classData.class_image}`}} style={styles.classImage} />
+                      <Image source={{ uri: `${API_BASE_URL}/uploads/${classData.class_image}` }} style={styles.classImage} />
                       <View style={styles.overlay}>
                         <Text style={styles.overlayText}>Session Ended</Text>
                       </View>
                     </View>
                     <View style={styles.classCard}>
                       <View style={styles.headerRow}>
-                        <Text style={styles.classTitle}>
-                          {classData.class_name}
-                        </Text>
+                        <View style={styles.headerClassRow}>
+                          <Text style={styles.classTitle}>
+                            {classData.class_name}
+                          </Text>
+                        </View>
                         <View style={styles.iconRow}>
                           <Ionicons
                             name="calendar-outline"
@@ -97,7 +99,7 @@ function ClassReport() {
                         {classData.description}
                       </Text>
                       <View style={styles.classInfo}>
-                        <View style={{ flex: 1, maxWidth: "65%", gap: 5 }}>  
+                        <View style={{ flex: 1, maxWidth: "65%", gap: 5 }}>
                           <View style={styles.infoRow}>
                             <Ionicons
                               name="time-outline"
@@ -105,7 +107,7 @@ function ClassReport() {
                               color="white"
                             />
                             <Text style={styles.classTime}>
-                              {classData.start_time.slice(0,-3)} - {classData.end_time.slice(0,-3)}
+                              {classData.start_time.slice(0, -3)} - {classData.end_time.slice(0, -3)}
                             </Text>
                           </View>
                           <View style={styles.infoRow}>
@@ -114,7 +116,7 @@ function ClassReport() {
                               size={18}
                               color="white"
                             />
-                            <Text style={classData.participants == classData.max_participants? styles.classSlots:styles.nonFullSlots}>
+                            <Text style={classData.participants == classData.max_participants ? styles.classSlots : styles.nonFullSlots}>
                               {classData.participants}/{classData.max_participants}
                             </Text>
                           </View>
@@ -123,7 +125,7 @@ function ClassReport() {
                         {/* Right side - Coach Info */}
                         <View style={styles.coachCard}>
                           <View style={styles.coachProfile}>
-                            <Image source={{ uri: `${API_BASE_URL}/uploads/${classData.profile_picture}`}} style={styles.coachImage} />
+                            <Image source={{ uri: `${API_BASE_URL}/uploads/${classData.profile_picture}` }} style={styles.coachImage} />
                             <View>
                               <Text style={styles.coachName} numberOfLines={1} ellipsizeMode="tail">
                                 {classData.name}
@@ -146,9 +148,9 @@ function ClassReport() {
               </View>
             </View>
           }
-          data={[]} 
-          renderItem={null} 
-          ListFooterComponent={<MemberFeedback feedbackData={memberFeedback}/>}
+          data={[]}
+          renderItem={null}
+          ListFooterComponent={<MemberFeedback feedbackData={memberFeedback} />}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -156,16 +158,18 @@ function ClassReport() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000" },
+  container: { flex: 1 },
 
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     marginBottom: 20,
   },
+  headerClassRow: {
+    marginRight: 5,
+  },
 
-  iconRow: { flexDirection: "row", gap: 20 },
+  iconRow: { flexDirection: "row", gap: 5, alignSelf:'center'},
   pageContent: {
     alignItems: "center",
     marginTop: 0,
@@ -175,8 +179,8 @@ const styles = StyleSheet.create({
   classInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center", 
-    gap: 10, 
+    alignItems: "center",
+    gap: 10,
     padding: 5,
   },
 
@@ -192,14 +196,14 @@ const styles = StyleSheet.create({
   classImage: {
     width: "100%",
     height: "100%",
-    opacity: 0.5, 
+    opacity: 0.5,
   },
   overlay: {
     position: "absolute",
     top: "70%",
     left: "40%",
     transform: [{ translateX: -50 }, { translateY: -50 }],
-    backgroundColor: "rgba(0, 0, 0, 0.7)", 
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     paddingHorizontal: 20,
     paddingVertical: 5,
     borderRadius: 10,
@@ -216,22 +220,22 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   classTitle: { fontSize: 26, color: "#E2F163", fontWeight: "bold" },
-  classDescription: { fontSize: 14, color: "white",  marginBottom:10},
+  classDescription: { fontSize: 14, color: "white", marginBottom: 10 },
   infoRow: { flexDirection: "row", alignItems: "center", gap: 5, marginTop: 5 },
   classTime: { fontSize: 16, color: "white" },
   classSlots: { fontSize: 16, color: "red", fontWeight: "bold" },
-  nonFullSlots:{fontSize: 16, color: "#E2F163", fontWeight: "bold"},
+  nonFullSlots: { fontSize: 16, color: "#E2F163", fontWeight: "bold" },
   classDate: { fontSize: 16, color: "white" },
   coachCard: {
     backgroundColor: "#E2F163",
     borderRadius: 10,
     padding: 10,
     marginTop: 'auto',
-    width:"60%"
+    width: "60%"
   },
   coachProfile: { flexDirection: "row", alignItems: "center", gap: 10 },
   coachImage: { width: 40, height: 40, borderRadius: 20 },
-  coachName: { fontSize: 18, fontWeight: 500, maxWidth:"100%" },
+  coachName: { fontSize: 18, fontWeight: 500, maxWidth: "100%" },
   coachEmail: { fontSize: 12, color: "#444" },
   coachNumber: { fontSize: 12, color: "#444" },
 

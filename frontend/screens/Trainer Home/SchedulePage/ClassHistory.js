@@ -126,7 +126,7 @@ function ClassHistory() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor:"#000" },
+  container: { flex: 1, backgroundColor:"#212020" },
   sectionTitle: {
     paddingHorizontal: 20,
     fontSize: 24,

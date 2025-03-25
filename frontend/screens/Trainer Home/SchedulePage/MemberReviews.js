@@ -9,7 +9,7 @@ const FeedbackCard = ({ item }) => {
     <View style={styles.card}>
       {/* User Info & Date */}
       <View style={styles.header}>
-        <Image source={{ uri: `${API_BASE_URL}/uploads/${item.profile_picture}`}} style={styles.userImage} />
+        <Image source={{ uri: `${API_BASE_URL}/uploads/${item.profile_picture}?t=${Date.now()}`}} style={styles.userImage} />
         <View>
           <Text style={styles.userName}>{item.name}</Text>
           <Text style={styles.email}>{item.email}</Text>

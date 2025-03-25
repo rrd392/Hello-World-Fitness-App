@@ -60,8 +60,6 @@ const UpdateProfile = () => {
             headers: { "Content-Type": "application/json" },
           });
     
-          console.log(response);
-
           if (!response.ok) {
             const text = await response.text();
             throw new Error(`HTTP error! Status: ${response.status} - ${text}`);

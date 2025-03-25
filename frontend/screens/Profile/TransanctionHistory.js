@@ -108,10 +108,10 @@ const TransactionHistory = () => {
                         transactions.map((item) => (
                             <View key={item.transaction_id} style={styles.transactionCard}>
                                 <View style={[styles.membershipContainer, getMembershipContainerStyle(item.description)]}>
-                                    <Text style={styles.membershipBadge}>{item.description.split('-')[0]}</Text>
+                                    <Text style={styles.membershipText}>{item.description.split('-')[0]}</Text>
                                 </View>
                                 <Text style={styles.dateText}>{new Date(item.payment_date).toLocaleDateString('en-GB')}</Text>
-                                <Text style={styles.amountText}>{item.amount}</Text>
+                                <Text style={styles.amountText}>RM {item.amount}</Text>
                             </View>
                         ))
                     ):(
@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
     dateHText: { fontSize: 14, fontWeight: 'bold'},
     amountHText: { width: 100, fontSize: 14, fontWeight: 'bold' },
     transactionCard: { backgroundColor: '#4d4d4d', padding: 12, marginVertical: 5, borderRadius: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
-    membershipContainer: { flexDirection: "row", alignItems: "center", marginVertical: 5 },
-    membershipBadge: { minWidth: 100, padding: 5, fontWeight: "bold", fontSize: 11 },
+    membershipContainer: { flexDirection: "row", alignItems: "center", marginVertical: 5, padding:5 },
+    membershipText: { fontWeight: "bold", fontSize: 11 },
     dateText: { width: 100, color: '#ddd', fontSize: 14, fontWeight: 'bold'},
     amountText: { width: 100, color: '#fff', fontSize: 12, fontWeight: 'bold'},
 });

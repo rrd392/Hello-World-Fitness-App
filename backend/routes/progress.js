@@ -50,6 +50,7 @@ router.get('/display/:user_id/:type', (req, res) => {
                 plan = {
                     title: row.plan_name,
                     type: row.type,
+                    user_workout_id: row.user_workout_id,
                     sessions: []
                 };
                 formattedData.push(plan);
@@ -59,7 +60,6 @@ router.get('/display/:user_id/:type', (req, res) => {
             if (!session) {
                 session = {
                     id: row.user_workout_progress_id,
-                    user_workout_id: row.user_workout_id,
                     time: `${Math.floor(row.duration_taken / 60)}:${String(row.duration_taken % 60).padStart(2, '0')}`,
                     date: new Date(row.updated_at).toLocaleDateString('en-GB'),
                     exercises: []

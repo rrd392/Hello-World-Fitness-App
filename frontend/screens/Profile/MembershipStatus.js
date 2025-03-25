@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
+import HeaderVer3 from "../HeaderVer3";
 
 const MembershipStatus = () => {
   const navigation = useNavigation();
@@ -47,10 +48,10 @@ const MembershipStatus = () => {
           const plansError = await plansResponse.text();
           throw new Error(`Plans fetch failed: ${plansError}`);
         }
-        
+
         const plansData = await plansResponse.json();
         setMembershipPlans(plansData.membershipPlan || []);
-        
+
       } catch (error) {
         console.error("Full error details:", error);
         Alert.alert("Error", error.message || "Failed to load data");
@@ -73,8 +74,8 @@ const MembershipStatus = () => {
   const getCurrentPlanDetails = () => {
     if (!selectedPlan) return { name: 'No Active Plan', expiry: '' };
 
-    
-    
+
+
     const plan = membershipPlans.find(p => p.membership_id === selectedPlan);
     return {
       name: plan?.plan_name || 'Unknown Plan',
@@ -83,15 +84,13 @@ const MembershipStatus = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="chevron-back" size={28} color="#E2F163" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Gym Membership</Text>
-          <View style={{ width: 28 }} />
-        </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+
+        <HeaderVer3
+          title="Renew Membership"
+          onPress={() => navigation.goBack()}
+        />
 
         <View style={styles.currentPlanCard}>
           <LinearGradient colors={['#1A1A1A', '#2D2D2D']} style={styles.currentPlanGradient}>
@@ -102,23 +101,23 @@ const MembershipStatus = () => {
               {getCurrentPlanDetails().name}
             </Text>
             <Text style={styles.expiryDate}>
-              {isExpired 
-                ? (!expiryDate || expiryDate === 'N/A' || expiryDate.trim() === '') 
-                ? 'Renew the membership plan to get more benefits' 
-                : `Expired on ${getCurrentPlanDetails().expiry}`
+              {isExpired
+                ? (expiryDate || expiryDate === 'N/A' || expiryDate.trim() === '')
+                  ? 'Renew the membership plan to get more benefits'
+                  : `Expired on ${getCurrentPlanDetails().expiry}`
                 : `Renews: ${getCurrentPlanDetails().expiry}`}
             </Text>
 
           </LinearGradient>
         </View>
 
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.plansContainer}
         >
           {membershipPlans.map((plan) => (
-            <TouchableOpacity 
+            <TouchableOpacity
               key={plan.membership_id}
               style={styles.planContainer}
               onPress={() => setSelectedPlan(plan.membership_id)}
@@ -135,60 +134,61 @@ const MembershipStatus = () => {
                 </View>
                 <Text style={styles.planPrice}>RM{plan.price}</Text>
                 <Text style={styles.durationText}>{plan.duration} Month{plan.duration > 1 ? 's' : ''}</Text>
-                
+
                 {/* Description with tick marks */}
                 <View style={styles.descriptionContainer}>
-                    {plan.description.split(',').map((feature, index) => (
-                     <View key={index} style={styles.descriptionItem}>
-                    <Ionicons name="checkmark-circle" size={18} color="#E2F163" style={styles.checkIcon} />
-                    <Text style={styles.descriptionText}>{feature.trim()}</Text>
-                 </View>
-                 ))}
+                  {plan.description.split(',').map((feature, index) => (
+                    <View key={index} style={styles.descriptionItem}>
+                      <Ionicons name="checkmark-circle" size={18} color="#E2F163" style={styles.checkIcon} />
+                      <Text style={styles.descriptionText}>{feature.trim()}</Text>
+                    </View>
+                  ))}
 
-            </View>
+                </View>
               </LinearGradient>
             </TouchableOpacity>
 
           ))}
 
         </ScrollView>
+      </View>
 
-        <View style={styles.buttonContainer}>
-                <TouchableOpacity 
-                    style={isExpired ? styles.renewButton : styles.upgradeButton}
-                    onPress={() => {
-                        const selectedPlanDetails = membershipPlans.find(p => p.membership_id === selectedPlan);
-                        if (selectedPlanDetails) {
-                          navigation.navigate("MembershipRenew", { 
-                            plan: selectedPlanDetails, 
-                            userId, 
-                            planName: selectedPlanDetails.plan_name,
-                            planID: selectedPlanDetails.membership_id 
-                        });
-                        } else {
-                            Alert.alert("Error", "Please select a membership plan.");
-                        }
-                        }}
->
-                <Text style={styles.buttonText}>{isExpired ? "Renew" : "Upgrade"}</Text>
-                <Ionicons name="arrow-forward" size={18} color="#000" style={styles.buttonIcon} />
-              </TouchableOpacity>
-            </View>
-
-      </SafeAreaView>
-    </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={isExpired? styles.renewButton: styles.upgradeButton}
+          onPress={() => {
+            const selectedPlanDetails = membershipPlans.find(p => p.membership_id === selectedPlan);
+            if (selectedPlanDetails) {
+              navigation.navigate("MembershipRenew", {
+                plan: selectedPlanDetails,
+                userId,
+                planName: selectedPlanDetails.plan_name,
+                planID: selectedPlanDetails.membership_id
+              });
+            } else {
+              Alert.alert("Error", "Please select a membership plan.");
+            }
+          }}
+          disabled = {!isExpired}
+        >
+          <Text style={styles.buttonText}>Renew</Text>
+          <Ionicons name="arrow-forward" size={18} color="#000" style={styles.buttonIcon} />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
+
   safeArea: {
     flex: 1,
+    backgroundColor: '#000',
+
+  },
+  container: {
+    marginTop: 30,
     padding: 16,
-    paddingBottom: 40
   },
   header: {
     marginTop: 40,
@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
     color: '#E2F163',
   },
   currentPlanCard: {
+    marginTop:40,
     borderRadius: 16,
     marginBottom: 32,
     overflow: 'hidden',
@@ -264,35 +265,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8
   },
-durationText: {
-  color: '#FFF', 
-  fontSize: 16,
-  fontWeight: 'bold',
-  marginBottom: 8
-},
-descriptionContainer: {
-  marginTop: 12
-},
-descriptionItem: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginBottom: 6
-},
-checkIcon: {
-  marginRight: 6
-},
-descriptionText: {
-  color: '#E2E2E2',
-  fontSize: 14, 
-  fontWeight: '500'
-},
+  durationText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8
+  },
+  descriptionContainer: {
+    marginTop: 12,
+    paddingHorizontal: 5,
+  },
+  descriptionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6
+  },
+  checkIcon: {
+    marginRight: 6
+  },
+  descriptionText: {
+    color: '#E2E2E2',
+    fontSize: 14,
+    fontWeight: '500'
+  },
 
-buttonContainer: {
+  buttonContainer: {
     position: 'absolute',
-    bottom: 20, 
+    bottom: 20,
     left: 0,
     right: 0,
-    alignItems: 'center', 
+    alignItems: 'center',
   },
   renewButton: {
     position: 'absolute',
@@ -311,7 +313,7 @@ buttonContainer: {
     bottom: 20,
     left: 16,
     right: 16,
-    backgroundColor: '#E2F163',
+    backgroundColor: 'rgba(226, 241, 99, 0.5)',
     borderRadius: 25,
     paddingVertical: 14,
     flexDirection: 'row',

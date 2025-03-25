@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import API_BASE_URL from "../../env";
 import { getUserId } from '../getUserId';
 import HeaderVer2 from '../HeaderVer2';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DetailWorkoutPlan = ({ route }) => {
     const navigation = useNavigation();
@@ -88,7 +89,10 @@ const DetailWorkoutPlan = ({ route }) => {
         }
     };
 
-    function toggleRunWorkout(workout_plan, planDetails) {
+    const toggleRunWorkout = async (workout_plan, planDetails) => {
+        const startTime = Date.now();
+        // Save the start time as a string
+        await AsyncStorage.setItem('workout_start_time', startTime.toString());
         navigation.navigate('RunWorkoutPlan', { workout_plan, planDetails })
     }
 
