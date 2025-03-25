@@ -16,10 +16,10 @@ const TrainerWorkoutStackNavigator = createStackNavigator();
 const TrainerWorkoutStack = () => {
     return (
         <TrainerWorkoutStackNavigator.Navigator
-            initialRouteName="Workout"
+            initialRouteName="Workout Home"
             screenOptions={{ headerShown: false }}
         >
-            <TrainerWorkoutStackNavigator.Screen name="Workout" component={Workout} />
+            <TrainerWorkoutStackNavigator.Screen name="Workout Home" component={Workout} />
             <TrainerWorkoutStackNavigator.Screen name="CreateWorkout" component={CreateWorkout} />
             <TrainerWorkoutStackNavigator.Screen name="Notification" component={Notification} />
             <TrainerWorkoutStackNavigator.Screen name="TrainerProfileStack" component={TrainerProfileStack} />

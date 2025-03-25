@@ -162,7 +162,7 @@ const Workout = () => {
                             <View key={member.user_id} style={styles.memberCardSection}>
                             {/* Member Profile */}
                             <View style={styles.memberProfile}>
-                                <Image source={{ uri: `${API_BASE_URL}/uploads/${member.profile_picture}` }} style={styles.profileImage} />
+                                    <Image source={{ uri: `${API_BASE_URL}/uploads/${member.profile_picture}?t=${Date.now()}` }} style={styles.profileImage} />
                                 <View style={styles.nameNemailContainer}>
                                     <View style={styles.nameNgender}>
                                         <Text style={styles.nameText}>{member.name}</Text>

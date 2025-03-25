@@ -154,7 +154,7 @@ function SelectedClass() {
                 <View key={member.user_id} style={styles.card}>
                   <View style={styles.cardContainer}>
                     <Text style={styles.listNum}>{index+1}</Text>
-                    <Image source={{ uri: `${API_BASE_URL}/uploads/${member.profile_picture}`}} style={styles.userImage} />
+                    <Image source={{ uri: `${API_BASE_URL}/uploads/${member.profile_picture}?t=${Date.now()}`}} style={styles.userImage} />
                     <View style={{maxWidth:"45%"}}>
                       <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{member.name}</Text>
                       <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">{member.email}</Text>

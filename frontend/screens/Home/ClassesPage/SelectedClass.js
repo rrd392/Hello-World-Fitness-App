@@ -109,7 +109,7 @@ function SelectedClass() {
 
                     <View style={styles.coachCard}>
                       <View style={styles.coachProfile}>
-                        <Image source={{uri: `${API_BASE_URL}/uploads/${item.class_image}`}} style={styles.coachImage}/>
+                        <Image source={{uri: `${API_BASE_URL}/uploads/${item.profile_picture}`}} style={styles.coachImage}/>
                         <View style={{width:"70%"}}>
                           <Text style={styles.coachName} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
                           <Text style={styles.coachEmail} numberOfLines={1} ellipsizeMode="tail">
