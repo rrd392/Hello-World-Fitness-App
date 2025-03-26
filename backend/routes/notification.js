@@ -49,11 +49,11 @@ router.get('/displayTrainerNotification/:user_id/:user_role', (req, res) => {
                                     AND (
                                         (n.user_id IS NULL AND n.class_id IS NULL)  
                                         OR (n.user_id = ?) 
-                                        OR (n.class_id IS NOT NULL AND c.trainer_id = ?)  
+                                        OR (n.class_id IS NOT NULL AND n.user_id IS NOT NULL)  
                                     )
                                     AND n.notification_id != 2;`;
 
-    db.query(notificationQuery, [user_id, user_role, user_id], (error, results) => {
+    db.query(notificationQuery, [user_role, user_id], (error, results) => {
         if (error) {
             console.error("Database error:", error);
             return res.status(500).json({ success: false, message: "Internal server error" });
