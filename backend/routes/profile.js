@@ -66,6 +66,13 @@ router.post("/uploadImage", upload.single("image"), (req, res) => {
 router.put('/updateUser', (req, res) => {
     const {email, username,password,name,contact,dob,gender,height,weight,goal,dateJoined,profileImage,membershipPlan} = req.body.updateData;
     const user_id = req.body.userId;
+
+    // Blank field validation
+    if ( !email || !name || !contact || !dob || !gender || !height || !weight || !goal) {
+        return res.status(400).json({ success: false, message: 'Please fill in all required fields.' });
+    }
+
+
     const calculateAge = (dob) => {
         const birthDate = new Date(dob);
         const today = new Date();
