@@ -7,7 +7,7 @@ import {
   Modal,
   ScrollView,
   FlatList, Dimensions,
-  Alert
+  Alert, TextInput
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import HeaderVer1 from "../../HeaderVer1";
@@ -27,6 +27,11 @@ function YourClasses() {
   const [classId, setClassId] = useState("");
   const [upcomingClass, setUpcomingClass] = useState([]);
   const [classHistory, setClassHistory] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredClasses = classHistory.filter((item) =>
+    item.class_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     async function fetchUserId() {
@@ -193,8 +198,18 @@ function YourClasses() {
         {/* History Section */}
         <View style={styles.historyContainer}>
           <Text style={styles.historyTitle}>History</Text>
-          {classHistory && classHistory.length >0 ? (
-            classHistory.map((item, index) => (
+
+          {/* Search Input */}
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search Class"
+            placeholderTextColor="#aaa"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+
+          {filteredClasses.length >0 ? (
+            filteredClasses.map((item, index) => (
               <View key={item.class_id} style={styles.historyCard}>
                 <Image source={{ uri: `${API_BASE_URL}/uploads/${item.class_image}`}} style={styles.historyImage} />
                 <View style={styles.historyInfo}>
@@ -417,9 +432,18 @@ const styles = {
     fontSize: 25,
     color: "white",
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 5,
     paddingLeft: 5,
   },
+  searchInput: {
+    backgroundColor: "#333",
+    color: "white",
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 8,
+    fontSize: 16,
+  },
+
   historyCard: {
     flexDirection: "row",
     alignItems: "center",
