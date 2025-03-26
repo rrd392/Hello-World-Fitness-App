@@ -42,7 +42,7 @@ const FeedbackCard = ({ feedback, classData }) => {
             type="star"
             imageSize={15}
             readonly
-            startingValue={feedback.coach_rating}
+            startingValue={feedback.trainer_rating}
             tintColor="#4A4A4A"
           />
         </View>

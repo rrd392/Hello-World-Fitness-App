@@ -62,9 +62,9 @@ router.post('/insertAttendance', (req, res) => {
                     });
                 });
             } else {
-                const checkAttendance = `SELECT * FROM attendance_gym WHERE DATE(check_in_time) = CURDATE()`;
+                const checkAttendance = `SELECT * FROM attendance_gym WHERE DATE(check_in_time) = CURDATE() AND user_id = ?`;
 
-                db.query(checkAttendance, (error, attendanceResults) => {
+                db.query(checkAttendance, [userId], (error, attendanceResults) => {
                     if (error) {
                         return res.status(500).json({ error: "Database query failed", details: error.message });
                     }

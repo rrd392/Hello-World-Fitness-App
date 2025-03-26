@@ -278,7 +278,7 @@ const AddWorkoutPlan = () => {
                                         day: callback(prevData.day)
                                     }))
                                 }
-                                placeholder="Select level"
+                                placeholder="Select day"
                                 nestedScrollEnabled={true}
                                 listMode="SCROLLVIEW"
                                 style={styles.dropdown}
