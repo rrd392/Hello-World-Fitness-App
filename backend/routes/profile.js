@@ -271,9 +271,9 @@ router.post("/update-membership", (req, res) => {
 
     // Determine membership plan duration
     let membership_plan;
-    if (membership_id === 1 || membership_id === 3) {
+    if (membership_id === 1 || membership_id === 2) {
         membership_plan = '1 month';
-    } else if (membership_id === 2 || membership_id === 4) {
+    } else if (membership_id === 3 || membership_id === 4) {
         membership_plan = '1 year';
     } else {
         return res.status(400).json({ error: "Invalid membership_id." });
