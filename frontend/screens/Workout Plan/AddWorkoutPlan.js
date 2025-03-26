@@ -86,7 +86,7 @@ const AddWorkoutPlan = () => {
 
     const [showDayDropdown, setShowDayDropdown] = useState(false);
     const day = [
-        { label: 'Select level', value: '', disabled: true },
+        { label: 'Select Day', value: '', disabled: true },
         { label: 'Monday', value: 'Monday' },
         { label: 'Tuesday', value: 'Tuesday' },
         { label: 'Wednesday', value: 'Wednesday' },
