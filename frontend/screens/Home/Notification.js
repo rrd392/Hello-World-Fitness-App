@@ -89,6 +89,7 @@ const Notification = () => {
                                 <Text style={styles.notificationTitle}>No notifications</Text>
                             </View>
                         }
+                        
                     />
                 )}
             
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
     titleContainer: { flex: 1, alignItems: 'center' },
     title: { color: 'white', fontSize: 24, fontWeight: 'bold' },
 
-    listSection: { marginTop: 40 },
+    listSection: { marginTop: 40, paddingBottom:80 },
     notificationItem: { padding: 15, backgroundColor: 'rgba(255, 255, 255, 0.3)', marginBottom: 15, paddingVertical: 30, borderRadius: 5 },
     notificationTitle: { fontWeight: 'bold', color: 'white' },
     notificationText: { color: 'white' },
