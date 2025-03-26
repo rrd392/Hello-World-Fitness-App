@@ -93,7 +93,7 @@ router.put('/updateUser', (req, res) => {
         }
         if (result.affectedRows > 0) {
             
-            res.status(200).json({ success:true, message: 'Member info updated successfully!' });
+            res.status(200).json({ success:true, message: 'User info updated successfully!' });
                     
         } else {
             res.status(404).json({ message: 'Member not found.' });
