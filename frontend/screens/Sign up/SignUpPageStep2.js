@@ -33,6 +33,20 @@ const SignUpPageStep2 = () => {
       Alert.alert("Missing Information", "Please fill in all required fields.");
       return; 
     }
+    // Calculate user's age
+    const today = new Date();
+    const birthDate = new Date(signupData.dob);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    if (age < 12) {
+      Alert.alert("Age Restriction", "You must be at least 12 years old to register.");
+      return;
+    }
 
     navigation.navigate("SignUpPageStep3"); 
   };
@@ -52,6 +66,8 @@ const SignUpPageStep2 = () => {
       }
       setShowPicker(false); 
   };
+
+
 
   return (
     <SafeAreaView style={styles.safeArea}>

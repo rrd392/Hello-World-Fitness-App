@@ -20,6 +20,8 @@ const SignUpPageStep1 = () => {
   const { signupData, setSignupData } = useSignup();
 
   const validateAndProceed = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const contactRegex = /^[0-9]{10,11}$/; 
     if (
       !signupData.email.trim() ||
       !signupData.username.trim() ||
@@ -28,6 +30,16 @@ const SignUpPageStep1 = () => {
       !signupData.contact.trim()
     ) {
       Alert.alert("Missing Information", "Please fill in all required fields.");
+      return;
+    }
+
+    if (!emailRegex.test(signupData.email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
+      return;
+    }
+  
+    if (!contactRegex.test(signupData.contact)) {
+      Alert.alert("Invalid Contact Number", "Please enter a valid contact number (10-11 digits).");
       return;
     }
 
