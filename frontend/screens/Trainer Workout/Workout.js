@@ -1,6 +1,6 @@
-import { View, SafeAreaView, Text, TouchableOpacity, FlatList, Image, Animated, ScrollView } from "react-native";
+import { View, SafeAreaView, Text, TouchableOpacity, FlatList, Image, ScrollView } from "react-native";
 import { StyleSheet } from "react-native";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import DeleteModal from "./DeleteModal";

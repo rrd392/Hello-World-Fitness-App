@@ -109,12 +109,12 @@ const ViewSelectedWorkoutModal = ({ visible, onCancel, fullWorkoutDetails, selec
 
             if (data.success) {
                 Alert.alert("Success", "Workout Plan successfully created.");
-                onCancel();
-                if(category == "Coach"){
-                    navigation.navigate('MemberWorkoutPlan', {member});
-                }else if (category == "General"){
+                if(category == "General"){
                     navigation.navigate('Workout');
+                }else if (category == "Coach"){
+                    navigation.navigate('MemberWorkoutPlan', {member});
                 }
+                onCancel();
             } else {
                 Alert.alert(data.message);
             }

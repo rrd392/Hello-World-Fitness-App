@@ -216,16 +216,32 @@ router.post('/createWorkoutPlan', upload.single("image"), async (req, res) => {
     }
 });
 
+const fs = require('fs');
+const util = require('util');
+const unlinkAsync = util.promisify(fs.unlink);
+
 router.delete('/deleteWorkoutPlan', (req, res) =>{
     const { workout_plan_id } = req.body;
+    const selectQuery = `SELECT workout_image FROM workout_plans WHERE workout_plan_id = ?`;
     const deleteQuery = `DELETE FROM workout_plans WHERE workout_plan_id = ?`;
-
-    db.query(deleteQuery, [ workout_plan_id], (error, deleteResult)=>{
+    db.query(selectQuery, [ workout_plan_id], (error, imageResults)=>{
         if (error) {
             return res.status(500).json({ error: "Database query failed" });
         }
-        
-        res.json({success:true});
+        const workout_image = imageResults[0].workout_image;
+            
+        const filePath = path.join(__dirname, '../../../uploads', workout_image);
+        if (fs.existsSync(filePath)) {
+            unlinkAsync(filePath);
+        }
+
+        db.query(deleteQuery, [ workout_plan_id], (error, deleteResult)=>{
+            if (error) {
+                return res.status(500).json({ error: "Database query failed" });
+            }
+            
+            res.json({success:true});
+        });
     });
 });
 
