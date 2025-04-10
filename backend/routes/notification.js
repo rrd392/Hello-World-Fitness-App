@@ -49,7 +49,7 @@ router.get('/displayTrainerNotification/:user_id/:user_role', (req, res) => {
                                     AND (
                                         (n.user_id IS NULL AND n.class_id IS NULL)  
                                         OR (n.user_id = ?) 
-                                        OR (n.class_id IS NOT NULL AND n.user_id IS NOT NULL)  
+                                        OR (n.class_id IS NOT NULL AND n.user_id IS NULL)  
                                     )
                                     AND n.notification_id != 2;`;
 
